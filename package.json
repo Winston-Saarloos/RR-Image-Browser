@@ -20,7 +20,8 @@
     "electron": "^10.1.5"
   },
   "dependencies": {
-    "electron-squirrel-startup": "^1.0.0"
+    "electron-squirrel-startup": "^1.0.0",
+    "jquery": "^3.5.1"
   },
   "config": {
     "forge": {

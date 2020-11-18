@@ -1,11 +1,12 @@
+// https://www.tutorialspoint.com/electron/electron_file_handling.htm
 const { app, BrowserWindow } = require('electron')
 
 function createWindow () {
   const win = new BrowserWindow({
-    width: 800,
+    width: 1100,
     height: 800,
-    minWidth: 1000,
-    minHeight: 800,
+    minWidth: 1050,
+    minHeight: 600,
     webPreferences: {
       nodeIntegration: true
     }
