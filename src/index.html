@@ -2,32 +2,35 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Augmented RR</title>
+    <title>RR Companion</title>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
     <link rel="stylesheet" href="index.css">
     <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
   </head>
-<body>
-
+<body class="body">
     <nav class="navbar navbar-expand navbar-dark bg-dark">
-          <a class="navbar-brand" href="#">Augmented RR</a>
+          <a class="navbar-brand" href="#">RR</a>
           <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
             <li class="nav-item active">
               <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="#">Photo Collection</a>
+              <a class="nav-link" href="#">Photos</a>
             </li>
           </ul>
           <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="search" placeholder="Enter RR '@' name" aria-label="Search">
-            <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
+            <input class="form-control mr-sm-2" type="text" placeholder="Enter RR '@' name" aria-label="Search" id="txtUsername" value="LuminousPanther617">
+            <button class="btn btn-success my-2 my-sm-0" onclick="getUserId(); return false;">Sync</button>
           </form>
       </nav>
-
-    <h1>Hello World!</h1>
-    We are using node <script>document.write(process.versions.node)</script>
-    Chrome <script>document.write(process.versions.chrome)</script>,
-    and Electron <script>document.write(process.versions.electron)</script>
+      <h5>User ID:</h5>
+      <p id="userId">000000</p>
+      <hr>
+      <h5>Total Public Photos:</h5>
+      <p id="totalPhotos">000000</p>
+    <button class="btn btn-outline-success" onclick="syncUserPhotos();">Click to Test!</button>
+    <!-- Adding Individual Renderer 
+         Process JS File -->
+    <script src="index.js"></script>
 </body>
 </html> 
