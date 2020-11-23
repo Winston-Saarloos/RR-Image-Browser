@@ -189,3 +189,50 @@ function downloadFile(configuration) {
         });
     });
 }
+
+// #######################################################################################
+//                            NEW GENERIC REUSABLE FUNCTIONS
+// #######################################################################################
+
+// Generic function for returning a list of files in a directory
+// folderPath = './images'
+// Returns: array of string
+function listFilesInFolder(folderPath) {
+    var fileList = [];
+    fs.readdirSync(folder).forEach(file => {
+        fileList.push(file);
+    });
+    console.log(fileList);
+    return fileList;
+}
+
+// Function takes in a RecNet Display name and converts it to a RecNet user ID.
+function getUserId(recNetDisplayName) {
+    var url = 'https://accounts.rec.net/account?username=' + recNetDisplayName;
+
+    // https://accounts.rec.net/account?username=rocko
+    axios.get(url)
+        .then(function (response) {
+            // handle success
+            console.log(response.data.accountId);
+            return response.data.accountId;
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+            return -1;
+        })
+        .then(function () {
+            // always executed
+        });
+}
+
+
+
+
+
+
+//swap all functions to be generic and re useable
+
+// redo feed API function to be more generic
+
