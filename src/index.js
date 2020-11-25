@@ -193,6 +193,11 @@ function downloadFile(configuration) {
 // #######################################################################################
 //                            NEW GENERIC REUSABLE FUNCTIONS
 // #######################################################################################
+// 
+// **************
+// I think I need some awaits to get these to function correctly...
+// **************
+
 
 // Generic function for returning a list of files in a directory
 // folderPath = './images'
@@ -214,7 +219,7 @@ function getUserId(recNetDisplayName) {
     axios.get(url)
         .then(function (response) {
             // handle success
-            console.log(response.data.accountId);
+            console.log('Successfully retrieved USER_ID (' + response.data.accountId + ') for user ' + recNetDisplayName);
             return response.data.accountId;
         })
         .catch(function (error) {
@@ -227,6 +232,47 @@ function getUserId(recNetDisplayName) {
         });
 }
 
+// Function takes a userID and returns back a user's entire public photo library
+function getUserPublicPhotoLibrary(userId) {
+    var url = 'https://api.rec.net/api/images/v4/player/' + userId + '?skip=0&take=50000'
+
+    // 'https://api.rec.net/api/images/v4/player/PLAYER_ID?skip=0&take=50000'
+    axios.get(url)
+        .then(function (response) {
+            // handle success
+            console.log('Successfully retreived photos for USER_ID: '+ userId + ' Count: ' + response.data);
+            return response.data.accountId;
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+            return -1;
+        })
+        .then(function () {
+            // always executed
+        });
+}
+
+// function takes in a imageName and returns the image associated
+// returns image data (separate function for downloading)
+function getRecNetImage(imageName) {
+    var IMAGE_URL = 'https://img.rec.net/' + imageName;
+
+    // 'https://api.rec.net/api/images/v4/player/PLAYER_ID?skip=0&take=50000'
+    axios.get(IMAGE_URL)
+        .then(function (response) {
+            // handle success
+            console.log('Successfully retreived image from image database.');
+            return response.data;
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+        })
+        .then(function () {
+            // always executed
+        });
+}
 
 
 
