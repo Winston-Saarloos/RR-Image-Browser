@@ -212,7 +212,7 @@ function listFilesInFolder(folderPath) {
 }
 
 // Function takes in a RecNet Display name and converts it to a RecNet user ID.
-function getUserId(recNetDisplayName) {
+async function getUserId(recNetDisplayName) {
     var url = 'https://accounts.rec.net/account?username=' + recNetDisplayName;
 
     // https://accounts.rec.net/account?username=rocko
