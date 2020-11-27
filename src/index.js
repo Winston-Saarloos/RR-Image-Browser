@@ -1,12 +1,34 @@
-const { electron } = require('electron');
+const { electron, app } = require('electron');
 const axios = require('axios');
 const fs = require('fs');
 const Path = require('path');
 var http = require('http');
 var request = require('request');
-
+// Electron-Store for saving preferences
 var userAccountId = 0;
 
+//var filePath = app.getPath("userData");
+var INDEVELOPMENTMODE = true;
+var filePath = 'C:/RNC/';
+
+// if (INDEVELOPMENTMODE) {
+//     filePath = 'C:/RNC/'
+// }
+
+// if (INDEVELOPMENTMODE) {
+//     console.log('App is in development mode!');
+// }
+
+
+async function syncUserPhotoLibrary() {
+    var username = document.getElementById("txtUsername").value;
+    var userId = await getUserId(username);
+
+    console.log('Username: ' + username);
+    console.log('User ID: ' + userId);
+
+
+}
 // Importing the net Module from electron remote 
 //const net = electron.remote.net; 
 
@@ -215,21 +237,25 @@ function listFilesInFolder(folderPath) {
 async function getUserId(recNetDisplayName) {
     var url = 'https://accounts.rec.net/account?username=' + recNetDisplayName;
 
-    // https://accounts.rec.net/account?username=rocko
-    axios.get(url)
-        .then(function (response) {
-            // handle success
-            console.log('Successfully retrieved USER_ID (' + response.data.accountId + ') for user ' + recNetDisplayName);
-            return response.data.accountId;
-        })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-            return -1;
-        })
-        .then(function () {
-            // always executed
-        });
+    return new Promise(function (resolve, reject) {
+
+        // https://accounts.rec.net/account?username=rocko
+        axios.get(url)
+            .then(function (response) {
+                // handle success
+                console.log('Successfully retrieved USER_ID (' + response.data.accountId + ') for user ' + recNetDisplayName);
+                //return response.data.accountId;
+                resolve(response.data.accountId);
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+                reject(error);
+            })
+            .then(function () {
+                // always executed
+            });
+    })
 }
 
 // Function takes a userID and returns back a user's entire public photo library

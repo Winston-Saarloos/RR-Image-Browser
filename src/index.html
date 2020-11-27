@@ -5,7 +5,7 @@
     <title>RR Companion</title>
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
     <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="../bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
   </head>
 <body class="body">
     <nav class="navbar navbar-expand navbar-dark bg-dark">
@@ -20,7 +20,7 @@
           </ul>
           <form class="form-inline my-2 my-lg-0">
             <input class="form-control mr-sm-2" type="text" placeholder="Enter RR '@' name" aria-label="Search" id="txtUsername" value="LuminousPanther617">
-            <button class="btn btn-success my-2 my-sm-0" onclick="getUserId(); return false;">Sync</button>
+            <button class="btn btn-success my-2 my-sm-0" onclick="syncUserPhotoLibrary(); return false;">Sync</button>
           </form>
       </nav>
       <h5>User ID:</h5>
@@ -28,7 +28,7 @@
       <hr>
       <h5>Total Public Photos:</h5>
       <p id="totalPhotos">000000</p>
-    <button class="btn btn-outline-success" onclick="getUserId('Rocko');">Click to Test!</button>
+    <button class="btn btn-outline-success" onclick="syncUserPhotoLibrary();">Click to Test!</button>
     <!-- Adding Individual Renderer 
          Process JS File -->
     <script src="index.js"></script>
