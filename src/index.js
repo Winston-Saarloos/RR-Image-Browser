@@ -11,83 +11,15 @@ var userAccountId = 0;
 var INDEVELOPMENTMODE = true;
 var filePath = 'C:/RNC/';
 
-// if (INDEVELOPMENTMODE) {
-//     filePath = 'C:/RNC/'
-// }
-
-// if (INDEVELOPMENTMODE) {
-//     console.log('App is in development mode!');
-// }
-
-
 async function syncUserPhotoLibrary() {
     var username = document.getElementById("txtUsername").value;
     var userId = await getUserId(username);
+    var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
 
     console.log('Username: ' + username);
     console.log('User ID: ' + userId);
+    console.log('User Photo Library Size: ' + userPhotoLibrary.length);
 
-
-}
-// Importing the net Module from electron remote 
-//const net = electron.remote.net; 
-
-// var get = document.getElementById('get'); 
-// get.addEventListener('click', () => { 
-//     const request = net.request({ 
-//         method: 'GET', 
-//         protocol: 'http:', 
-//         hostname: 'httpbin.org', 
-//         path: '/get', 
-//         redirect: 'follow'
-//     }); 
-//     request.on('response', (response) => { 
-//         console.log(`STATUS: ${response.statusCode}`); 
-//         console.log(`HEADERS: ${JSON.stringify(response.headers)}`); 
-
-//         response.on('data', (chunk) => { 
-//             console.log(`BODY: ${chunk}`) 
-//         }); 
-//     }); 
-//     request.on('finish', () => { 
-//         console.log('Request is Finished') 
-//     }); 
-//     request.on('abort', () => { 
-//         console.log('Request is Aborted') 
-//     }); 
-//     request.on('error', (error) => { 
-//         console.log(`ERROR: ${JSON.stringify(error)}`) 
-//     }); 
-//     request.on('close', (error) => { 
-//         console.log('Last Transaction has occured') 
-//     }); 
-//     request.setHeader('Content-Type', 'application/json'); 
-//     request.end(); 
-// }); 
-
-// takes in a '@' name and returns account information
-function getUserId() {
-    var username = document.getElementById("txtUsername").value;
-    console.log(username);
-
-    var url = 'https://accounts.rec.net/account?username=' + username;
-    console.log('URL: ' + url);
-    // https://accounts.rec.net/account?username=rocko
-    axios.get(url)
-        .then(function (response) {
-            // handle success
-            userAccountId = response.data.accountId;
-            console.log(response);
-            document.getElementById("userId").innerHTML = userAccountId;
-            syncUserPhotos(userAccountId);
-        })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-        })
-        .then(function () {
-            // always executed
-        });
 }
 
 function syncUserPhotos(userId) {
@@ -259,24 +191,28 @@ async function getUserId(recNetDisplayName) {
 }
 
 // Function takes a userID and returns back a user's entire public photo library
-function getUserPublicPhotoLibrary(userId) {
+async function getUserPublicPhotoLibrary(userId) {
     var url = 'https://api.rec.net/api/images/v4/player/' + userId + '?skip=0&take=50000'
 
-    // 'https://api.rec.net/api/images/v4/player/PLAYER_ID?skip=0&take=50000'
-    axios.get(url)
-        .then(function (response) {
-            // handle success
-            console.log('Successfully retreived photos for USER_ID: '+ userId + ' Count: ' + response.data);
-            return response.data.accountId;
+        return new Promise(function (resolve, reject) {
+
+            // https://accounts.rec.net/account?username=rocko
+            axios.get(url)
+                .then(function (response) {
+                    // handle success
+                    console.log('Successfully retreived photos for USER_ID: '+ userId + ' Count: ' + response.data.length);
+                    //return response.data.accountId;
+                    resolve(response.data);
+                })
+                .catch(function (error) {
+                    // handle error
+                    console.log(error);
+                    reject(error);
+                })
+                .then(function () {
+                    // always executed
+                });
         })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-            return -1;
-        })
-        .then(function () {
-            // always executed
-        });
 }
 
 // function takes in a imageName and returns the image associated
