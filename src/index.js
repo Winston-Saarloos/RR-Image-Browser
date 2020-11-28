@@ -17,8 +17,12 @@ async function syncUserPhotoLibrary() {
     var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
 
     console.log('Username: ' + username);
-    console.log('User ID: ' + userId);
-    console.log('User Photo Library Size: ' + userPhotoLibrary.length);
+    
+    //console.log('User ID: ' + userId);
+    document.getElementById("userId").innerHTML = userId;
+
+    //console.log('User Photo Library Size: ' + userPhotoLibrary.length);
+    document.getElementById("totalPhotos").innerHTML = userPhotoLibrary.length;
 
 }
 
