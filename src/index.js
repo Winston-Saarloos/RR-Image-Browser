@@ -24,6 +24,32 @@ async function syncUserPhotoLibrary() {
     //console.log('User Photo Library Size: ' + userPhotoLibrary.length);
     document.getElementById("totalPhotos").innerHTML = userPhotoLibrary.length;
 
+    organizePhotosForDownload(userPhotoLibrary);
+
+}
+
+async function organizePhotosForDownload(photoJSON) {
+    var numOfConcurrency = 50;
+    var numOfCollections = photoJSON.length / numOfConcurrency;
+    var numOfCollectionsMod = photoJSON.length % numOfConcurrency;
+    var collectionOfBuckets = [];
+
+    console.log("Division: " + Math.floor(numOfCollections));
+    console.log("Modulus: " + numOfCollectionsMod);
+
+    var i;
+    for (i = 0; i < Math.floor(numOfCollections); i++) {
+        collectionOfBuckets.push(new Array);
+    }
+    if (numOfCollectionsMod > 0) {
+        collectionOfBuckets.push(new Array);
+    }
+
+    console.log(collectionOfBuckets.length);
+    console.log(collectionOfBuckets);
+
+    // Next Step: put each promise into a collection so it can be sent off.
+    //https://stackoverflow.com/questions/53948280/how-to-throttle-promise-all-to-5-promises-per-second
 }
 
 function syncUserPhotos(userId) {
