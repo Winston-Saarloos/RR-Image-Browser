@@ -4,6 +4,7 @@ const fs = require('fs');
 const Path = require('path');
 var http = require('http');
 var request = require('request');
+//const sleep = require('util').promisify(setTimeout);
 // Electron-Store for saving preferences
 var userAccountId = 0;
 
@@ -11,7 +12,26 @@ var userAccountId = 0;
 var INDEVELOPMENTMODE = true;
 var filePath = 'C:/RNC/';
 
+//TODO
+// Save Feed JSON to folder on machine
+//  - read top most item and see if it is a day old if so run sync
+
+// Photo Sync (Run every 5 seconds for 50 requests/downloads each)
+var z = 0;
+var interval = setInterval(function(){ 
+    //this code runs every second 
+    if (z === 2){
+        clearInterval(interval);
+        console.log("Stopped photo sync for now..");
+    }
+
+    console.log("Syncing..." + z);
+    syncUserPhotoLibrary();
+    z++;
+}, 5000);
+
 async function syncUserPhotoLibrary() {
+    console.log("Running Sync...");
     var username = document.getElementById("txtUsername").value;
     var userId = await getUserId(username);
     var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
@@ -24,11 +44,31 @@ async function syncUserPhotoLibrary() {
     //console.log('User Photo Library Size: ' + userPhotoLibrary.length);
     document.getElementById("totalPhotos").innerHTML = userPhotoLibrary.length;
 
-    organizePhotosForDownload(userPhotoLibrary);
-
+    //organizePhotosForDownload(userPhotoLibrary);
 }
 
-async function organizePhotosForDownload(photoJSON) {
+// Get the image data from REC NET
+function getImageData(imageName) {
+    var IMAGE_URL = 'https://img.rec.net/' + imageName;
+
+    // 'https://api.rec.net/api/images/v4/player/PLAYER_ID?skip=0&take=50000'
+    axios.get(IMAGE_URL)
+        .then(function (response) {
+            // handle success
+            console.log('Successfully retreived image from image database.');
+            return response.data;
+        })
+        .catch(function (error) {
+            // handle error
+            console.log(error);
+        })
+        .then(function () {
+            // always executed
+        });
+}
+
+// Can this be kept syncronous?
+function organizePhotosForDownload(photoJSON) {
     var numOfConcurrency = 50;
     var numOfCollections = photoJSON.length / numOfConcurrency;
     var numOfCollectionsMod = photoJSON.length % numOfConcurrency;
@@ -45,11 +85,46 @@ async function organizePhotosForDownload(photoJSON) {
         collectionOfBuckets.push(new Array);
     }
 
+    // Put each image name into the collection
+    var n = 0; // Iterator for collectionOfBuckets
+    photoJSON.forEach(element => {
+        console.log("ELEMENT: " + element.ImageName);
+        console.log("N = " + n);
+        collectionOfBuckets[n].push(element.ImageName)
+        if (collectionOfBuckets[n].length >= numOfConcurrency) {
+            n++;
+        }
+    });
+
+    console.log(photoJSON[0].ImageName);
     console.log(collectionOfBuckets.length);
     console.log(collectionOfBuckets);
 
     // Next Step: put each promise into a collection so it can be sent off.
     //https://stackoverflow.com/questions/53948280/how-to-throttle-promise-all-to-5-promises-per-second
+
+    var goOn = true;
+    var i = 0;
+    do {
+        console.log("Error issue: " + collectionOfBuckets[0].length);
+        // Iterate through items in the given set
+        collectionOfBuckets[i].forEach(element => console.log("WHAT IS THIS?!: " + element.length));
+
+        // time out function
+        setTimeout(function () {
+            console.log("Time out complete");
+            return true;
+         }, 5000);
+
+        // increment to next collection
+        if (i = (collectionOfBuckets.length - 1)) {
+            console.log("We have reached the last collection. i = " + i + " Array Length: " + collectionOfBuckets.length);
+            goOn  = false;
+        }
+
+        i = i + 1;
+    } 
+    while (goOn = true);
 }
 
 function syncUserPhotos(userId) {
@@ -128,10 +203,6 @@ function syncUserPhotos(userId) {
     //else if the folder exists.  For each photo returned by recnet verify it exists in the file system
     // if it does not then download it from the image database and write the file to disc
     // Make a request for a user with a given ID
-}
-
-function sleep(millis) {
-    return new Promise(resolve => setTimeout(resolve, millis));
 }
 
 function downloadFile(configuration) {
@@ -217,7 +288,7 @@ async function getUserId(recNetDisplayName) {
             .then(function () {
                 // always executed
             });
-    })
+    });
 }
 
 // Function takes a userID and returns back a user's entire public photo library
@@ -247,7 +318,7 @@ async function getUserPublicPhotoLibrary(userId) {
 
 // function takes in a imageName and returns the image associated
 // returns image data (separate function for downloading)
-function getRecNetImage(imageName) {
+function getImageData(imageName) {
     var IMAGE_URL = 'https://img.rec.net/' + imageName;
 
     // 'https://api.rec.net/api/images/v4/player/PLAYER_ID?skip=0&take=50000'
