@@ -11,6 +11,8 @@ var userAccountId = 0;
 //var filePath = app.getPath("userData");
 var INDEVELOPMENTMODE = true;
 var filePath = 'C:/RNC/';
+var appDataPath = './appData/';
+var dataCache = 'cache/';
 
 //TODO
 // Save Feed JSON to folder on machine
@@ -18,23 +20,25 @@ var filePath = 'C:/RNC/';
 
 // Photo Sync (Run every 5 seconds for 50 requests/downloads each)
 var z = 0;
-var interval = setInterval(function(){ 
-    //this code runs every second 
-    if (z === 2){
-        clearInterval(interval);
-        console.log("Stopped photo sync for now..");
-    }
+// var interval = setInterval(function(){ 
+//     //this code runs every second 
+//     if (z === 2){
+//         clearInterval(interval);
+//         console.log("Stopped photo sync for now..");
+//     }
 
-    console.log("Syncing..." + z);
-    syncUserPhotoLibrary();
-    z++;
-}, 5000);
+//     console.log("Syncing..." + z);
+//     syncUserPhotoLibrary();
+//     z++;
+// }, 5000);
 
 async function syncUserPhotoLibrary() {
     console.log("Running Sync...");
     var username = document.getElementById("txtUsername").value;
     var userId = await getUserId(username);
     var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
+
+    writeJsonFileToFolder(appDataPath + dataCache, userPhotoLibrary,'publicImageLibrary.json', userId);
 
     console.log('Username: ' + username);
     
@@ -338,8 +342,16 @@ function getImageData(imageName) {
 }
 
 
-
-
+// Writes JSON data to a specific users folder based on the user's RR ID.
+function writeJsonFileToFolder(path, fileData, fileName, userId) {
+    let data = JSON.stringify(fileData);
+    var filePath = path + userId;
+    if (!fs.existsSync(filePath)) {
+        console.log("Creating cache folder for user: " + userId + ".");
+        fs.mkdirSync(filePath);
+    }
+    fs.writeFileSync(filePath + '/' + fileName, data);
+}
 
 //swap all functions to be generic and re useable
 
