@@ -24,3 +24,14 @@ Main app plans
 [] Smart Sync (only syncs photos which are not already on the user's computer)
 [] Left bar menu for switching between applications
 [] Import and export settings
+
+
+
+AppData - Folder Structure
+------------------------------
+appdata
+  cache
+    {FolderName = folderID}
+      RecNetResponse - holds all response JSON from RecNet (name the file what the response is called)
+      Data - Contains data on sync processes and other information
+      
