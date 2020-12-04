@@ -14,23 +14,59 @@ var filePath = 'C:/RNC/';
 var appDataPath = './appData/';
 var dataCache = 'cache/';
 
+let photoSync = require('../appdata/photosync/photoSyncInfo.json');
+var inProgress = false;
+
 //TODO
 // Save Feed JSON to folder on machine
 //  - read top most item and see if it is a day old if so run sync
 
 // Photo Sync (Run every 5 seconds for 50 requests/downloads each)
 var z = 0;
-// var interval = setInterval(function(){ 
-//     //this code runs every second 
-//     if (z === 2){
-//         clearInterval(interval);
-//         console.log("Stopped photo sync for now..");
-//     }
+var interval = setInterval(function(){ 
+    //this code runs every second 
+    if (!inProgress){
+        clearInterval(interval);
+        console.log("Stopped photo sync for now..");
+    } else {
+        console.log("Syncing..." + z);
+        var imageNameArray = [];
+        // for each to process in batches of images
+        // getAnArray of image names to send out async
+        // imageNumStart = page * 1;
 
-//     console.log("Syncing..." + z);
-//     syncUserPhotoLibrary();
-//     z++;
-// }, 5000);
+        
+        if (imageNameArray.length < 50){
+            inProgress = false;
+
+            // realistically write out some data to that file as well..
+        }
+
+
+        //syncUserPhotoLibrary();
+        z++;
+    }
+}, 5000);
+
+function readPhotoSyncJson(startSync, userId) {
+    var photoSyncJson = photoSync;    
+    if (startSync) {
+        inProgress = true;
+        photoSyncJson.lastSync = new Date();
+        photoSyncJson.page = 0;
+        photoSyncJson.syncCurrentlyInprogress = true;
+        photoSyncJson.userId = userId;
+
+        let fileData = JSON.stringify(photoSyncJson);
+        var filePath = './appdata/photosync/photoSyncInfo.json';
+
+        fs.writeFileSync(filePath, fileData);
+        console.log('Updated file values.');
+
+        // Trigger the interval function to run and process photos
+        interval;
+    }
+}
 
 async function syncUserPhotoLibrary() {
     console.log("Running Sync...");
@@ -49,6 +85,7 @@ async function syncUserPhotoLibrary() {
     document.getElementById("totalPhotos").innerHTML = userPhotoLibrary.length;
 
     //organizePhotosForDownload(userPhotoLibrary);
+    readPhotoSyncJson(true, userId);
 }
 
 // Get the image data from REC NET
@@ -351,6 +388,7 @@ function writeJsonFileToFolder(path, fileData, fileName, userId) {
         fs.mkdirSync(filePath);
     }
     fs.writeFileSync(filePath + '/' + fileName, data);
+    // Update last sync time
 }
 
 //swap all functions to be generic and re useable
