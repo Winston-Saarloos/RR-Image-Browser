@@ -48,6 +48,41 @@ var interval = setInterval(function(){
     }
 }, 5000);
 
+// Order...
+// Get look at photo name in array..
+// Look in the folder for that photo name
+//      if it exists.. skip that photo
+// ELSE
+//      Call the API to get the photo
+//            Write the photo to disk
+
+
+function checkIfImageExists(imageName, userId) {
+    // Add actual IMAGE folder to this path
+    var szPath = appDataPath + dataCache + userId + '/Images/' + imageName;
+
+    //console.log('PATH: ' + szPath);
+
+    if (!fs.existsSync(appDataPath + dataCache + userId + '/Images/')) {
+        console.log("Creating image folder for user: " + userId + ".");
+        fs.mkdirSync(appDataPath + dataCache + userId + '/Images/');
+    }
+
+    try {
+        if (fs.existsSync(szPath)) {
+            //file exists
+            console.log('Image Exists..');
+            return true;
+        } else {
+            console.log('Image does not exist..');
+            return false;
+        }
+    } catch (err) {
+        console.error(err)
+    }
+}
+
+
 function readPhotoSyncJson(startSync, userId) {
     var photoSyncJson = photoSync;    
     if (startSync) {
