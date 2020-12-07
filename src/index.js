@@ -14,7 +14,7 @@ var filePath = 'C:/RNC/';
 var appDataPath = './appData/';
 var dataCache = 'cache/';
 
-let photoSync = require('../appdata/photosync/photoSyncInfo.json');
+let photoSync = require('../appdata/photosync/ImageSyncData.json');
 var inProgress = false;
 
 //TODO
@@ -82,18 +82,29 @@ function checkIfImageExists(imageName, userId) {
     }
 }
 
-
 function readPhotoSyncJson(startSync, userId) {
-    var photoSyncJson = photoSync;    
+    var photoSyncJson = photoSync;
+    var index = photoSyncJson.ImageSyncData.findIndex(x => x.userId === userId);
+
+    console.log(index);
+
     if (startSync) {
         inProgress = true;
-        photoSyncJson.lastSync = new Date();
-        photoSyncJson.page = 0;
-        photoSyncJson.syncCurrentlyInprogress = true;
-        photoSyncJson.userId = userId;
-
+        if (index === -1) {
+            console.log("Adding new user to array...");
+            photoSyncJson['ImageSyncData'].push({"lastSync":new Date(), "page":0, "syncCurrentlyInprogress": true, "userId": userId});
+        } else {
+            console.log("Editing existing user in array...");
+            photoSyncJson.ImageSyncData[index].lastSync = new Date();
+            photoSyncJson.ImageSyncData[index].page = 0;
+            photoSyncJson.ImageSyncData[index].syncCurrentlyInprogress = true;
+            photoSyncJson.ImageSyncData[index].userId = userId;
+        }
         let fileData = JSON.stringify(photoSyncJson);
-        var filePath = './appdata/photosync/photoSyncInfo.json';
+
+        console.log(fileData);
+
+        var filePath = './appdata/photosync/ImageSyncData.json';
 
         fs.writeFileSync(filePath, fileData);
         console.log('Updated file values.');
