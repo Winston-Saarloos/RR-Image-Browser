@@ -15,7 +15,9 @@ var appDataPath = './appData/';
 var dataCache = 'cache/';
 
 let photoSync = require('../appdata/photosync/ImageSyncData.json');
+const { Console } = require('console');
 var inProgress = false;
+var USER_ID = 0;
 
 //TODO
 // Save Feed JSON to folder on machine
@@ -29,20 +31,75 @@ var interval = setInterval(function(){
         clearInterval(interval);
         console.log("Stopped photo sync for now..");
     } else {
-        console.log("Syncing..." + z);
+        console.log("Syncing... " + z);
+
+        // Read File Sync Data to variables
+        if (USER_ID < 0) 
+        {
+            console.log("Error occurred in sync process: User ID cannot be 0.");
+            inProgress = false;
+            return;
+        };
+
+        var photoSyncJson = photoSync;
+        var index = photoSyncJson.ImageSyncData.findIndex(x => x.userId === USER_ID);
+        if (index === -1){
+            console.log('Error occured in sync process: Invalid Index.');
+            inProgress = false;
+            return;
+        }
+        
+        //get variable values
+        var page = photoSyncJson.ImageSyncData[index].page;
         var imageNameArray = [];
+        console.log('Page Number: ' + page);
+
         // for each to process in batches of images
         // getAnArray of image names to send out async
         // imageNumStart = page * 1;
+        var rawUserImageData = fs.readFileSync('./appdata/cache/' + USER_ID + '/publicImageLibrary.json');
+        var ImageJson = JSON.parse(rawUserImageData);
+        console.log("Image JSON: ");
+        console.log(ImageJson);
 
-        
-        if (imageNameArray.length < 50){
-            inProgress = false;
+        var i;
+        for (i = page; i < 99; i++) {
+            if (i >= ImageJson.length) {
+                console.log(ImageJson.length);
+                console.log('Index did not exist in image JSON.. Exiting.. ' + i);
+                break;
+            }
+            var imageName = ImageJson[i].ImageName;
+            if (checkIfImageExists(imageName, USER_ID)) {
+                console.log('Image already exists on disk: ' + imageName);
+                continue;
+            }
+            console.log("Image did not exist.. Adding image to array.. " + i);
 
-            // realistically write out some data to that file as well..
+            imageNameArray.push(imageName);
+
+            if (imageNameArray.length === 50){
+                console.log("Image array contains 50 images.");
+                break;
+            }
         }
 
+        if (imageNameArray.length < 50){
+            inProgress = false;
+            // add 50 to page (rename page to LastItemIndex)
 
+            // realistically write out some data to that file as well..
+        }    
+        // Add 50 to page (LastItemIndex)
+    
+
+        // Download Images from RecNet and write to disk.
+        //var ImageData = getImageData(imageNameArray[element]);
+
+        // For each item in the array call an async function to download and write file to disk
+        imageNameArray.forEach(image => console.log(image)); // <== Put that fancy async business here
+
+        // write back out at some point to the last sync file
         //syncUserPhotoLibrary();
         z++;
     }
@@ -83,13 +140,15 @@ function checkIfImageExists(imageName, userId) {
 }
 
 function readPhotoSyncJson(startSync, userId) {
+    console.log("ReadPhotoSyncJson Fired!");
     var photoSyncJson = photoSync;
     var index = photoSyncJson.ImageSyncData.findIndex(x => x.userId === userId);
 
-    console.log(index);
+    //console.log(index);
 
     if (startSync) {
         inProgress = true;
+        USER_ID = userId;
         if (index === -1) {
             console.log("Adding new user to array...");
             photoSyncJson['ImageSyncData'].push({"lastSync":new Date(), "page":0, "syncCurrentlyInprogress": true, "userId": userId});
@@ -131,7 +190,7 @@ async function syncUserPhotoLibrary() {
     document.getElementById("totalPhotos").innerHTML = userPhotoLibrary.length;
 
     //organizePhotosForDownload(userPhotoLibrary);
-    readPhotoSyncJson(true, userId);
+    readPhotoSyncJson(true, await userId);
 }
 
 // Get the image data from REC NET
@@ -405,7 +464,7 @@ async function getUserPublicPhotoLibrary(userId) {
 
 // function takes in a imageName and returns the image associated
 // returns image data (separate function for downloading)
-function getImageData(imageName) {
+async function getImageData(imageName) {
     var IMAGE_URL = 'https://img.rec.net/' + imageName;
 
     // 'https://api.rec.net/api/images/v4/player/PLAYER_ID?skip=0&take=50000'
