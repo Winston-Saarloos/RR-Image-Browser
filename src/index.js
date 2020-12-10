@@ -25,85 +25,89 @@ var USER_ID = 0;
 
 // Photo Sync (Run every 5 seconds for 50 requests/downloads each)
 var z = 0;
-var interval = setInterval(function(){ 
-    //this code runs every second 
-    if (!inProgress){
-        clearInterval(interval);
-        console.log("Stopped photo sync for now..");
-    } else {
-        console.log("Syncing... " + z);
-
-        // Read File Sync Data to variables
-        if (USER_ID < 0) 
-        {
-            console.log("Error occurred in sync process: User ID cannot be 0.");
-            inProgress = false;
-            return;
-        };
-
-        var photoSyncJson = photoSync;
-        var index = photoSyncJson.ImageSyncData.findIndex(x => x.userId === USER_ID);
-        if (index === -1){
-            console.log('Error occured in sync process: Invalid Index.');
-            inProgress = false;
-            return;
-        }
-        
-        //get variable values
-        var page = photoSyncJson.ImageSyncData[index].page;
-        var imageNameArray = [];
-        console.log('Page Number: ' + page);
-
-        // for each to process in batches of images
-        // getAnArray of image names to send out async
-        // imageNumStart = page * 1;
-        var rawUserImageData = fs.readFileSync('./appdata/cache/' + USER_ID + '/publicImageLibrary.json');
-        var ImageJson = JSON.parse(rawUserImageData);
-        console.log("Image JSON: ");
-        console.log(ImageJson);
-
-        var i;
-        for (i = page; i < 99; i++) {
-            if (i >= ImageJson.length) {
-                console.log(ImageJson.length);
-                console.log('Index did not exist in image JSON.. Exiting.. ' + i);
-                break;
-            }
-            var imageName = ImageJson[i].ImageName;
-            if (checkIfImageExists(imageName, USER_ID)) {
-                console.log('Image already exists on disk: ' + imageName);
-                continue;
-            }
-            console.log("Image did not exist.. Adding image to array.. " + i);
-
-            imageNameArray.push(imageName);
-
-            if (imageNameArray.length === 50){
-                console.log("Image array contains 50 images.");
-                break;
-            }
-        }
-
-        if (imageNameArray.length < 50){
-            inProgress = false;
-            // add 50 to page (rename page to LastItemIndex)
-
-            // realistically write out some data to that file as well..
-        }    
-        // Add 50 to page (LastItemIndex)
+function startSyncTick(){
+    var interval = setInterval(function(){ 
+        //this code runs every second 
+        console.log('Interval set..');
+        if (!inProgress){
+            clearInterval(interval);
+            console.log("Stopped photo sync for now..");
+        } else {
+            console.log("Syncing... " + z);
     
+            // Read File Sync Data to variables
+            if (USER_ID < 0) 
+            {
+                console.log("Error occurred in sync process: User ID cannot be 0.");
+                inProgress = false;
+                return;
+            };
+    
+            var photoSyncJson = photoSync;
+            var index = photoSyncJson.ImageSyncData.findIndex(x => x.userId === USER_ID);
+            if (index === -1){
+                console.log('Error occured in sync process: Invalid Index.');
+                inProgress = false;
+                return;
+            }
+            
+            //get variable values
+            var page = photoSyncJson.ImageSyncData[index].page;
+            var imageNameArray = [];
+            console.log('Page Number: ' + page);
+    
+            // for each to process in batches of images
+            // getAnArray of image names to send out async
+            // imageNumStart = page * 1;
+            var rawUserImageData = fs.readFileSync('./appdata/cache/' + USER_ID + '/publicImageLibrary.json');
+            var ImageJson = JSON.parse(rawUserImageData);
+            console.log("Image JSON: ");
+            console.log(ImageJson);
+    
+            var i;
+            for (i = page; i < 99; i++) {
+                if (i >= ImageJson.length) {
+                    console.log(ImageJson.length);
+                    console.log('Index did not exist in image JSON.. Exiting.. ' + i);
+                    break;
+                }
+                var imageName = ImageJson[i].ImageName;
+                if (checkIfImageExists(imageName, USER_ID)) {
+                    console.log('Image already exists on disk: ' + imageName);
+                    continue;
+                }
+                console.log("Image did not exist.. Adding image to array.. " + i);
+    
+                imageNameArray.push(imageName);
+    
+                if (imageNameArray.length === 50){
+                    console.log("Image array contains 50 images.");
+                    break;
+                }
+            }
+    
+            if (imageNameArray.length < 50){
+                inProgress = false;
+                // add 50 to page (rename page to LastItemIndex)
+    
+                // realistically write out some data to that file as well..
+            }    
+            // Add 50 to page (LastItemIndex)
+        
+    
+            // Download Images from RecNet and write to disk.
+            //var ImageData = getImageData(imageNameArray[element]);
+    
+            // For each item in the array call an async function to download and write file to disk
+            imageNameArray.forEach(image => console.log(image)); // <== Put that fancy async business here
+    
+            // write back out at some point to the last sync file
+            //syncUserPhotoLibrary();
+            z++;
+        }
+    }, 5000);    
+}
 
-        // Download Images from RecNet and write to disk.
-        //var ImageData = getImageData(imageNameArray[element]);
-
-        // For each item in the array call an async function to download and write file to disk
-        imageNameArray.forEach(image => console.log(image)); // <== Put that fancy async business here
-
-        // write back out at some point to the last sync file
-        //syncUserPhotoLibrary();
-        z++;
-    }
-}, 5000);
 
 // Order...
 // Get look at photo name in array..
@@ -169,7 +173,7 @@ function readPhotoSyncJson(startSync, userId) {
         console.log('Updated file values.');
 
         // Trigger the interval function to run and process photos
-        interval;
+        startSyncTick();
     }
 }
 
