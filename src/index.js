@@ -18,6 +18,7 @@ let photoSync = require('../appdata/photosync/ImageSyncData.json');
 const { Console } = require('console');
 var inProgress = false;
 var USER_ID = 0;
+var PAGE_NUM = 0;
 
 //TODO
 // Save Feed JSON to folder on machine
@@ -26,7 +27,7 @@ var USER_ID = 0;
 // Photo Sync (Run every 5 seconds for 50 requests/downloads each)
 var z = 0;
 function startSyncTick(){
-    var interval = setInterval(function(){ 
+    var interval = setInterval(async function(){ 
         //this code runs every second 
         console.log('Interval set..');
         if (!inProgress){
@@ -61,18 +62,20 @@ function startSyncTick(){
             // imageNumStart = page * 1;
             var rawUserImageData = fs.readFileSync('./appdata/cache/' + USER_ID + '/publicImageLibrary.json');
             var ImageJson = JSON.parse(rawUserImageData);
-            console.log("Image JSON: ");
-            console.log(ImageJson);
+            //console.log("Image JSON: ");
+            //console.log(ImageJson);
     
             var i;
-            for (i = page; i < 99; i++) {
+            for (i = PAGE_NUM; i < ImageJson.length; i++) {
                 if (i >= ImageJson.length) {
                     console.log(ImageJson.length);
                     console.log('Index did not exist in image JSON.. Exiting.. ' + i);
                     break;
                 }
                 var imageName = ImageJson[i].ImageName;
-                if (checkIfImageExists(imageName, USER_ID)) {
+                var imageExists = await checkIfImageExists(imageName, USER_ID);
+
+                if (imageExists) {
                     console.log('Image already exists on disk: ' + imageName);
                     continue;
                 }
@@ -88,6 +91,7 @@ function startSyncTick(){
     
             if (imageNameArray.length < 50){
                 inProgress = false;
+                PAGE_NUM = 0;
                 // add 50 to page (rename page to LastItemIndex)
     
                 // realistically write out some data to that file as well..
@@ -99,8 +103,10 @@ function startSyncTick(){
             //var ImageData = getImageData(imageNameArray[element]);
     
             // For each item in the array call an async function to download and write file to disk
-            imageNameArray.forEach(image => console.log(image)); // <== Put that fancy async business here
+            imageNameArray.forEach(image => downloadImageAndWriteFile(image, USER_ID)); // <== Put that fancy async business here
     
+            PAGE_NUM = PAGE_NUM + 50;
+
             // write back out at some point to the last sync file
             //syncUserPhotoLibrary();
             z++;
@@ -108,6 +114,32 @@ function startSyncTick(){
     }, 5000);    
 }
 
+function downloadImageAndWriteFile(imageName, userId) { 
+    console.log('Attempting to download and store.. ' + imageName);
+
+    var IMAGE_URL = 'https://img.rec.net/' + imageName;
+    var szPath = appDataPath + dataCache + userId + '/Images/' + imageName;
+
+    //console.log(IMAGE_URL);
+    var imageNameNoExt = imageName;
+    if (imageNameNoExt.includes(".jpg")){
+        imageNameNoExt = imageNameNoExt.replace('.jpg','');
+    }
+
+    //console.log('Image Name no Extention: ' + imageNameNoExt);
+    //console.log(appDataPath + dataCache + userId + '/Images/' + imageNameNoExt + ".jpeg");
+
+    downloadFile({
+        remoteFile: IMAGE_URL,
+        localFile: appDataPath + dataCache + userId + '/Images/' + imageNameNoExt + ".jpeg",
+        //onProgress: function (received,total){
+        //    var percentage = (received * 100) / total;
+        //    console.log(percentage + "% | " + received + " bytes out of " + total + " bytes.");
+        //}
+    }).then(function () {
+        console.log("File succesfully downloaded");
+    });
+}
 
 // Order...
 // Get look at photo name in array..
@@ -118,9 +150,17 @@ function startSyncTick(){
 //            Write the photo to disk
 
 
-function checkIfImageExists(imageName, userId) {
+async function checkIfImageExists(imageName, userId) {
     // Add actual IMAGE folder to this path
-    var szPath = appDataPath + dataCache + userId + '/Images/' + imageName;
+
+    var imageNameNoExt = imageName;
+    if (imageNameNoExt.includes(".jpg")){
+        imageNameNoExt = imageNameNoExt.replace('.jpg','');
+    }
+
+    var imageNameCorrected = imageNameNoExt + '.jpeg';
+
+    var szPath = appDataPath + dataCache + userId + '/Images/' + imageNameCorrected;
 
     //console.log('PATH: ' + szPath);
 
@@ -132,7 +172,7 @@ function checkIfImageExists(imageName, userId) {
     try {
         if (fs.existsSync(szPath)) {
             //file exists
-            console.log('Image Exists..');
+            console.log('Image Exists.. Skipping it..');
             return true;
         } else {
             console.log('Image does not exist..');
@@ -198,8 +238,10 @@ async function syncUserPhotoLibrary() {
 }
 
 // Get the image data from REC NET
-function getImageData(imageName) {
+async function getImageData(imageName) {
     var IMAGE_URL = 'https://img.rec.net/' + imageName;
+
+    console.log(IMAGE_URL);
 
     // 'https://api.rec.net/api/images/v4/player/PLAYER_ID?skip=0&take=50000'
     axios.get(IMAGE_URL)
