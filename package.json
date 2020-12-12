@@ -29,6 +29,7 @@
     "electron-store": "^6.0.1",
     "fs": "0.0.1-security",
     "jquery": "^3.5.1",
+    "masonry-layout": "^4.2.2",
     "path": "^0.12.7",
     "request": "^2.88.2",
     "util": "^0.12.3",

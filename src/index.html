@@ -1,36 +1,54 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="UTF-8">
-    <title>RR Companion</title>
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
-    <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
-  </head>
+  <meta charset="UTF-8">
+  <title>RR Companion</title>
+  <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+  <script>window.$ = window.jQuery = require('jquery');</script>
+  <!-- <script>window.m = window.Masonry = require('masonry-layout');</script> -->
+  <script src="../node_modules/masonry-layout/masonry.js"></script>
+  <link rel="stylesheet" href="index.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+
 <body class="body">
-    <nav class="navbar navbar-expand navbar-dark bg-dark">
-          <a class="navbar-brand" href="#">RR</a>
-          <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-            <li class="nav-item active">
-              <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#">Photos</a>
-            </li>
-          </ul>
-          <form class="form-inline my-2 my-lg-0">
-            <input class="form-control mr-sm-2" type="text" placeholder="Enter RR '@' name" aria-label="Search" id="txtUsername" value="LuminousPanther617">
-            <button class="btn btn-success my-2 my-sm-0" onclick="syncUserPhotoLibrary(); return false;">Sync</button>
-          </form>
-      </nav>
-      <h5>User ID:</h5>
-      <p id="userId">000000</p>
-      <hr>
-      <h5>Total Public Photos:</h5>
-      <p id="totalPhotos">000000</p>
-    <button class="btn btn-outline-success" onclick="syncUserPhotoLibrary();">Click to Test!</button>
-    <!-- Adding Individual Renderer 
-         Process JS File -->
-    <script src="index.js"></script>
+  <nav class="navbar navbar-expand navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">RR</a>
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="#">Photos</a>
+      </li>
+    </ul>
+    <form class="form-inline my-2 my-lg-0">
+      <input class="form-control mr-sm-2" type="text" placeholder="Enter RR '@' name" aria-label="Search"
+        id="txtUsername" value="LuminousPanther617">
+      <button class="btn btn-success my-2 my-sm-0" onclick="syncUserPhotoLibrary(); return false;">Sync</button>
+    </form>
+  </nav>
+  <h5>User ID:</h5>
+  <p id="userId">000000</p>
+  <hr>
+  <h5>Total Public Photos:</h5>
+  <p id="totalPhotos">000000</p>
+  <button class="btn btn-outline-success test-button" onclick="syncUserPhotoLibrary();">Click to Test!</button>
+  <!-- Adding Individual Renderer 
+           Process JS File -->
+  <div class="grid">
+    <div class="grid-item"><img src="https://img.rec.net/b26edd5c623a4c3f9ae8f634d545e038.jpg"></div>
+    <div class="grid-item"><img src="https://img.rec.net/bf9a5f686f114387ad9e87237e613d17.jpg"></div>
+    <div class="grid-item"><img src="https://img.rec.net/2b3b3855e06d48689566c59336e57634.jpg"></div>
+    <div class="grid-item"><img src="https://img.rec.net/f8032f76b0484e2c8b358d0d551edffb.jpg"></div>
+    <div class="grid-item"><img src="https://img.rec.net/18e5043b3b5e4b079a3715462c36c380.jpg"></div>
+    <div class="grid-item"><img src="https://img.rec.net/8e04494bbb9142eaae8910322d46c365.jpg"></div>
+  </div>
+
+
+  <script src="index.js"></script>
 </body>
-</html> 
+
+</html>

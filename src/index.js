@@ -20,6 +20,18 @@ var inProgress = false;
 var USER_ID = 0;
 var PAGE_NUM = 0;
 
+var Masonry = require('masonry-layout');
+
+window.onload = () => {
+    const grid = document.querySelector('.grid');
+
+    const masonry = new Masonry(grid, {
+        itemSelector: '.grid-item',
+        gutter: 10
+    });
+}
+
+
 //TODO
 // Save Feed JSON to folder on machine
 //  - read top most item and see if it is a day old if so run sync
