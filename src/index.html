@@ -27,7 +27,7 @@
     <form class="form-inline my-2 my-lg-0">
       <input class="form-control mr-sm-2" type="text" placeholder="Enter RR '@' name" aria-label="Search"
         id="txtUsername" value="LuminousPanther617">
-      <button class="btn btn-success my-2 my-sm-0" onclick="syncUserPhotoLibrary(); return false;">Sync</button>
+      <button class="btn btn-success my-2 my-sm-0" onclick="loadImagesOntoPage(); return false;">Sync</button>
     </form>
   </nav>
   <h5>User ID:</h5>
@@ -38,16 +38,8 @@
   <button class="btn btn-outline-success test-button" onclick="syncUserPhotoLibrary();">Click to Test!</button>
   <!-- Adding Individual Renderer 
            Process JS File -->
-  <div class="grid">
-    <div class="grid-item"><img src="https://img.rec.net/b26edd5c623a4c3f9ae8f634d545e038.jpg"></div>
-    <div class="grid-item"><img src="https://img.rec.net/bf9a5f686f114387ad9e87237e613d17.jpg"></div>
-    <div class="grid-item"><img src="https://img.rec.net/2b3b3855e06d48689566c59336e57634.jpg"></div>
-    <div class="grid-item"><img src="https://img.rec.net/f8032f76b0484e2c8b358d0d551edffb.jpg"></div>
-    <div class="grid-item"><img src="https://img.rec.net/18e5043b3b5e4b079a3715462c36c380.jpg"></div>
-    <div class="grid-item"><img src="https://img.rec.net/8e04494bbb9142eaae8910322d46c365.jpg"></div>
+  <div class="grid" id="grid">
   </div>
-
-
   <script src="index.js"></script>
 </body>
 

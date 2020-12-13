@@ -27,7 +27,8 @@ window.onload = () => {
 
     const masonry = new Masonry(grid, {
         itemSelector: '.grid-item',
-        gutter: 10
+        gutter: 10,
+        transitionDuration: 0
     });
 }
 
@@ -558,3 +559,165 @@ function writeJsonFileToFolder(path, fileData, fileName, userId) {
 
 // redo feed API function to be more generic
 
+//======================================================================
+// Image Download above
+//======================================================================
+// New sorting code for rendering images on the page
+
+// async function syncUserPhotoLibrary() {
+//     console.log("Running Sync...");
+//     var username = document.getElementById("txtUsername").value;
+//     var userId = await getUserId(username);
+//     var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
+
+//     writeJsonFileToFolder(appDataPath + dataCache, userPhotoLibrary,'publicImageLibrary.json', userId);
+
+//     console.log('Username: ' + username);
+    
+//     //console.log('User ID: ' + userId);
+//     document.getElementById("userId").innerHTML = userId;
+
+//     //console.log('User Photo Library Size: ' + userPhotoLibrary.length);
+//     document.getElementById("totalPhotos").innerHTML = userPhotoLibrary.length;
+
+//     //organizePhotosForDownload(userPhotoLibrary);
+//     readPhotoSyncJson(true, await userId);
+// }
+
+
+async function loadImagesOntoPage () {
+    var username = document.getElementById("txtUsername").value;
+    var userId = await getUserId(username);
+    var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
+    document.getElementById("userId").innerHTML = userId;
+    document.getElementById("totalPhotos").innerHTML = userPhotoLibrary.length;
+
+    var imageDiv = document.getElementById("grid");
+    while(imageDiv.firstChild) { 
+        imageDiv.removeChild(imageDiv.firstChild); 
+    } 
+
+    // Generate image HTML
+    loadImagesIntoPage(userPhotoLibrary);
+    
+    // var i = 0;
+    // userPhotoLibrary.forEach(image => {
+    //     var img = document.createElement("img");
+    //     img.src = 'https://img.rec.net/' + image.ImageName;
+
+    //     var divGridItem = document.createElement("div");
+    //     divGridItem.classList.add("grid-item");
+    //     divGridItem.appendChild(img);
+
+    //     var src = document.getElementById("grid");
+    //     src.appendChild(divGridItem); // append Div
+
+    //     if (i >= 25) {
+    //         return false;
+    //     }
+
+    //     console.log(i);
+    //     i++;
+    // });
+}
+
+function loadImagesIntoPage(userPhotoLibrary) {
+    var imageDiv = document.getElementById("grid");
+    while (imageDiv.firstChild) {
+        imageDiv.removeChild(imageDiv.firstChild);
+    }
+
+    // Generate image HTML
+    var i = 0;
+    for (i = 0; i < userPhotoLibrary.length; i++) {  // One day I'll have to impement lazy load so I dont just load ALL images
+        var img = document.createElement("img");
+        var imageUrl = 'https://img.rec.net/' + userPhotoLibrary[i].ImageName + '?width=500';
+        img.setAttribute('data-src', imageUrl);
+        img.classList.add("grid-image");
+        //img.src = "";
+
+        var divGridItem = document.createElement("div");
+        divGridItem.classList.add("grid-item");
+        divGridItem.appendChild(img);
+
+        var src = document.getElementById("grid");
+        src.appendChild(divGridItem); // append Div
+        console.log(i);
+        // if (i >= 200) {
+        //     break;
+        // }
+    }
+    console.log('Attaching load...');
+
+    const targets = document.querySelectorAll('img');
+
+    const lazyLoad = target => {
+        let observer = {
+            threshold:0.1
+        }
+        const io = new IntersectionObserver((entries, observer) => {
+
+            entries.forEach(entry => {
+                console.log('Loaded Image..');
+
+                if (entry.isIntersecting) {
+                    console.log('intersection..');
+                    const img = entry.target;
+                    const src = img.getAttribute('data-src');
+
+                    img.setAttribute('src', src);
+
+                    observer.disconnect();
+                }
+            });
+        });
+        io.observe(target);
+    };
+    targets.forEach(lazyLoad);
+
+    // let options = {
+    //     threshold: 0.5
+    // }
+    
+    // const observer = new IntersectionObserver(imageObserver, options);
+    // function imageObserver(images, observer) {
+    //     images.forEach(image => {
+    //         if (image.isIntersecting) {
+    //             const img = image.target;
+    //             const img_src = img.dataset.src;
+    //             console.log("Lazy Loading ", img);
+    //             img.src = img_src;
+    //             observer.unobserve(img);
+    //         };
+    //     });
+    // }
+    
+    // let imgs = document.querySelectorAll('img');
+    // imgs.forEach(img => {
+    //     observer.observe(img);
+    // });
+};
+
+
+
+
+// Function for each filter that takes in a JSON object and returns out a JSON sorted object
+
+// Room Info
+// https://api.rec.net/roomserver/rooms/bulk?Id=9515154
+
+// Image Comments
+//https://api.rec.net//api/images/v1/44549961/comments
+
+// Sorts
+
+// Sort Images by Date
+//  sortByDate = 1
+//  sortByPlayerNumber = 2
+//  sortByCommentAmount = 3
+//  sortByCheerAmount = 4
+// function sortPhotosBy (photoLibaray, sortType, mostNewestFirst) {
+
+// }
+
+// Searches

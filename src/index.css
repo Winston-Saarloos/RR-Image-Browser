@@ -32,13 +32,13 @@ h5, p {
     flex-flow: row wrap;
     margin-left: -8px; /* Adjustment for the gutter */
     width: 100%;
-    border: solid 1px red;
+    border: solid 1px rgb(0, 0, 0);
   }
   
   .grid-item {
     flex: auto;
     height: auto;
     min-width: 150px;
-    max-width: 200px;
+    max-width: 500px;
     margin: 0 8px 8px 0; /* Some gutter */
   }
