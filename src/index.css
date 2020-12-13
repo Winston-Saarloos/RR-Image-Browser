@@ -4,6 +4,7 @@
 
 img {
     width: 100%;
+    background-color: mediumblue;
 }
 
 h5, p {
@@ -24,21 +25,22 @@ h5, p {
     margin-bottom: 10px;
 } */
 
-
-
-
 .grid { 
-    display: flex;
+    /* display: flex;
     flex-flow: row wrap;
     margin-left: -8px; /* Adjustment for the gutter */
-    width: 100%;
-    border: solid 1px rgb(0, 0, 0);
+    /*width: 100%; */
+    border: solid 1px rgb(251, 0, 189);
   }
   
   .grid-item {
     flex: auto;
-    height: auto;
-    min-width: 150px;
-    max-width: 500px;
+    float: left;
+    /*height: auto;
+    max-width: 500px; */
+    width: 300px;
+    min-width: 300px;
+    min-height: 167px;
     margin: 0 8px 8px 0; /* Some gutter */
+    border: solid 1px lime;
   }

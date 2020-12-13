@@ -20,17 +20,17 @@ var inProgress = false;
 var USER_ID = 0;
 var PAGE_NUM = 0;
 
-var Masonry = require('masonry-layout');
+// var Masonry = require('masonry-layout');
 
-window.onload = () => {
-    const grid = document.querySelector('.grid');
+// window.onload = () => {
+//     const grid = document.querySelector('.grid');
 
-    const masonry = new Masonry(grid, {
-        itemSelector: '.grid-item',
-        gutter: 10,
-        transitionDuration: 0
-    });
-}
+//     const masonry = new Masonry(grid, {
+//         itemSelector: '.grid-item',
+//         gutter: 10,
+//         transitionDuration: 0
+//     });
+// }
 
 
 //TODO
@@ -599,26 +599,6 @@ async function loadImagesOntoPage () {
 
     // Generate image HTML
     loadImagesIntoPage(userPhotoLibrary);
-    
-    // var i = 0;
-    // userPhotoLibrary.forEach(image => {
-    //     var img = document.createElement("img");
-    //     img.src = 'https://img.rec.net/' + image.ImageName;
-
-    //     var divGridItem = document.createElement("div");
-    //     divGridItem.classList.add("grid-item");
-    //     divGridItem.appendChild(img);
-
-    //     var src = document.getElementById("grid");
-    //     src.appendChild(divGridItem); // append Div
-
-    //     if (i >= 25) {
-    //         return false;
-    //     }
-
-    //     console.log(i);
-    //     i++;
-    // });
 }
 
 function loadImagesIntoPage(userPhotoLibrary) {
@@ -643,9 +623,6 @@ function loadImagesIntoPage(userPhotoLibrary) {
         var src = document.getElementById("grid");
         src.appendChild(divGridItem); // append Div
         console.log(i);
-        // if (i >= 200) {
-        //     break;
-        // }
     }
     console.log('Attaching load...');
 
@@ -653,7 +630,7 @@ function loadImagesIntoPage(userPhotoLibrary) {
 
     const lazyLoad = target => {
         let observer = {
-            threshold:0.1
+            threshold: 1
         }
         const io = new IntersectionObserver((entries, observer) => {
 
@@ -674,28 +651,6 @@ function loadImagesIntoPage(userPhotoLibrary) {
         io.observe(target);
     };
     targets.forEach(lazyLoad);
-
-    // let options = {
-    //     threshold: 0.5
-    // }
-    
-    // const observer = new IntersectionObserver(imageObserver, options);
-    // function imageObserver(images, observer) {
-    //     images.forEach(image => {
-    //         if (image.isIntersecting) {
-    //             const img = image.target;
-    //             const img_src = img.dataset.src;
-    //             console.log("Lazy Loading ", img);
-    //             img.src = img_src;
-    //             observer.unobserve(img);
-    //         };
-    //     });
-    // }
-    
-    // let imgs = document.querySelectorAll('img');
-    // imgs.forEach(img => {
-    //     observer.observe(img);
-    // });
 };
 
 
