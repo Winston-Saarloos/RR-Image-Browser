@@ -14,33 +14,39 @@ h5, p {
 .test-button {
     margin-bottom: 10px;
 }
-/* .grid{
-    width: 100%;
-    border:solid red 1px;
-    padding-left: 10px;
-    padding-right: 10px;
+
+#photoGrid {
+    height:auto;
 }
-.grid-item {
-    width: 25%;
-    margin-bottom: 10px;
-} */
 
 .grid { 
-    /* display: flex;
-    flex-flow: row wrap;
-    margin-left: -8px; /* Adjustment for the gutter */
-    /*width: 100%; */
-    border: solid 1px rgb(251, 0, 189);
+    display: flex;
+    flex-wrap: wrap;
   }
   
-  .grid-item {
-    flex: auto;
-    float: left;
-    /*height: auto;
-    max-width: 500px; */
-    width: 300px;
-    min-width: 300px;
-    min-height: 167px;
-    margin: 0 8px 8px 0; /* Some gutter */
-    border: solid 1px lime;
-  }
+.grid-item {
+  display: flex;
+  flex-direction: column;
+  flex: auto;
+  float: left;
+  /*height: auto;
+  max-width: 500px; */
+  width: 300px;
+  min-width: 300px;
+  min-height: 167px;
+  margin: 4px 4px 4px 4px; /* Some gutter */
+  border: solid 2px lightslategray;
+  background-color:rgb(65, 84, 121);
+}
+
+.grid-item:hover {
+    background-color:rgb(42, 55, 83);
+}
+
+.imageLink {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    margin-bottom: 0;
+    margin-top: 0;;
+}

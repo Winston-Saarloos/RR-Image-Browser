@@ -1,7 +1,5 @@
 // https://www.tutorialspoint.com/electron/electron_file_handling.htm
 const { app, BrowserWindow } = require('electron');
-const axios = require('axios');
-const fs = require('fs');
 
 function createWindow () {
   const win = new BrowserWindow({

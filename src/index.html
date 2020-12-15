@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>RR Companion</title>
+  <title>Rec Room Photo Viewer (+)</title>
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
   <script>window.$ = window.jQuery = require('jquery');</script>
   <!-- <script>window.m = window.Masonry = require('masonry-layout');</script> -->
@@ -15,48 +15,62 @@
 
 <body class="body">
   <nav class="navbar navbar-expand navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">RR</a>
-    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Photos</a>
-      </li>
-    </ul>
+    <a class="navbar-brand" href="#">Photo Viewer (+)</a>
+    <button type="button" class="btn btn-secondary oldestNewest" onClick="toggleButtonOldestNewest(); return false;"
+      id="btnOldestToNewest" value="0">Newest to Oldest</button>
+
     <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="text" placeholder="Enter RR '@' name" aria-label="Search"
+      <input class="form-control mr-sm-2" type="text" placeholder="Enter RR '@' name" aria-label="@ RecNet Username"
         id="txtUsername" value="LuminousPanther617">
-      <button class="btn btn-success my-2 my-sm-0" onclick="loadImagesOntoPage(); return false;">Sync</button>
+      <button class="btn btn-success my-2 my-sm-0" onclick="loadImagesOntoPage(); return false;">Load</button>
     </form>
   </nav>
-  <h5>User ID:</h5>
+  <!-- <h5>User ID:</h5>
   <p id="userId">000000</p>
   <h5>Total Public Photos:</h5>
   <p id="totalPhotos">000000</p>
-  <button class="btn btn-outline-success test-button" onclick="syncUserPhotoLibrary();">Click to Test!</button>
-  
-<!-- <div class="row offset-md-2 col-md-8" style="border:rgb(18, 15, 240) solid 1px;">
-  <div class="grid">
-    <img src="https://img.rec.net/6f3c0bcb604a443a9ecd39547e9c645f.jpg?width=500">
-  </div>
-</div> -->
-<br>
-<div class="row" style="border:blueviolet solid 1px; height:auto;">
-  <div class="grid col-md-8 offset-md-2" id="grid" style="height:auto;">
-    <div class="grid-item">
-      <img src="https://img.rec.net/2be11e50a9b84e3692be213534647543.jpg?width=500">
+  <button class="btn btn-outline-success test-button" onclick="syncUserPhotoLibrary();">Click to Test!</button> -->
+
+  <!-- <div class="row offset-md-2 col-md-8" style="border:rgb(18, 15, 240) solid 1px;">
+    <div class="grid">
+      <img src="https://img.rec.net/6f3c0bcb604a443a9ecd39547e9c645f.jpg?width=500">
     </div>
-    <div class="grid-item">
-      <img src="https://img.rec.net/2be11e50a9b84e3692be213534647543.jpg?width=500">
-    </div>
-  </div>
-</div>
- 
-  <!-- <div class="row" id="loadMoreDiv">
-    <button>Load More Images</button>
   </div> -->
-  
+  <div id="content-main" class="container-fluid" >
+
+    <!-- Top Sidebar -->
+    <!-- <nav class="navbar navbar-expand navbar-dark bg-dark style="border:yellow 2px solid;">
+        <a class="navbar-brand" href="#">Photo Viewer</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+    
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <form class="form-inline my-2 my-lg-0 float-right">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-success my-2 my-sm-0" type="submit">Search</button>
+          </form>
+        </div>
+      </nav> -->
+
+    <!-- Left Sidebar -->
+    <div class="row" id="photoGrid">
+      <div class="grid container col-md" id="grid" style="height:auto;">
+        <div class="grid-item">
+          <img data-src="https://img.rec.net/526d0c67906f4df09b6ff8f7815720f4.jpg?width=500" class="grid-image"
+            src="https://img.rec.net/526d0c67906f4df09b6ff8f7815720f4.jpg?width=500">
+          <p class="imageLink">https://rec.net/image/44366575</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- <div class="row" id="loadMoreDiv">
+      <button>Load More Images</button>
+    </div> -->
+
   <script src="index.js"></script>
-  </body>
-  </html>
+</body>
+
+</html>

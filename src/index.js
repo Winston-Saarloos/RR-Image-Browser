@@ -4,6 +4,7 @@ const fs = require('fs');
 const Path = require('path');
 var http = require('http');
 var request = require('request');
+const { shell } = require('electron')
 //const sleep = require('util').promisify(setTimeout);
 // Electron-Store for saving preferences
 var userAccountId = 0;
@@ -584,13 +585,35 @@ function writeJsonFileToFolder(path, fileData, fileName, userId) {
 //     readPhotoSyncJson(true, await userId);
 // }
 
+function toggleButtonOldestNewest() {
+    var button = document.getElementById("btnOldestToNewest");
+    
+    if (button) {
+        if (button.value === "1") {
+            button.value = "0";
+            button.innerText = "Newest to Oldest";
+        } else {
+            button.value = "1";
+            button.innerText = "Oldest to Newest";
+        }
+    }
+}
 
-async function loadImagesOntoPage () {
+async function loadImagesOntoPage() {
     var username = document.getElementById("txtUsername").value;
     var userId = await getUserId(username);
     var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
-    document.getElementById("userId").innerHTML = userId;
-    document.getElementById("totalPhotos").innerHTML = userPhotoLibrary.length;
+    //document.getElementById("userId").innerHTML = userId;
+    //document.getElementById("totalPhotos").innerHTML = userPhotoLibrary.length;
+    var dateOrder = document.getElementById("btnOldestToNewest");
+    console.log("normal");
+    console.log(userPhotoLibrary);
+    console.log(dateOrder.value);
+    if (dateOrder.value == "1") { // Oldest to Newest
+        userPhotoLibrary = userPhotoLibrary.reverse();
+        console.log("Reversed");
+        console.log(userPhotoLibrary);
+    }
 
     var imageDiv = document.getElementById("grid");
     while(imageDiv.firstChild) { 
@@ -620,11 +643,14 @@ function loadImagesIntoPage(userPhotoLibrary) {
         divGridItem.classList.add("grid-item");
         divGridItem.appendChild(img);
 
+        var pImageLink = document.createElement("p");
+        pImageLink.classList.add("imageLink");
+        pImageLink.innerText = "https://rec.net/image/" + userPhotoLibrary[i].Id;
+        divGridItem.appendChild(pImageLink);
+
         var src = document.getElementById("grid");
         src.appendChild(divGridItem); // append Div
-        console.log(i);
     }
-    console.log('Attaching load...');
 
     const targets = document.querySelectorAll('img');
 
@@ -635,10 +661,8 @@ function loadImagesIntoPage(userPhotoLibrary) {
         const io = new IntersectionObserver((entries, observer) => {
 
             entries.forEach(entry => {
-                console.log('Loaded Image..');
 
                 if (entry.isIntersecting) {
-                    console.log('intersection..');
                     const img = entry.target;
                     const src = img.getAttribute('data-src');
 
@@ -654,6 +678,9 @@ function loadImagesIntoPage(userPhotoLibrary) {
 };
 
 
+function openRecNetExternalLink(url){
+    shell.openExternal(url);
+}
 
 
 // Function for each filter that takes in a JSON object and returns out a JSON sorted object
