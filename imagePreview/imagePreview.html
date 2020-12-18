@@ -1,0 +1,72 @@
+<html>
+
+<head>
+    <title>Image Preview</title>
+    <link rel="stylesheet" href="imagePreview.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+</head>
+
+<body class="body">
+    <div class="container-fluid" style="border: 2px solid green;">
+        <div class="row imagePreviewHeader" style="border: 2px solid purple;">
+            <h2>Image Preview</h2>
+        </div>
+        <div class="container-fluid imagePanel" style="border: 2px solid yellow; display: flex;"">
+            <img src="https://img.rec.net/526d0c67906f4df09b6ff8f7815720f4.jpg" style="height: auto; width: 100%;">
+        </div>
+        <div class="container-fluid imageDetails" style="border: 2px solid blue; display: flex; flex-direction: column;">
+            <div class="imageDetailLine">
+                <p class="imageDetailLineLabel">
+                Image ID:
+                </p>
+                <p class="imageDetailLineText">
+                    {IMAGE ID}
+                </p>
+            </div>
+            <div class="imageDetailLine">
+                <p class="imageDetailLineLabel">
+                Activity:
+                </p>
+                <p class="imageDetailLineText">
+                    {ACTIVITY NAME}
+                </p>
+            </div>
+            <div class="imageDetailLine">
+                <p class="imageDetailLineLabel">
+                Event Name:
+                </p>
+                <p class="imageDetailLineText">
+                    {EVENT NAME}
+                </p>
+            </div>
+            <div class="imageDetailLine">
+                <p class="imageDetailLineLabel">
+                Tagged Players:
+                </p>
+                <p class="imageDetailLineText">
+                    {CSV Tagged Player Names}
+                </p>
+            </div>
+            <div class="imageDetailLine">
+                <p class="imageDetailLineLabel">
+                Cheer Count:
+                </p>
+                <p class="imageDetailLineText">
+                    {CHEER COUNT}
+                </p>
+            </div>
+            <div class="imageDetailLine">
+                <p class="imageDetailLineLabel">
+                Comment Count:
+                </p>
+                <p class="imageDetailLineText">
+                    {COMMENT COUNT}
+                </p>
+            </div>
+        </div>
+
+        <script src="imagePreview.js"></script>
+</body>
+
+</html>
