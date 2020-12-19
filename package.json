@@ -1,5 +1,5 @@
 {
-  "name": "rrphotobrowser",
+  "name": "rr-image-browser",
   "version": "0.1.0",
   "description": "Adding bonus functionality to Rec.net",
   "main": "main.js",
@@ -43,7 +43,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "rrphotobrowser"
+            "name": "rr-image-browser"
           }
         },
         {
