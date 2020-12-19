@@ -25,7 +25,6 @@ function createWindow () {
 
   child.removeMenu()
   child.webContents.openDevTools();
-
 }
 
 app.whenReady().then(createWindow)

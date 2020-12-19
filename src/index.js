@@ -5,7 +5,6 @@ const Path = require('path');
 var http = require('http');
 var request = require('request');
 const { shell } = require('electron');
-const { ipcRenderer } = require('electron');
 //const sleep = require('util').promisify(setTimeout);
 // Electron-Store for saving preferences
 var userAccountId = 0;
@@ -21,17 +20,6 @@ var inProgress = false;
 var USER_ID = 0;
 var PAGE_NUM = 0;
 
-const updateBtn = document.getElementById('updateBtn')
-
-updateBtn.addEventListener('click', function () {
-    ipcRenderer.send('update-notify-value', 1) // put the image object data in where "1" is
-
-//   // Close this window
-//   var window = remote.getCurrentWindow();
-//   window.close();
-})
-
-
 // var Masonry = require('masonry-layout');
 
 // window.onload = () => {
@@ -43,11 +31,6 @@ updateBtn.addEventListener('click', function () {
 //         transitionDuration: 0
 //     });
 // }
-
-function showImagePreview() {
-    //win.webContents.send('show-imagePreview');
-    ipcMain.on('show-imagePreview');
-}
 
 //TODO
 // Save Feed JSON to folder on machine
@@ -656,6 +639,10 @@ function loadImagesIntoPage(userPhotoLibrary) {
 
         var divGridItem = document.createElement("div");
         divGridItem.classList.add("grid-item");
+        divGridItem.setAttribute('type', 'button');
+        divGridItem.setAttribute('data-toggle', 'modal');
+        divGridItem.setAttribute('data-target', '#imageDetailModal');
+        divGridItem.setAttribute('onclick', 'loadDataImageDetailModal(' + userPhotoLibrary[i].Id + '); return false;');
         divGridItem.appendChild(img);
 
         var pImageLink = document.createElement("p");
@@ -695,6 +682,11 @@ function loadImagesIntoPage(userPhotoLibrary) {
 
 function openRecNetExternalLink(url){
     shell.openExternal(url);
+}
+
+
+function loadDataImageDetailModal(imageId) {
+    console.log(imageId);
 }
 
 

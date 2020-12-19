@@ -4,7 +4,7 @@
 
 img {
     width: 100%;
-    background-color: mediumblue;
+    background-color: rgb(202, 202, 221);
 }
 
 h5, p {
@@ -34,6 +34,7 @@ h5, p {
   width: 300px;
   min-width: 300px;
   min-height: 167px;
+  max-width: 500px;
   margin: 4px 4px 4px 4px; /* Some gutter */
   border: solid 2px lightslategray;
   background-color:rgb(65, 84, 121);
@@ -49,4 +50,43 @@ h5, p {
     text-align: center;
     margin-bottom: 0;
     margin-top: 0;;
+}
+
+h5 .modal-title {
+    color: black;
+}
+
+.modal-dialog {
+    max-width: 80%;
+}
+
+.modal-content {
+    background-color:rgb(42, 55, 83);
+}
+
+.close {
+    color: rgb(255, 255, 255);
+    text-shadow: none;
+}
+
+h2, p {
+    color: white;
+}
+
+.imagePreviewHeader {
+    height: 100px;
+    align-items: center;
+}
+
+.imageDetailLine {
+    display: flex;
+    flex-direction: row;
+}
+
+.imageDetailLineLabel {
+    width: 250px;
+}
+
+.imageDetailLineText {
+    padding-left: 10px;
 }
