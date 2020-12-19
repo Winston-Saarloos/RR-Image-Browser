@@ -630,7 +630,7 @@ function loadImagesIntoPage(userPhotoLibrary) {
 
     // Generate image HTML
     var i = 0;
-    for (i = 0; i < userPhotoLibrary.length; i++) {  // One day I'll have to impement lazy load so I dont just load ALL images
+    for (i = 0; i < userPhotoLibrary.length; i++) {
         var img = document.createElement("img");
         var imageUrl = 'https://img.rec.net/' + userPhotoLibrary[i].ImageName + '?width=500';
         img.setAttribute('data-src', imageUrl);
@@ -668,8 +668,9 @@ function loadImagesIntoPage(userPhotoLibrary) {
                     const img = entry.target;
                     const src = img.getAttribute('data-src');
 
-                    img.setAttribute('src', src);
-
+                    if (img.hasAttribute('data-src')){
+                        img.setAttribute('src', src);
+                    }
                     observer.disconnect();
                 }
             });
@@ -684,9 +685,48 @@ function openRecNetExternalLink(url){
     shell.openExternal(url);
 }
 
+function clearImageSource() { // TODO figure out how to keep the image size so it doesnt jump up when the image loads in
+    var modalDisplayImage = document.getElementById("imageDisplay");
+    if (modalDisplayImage) {
+        modalDisplayImage.src = "";
+    }
+}
 
-function loadDataImageDetailModal(imageId) {
-    console.log(imageId);
+
+async function loadDataImageDetailModal(imageId) {
+    console.log("Modal Image ID: " + imageId);
+
+    var username = document.getElementById("txtUsername").value; // This could be re written to not pull data if it is already available
+    var userId = await getUserId(username);
+    var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
+    var imageData = {};
+    var i = 0;
+    for (i = 0; i < userPhotoLibrary.length; i++) {
+        console.log("Current Iteration: " + i);
+        console.log("Send Image ID: " + imageId);
+        console.log("Current Image ID I'm looking at: " + userPhotoLibrary[i].Id);
+        if (userPhotoLibrary[i].Id === imageId) {
+            imageData = userPhotoLibrary[i];
+            console.log("Image Match Found.");
+            break;
+        }
+    };
+
+    // Modal Elements
+    var modalDisplayImage = document.getElementById("imageDisplay");
+
+    if (modalDisplayImage) {
+        var imageUrl = 'https://img.rec.net/' + imageData.ImageName;
+        console.log(imageUrl);
+        modalDisplayImage.src = imageUrl;
+        console.log(modalDisplayImage.src);
+    }
+
+    var modalImageId = document.getElementById("imageId");
+    if (modalImageId) {
+        console.log('Set image ID on modal.');
+        modalImageId.innerText = imageId;
+    }
 }
 
 
