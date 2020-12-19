@@ -1,4 +1,4 @@
-# AugmentedRR
+# RR-Image-Browser
 This app is intended to add special functionality to Rec Room that I feel Rec.net is lacking.  I utilize private API's that are undocumented by Rec Room but require no authentication to access.  This allows anyone to use this app without having to login to recnet.  
 
 Users have limited access to the private API's of Rec Room without logging in.  So in the future I plan to expand into authenticated API's but the fear of the app having elevated access is understood.  If I did do this I would have the user login via a browser on the app and then read the bearer token from local storage.  That way I would escape the need to know the players credentials.
