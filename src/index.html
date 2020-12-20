@@ -27,6 +27,7 @@
       <input class="form-control mr-sm-2" type="text" placeholder="Enter RR '@' name" aria-label="@ RecNet Username"
         id="txtUsername" value="LuminousPanther617">
       <button class="btn btn-success my-2 my-sm-0" onclick="loadImagesOntoPage(); return false;">Load</button>
+      <p id="versionNumber">V0.1.0</p>
     </form>
   </nav>
   <!-- <h5>User ID:</h5>
@@ -91,7 +92,7 @@
                 Image ID:
                 </p>
                 <p id="imageId" class="imageDetailLineText">
-                    {IMAGE ID}
+                    Loading...
                 </p>
             </div>
             <div class="imageDetailLine">
@@ -99,7 +100,7 @@
                 Activity:
                 </p>
                 <p class="imageDetailLineText imageActivity">
-                    {ACTIVITY NAME}
+                   Loading...
                 </p>
             </div>
             <div class="imageDetailLine">
@@ -107,7 +108,7 @@
                 Event Name:
                 </p>
                 <p class="imageDetailLineText imageEvent">
-                    {EVENT NAME}
+                   Loading...
                 </p>
             </div>
             <div class="imageDetailLine">
@@ -115,7 +116,7 @@
                 Tagged Players:
                 </p>
                 <p class="imageDetailLineText imageTaggedPlayers">
-                    {CSV Tagged Player Names}
+                   Loading...
                 </p>
             </div>
             <div class="imageDetailLine">
@@ -123,7 +124,7 @@
                 Cheer Count:
                 </p>
                 <p class="imageDetailLineText imageCheerCount">
-                    {CHEER COUNT}
+                   Loading...
                 </p>
             </div>
             <div class="imageDetailLine">
@@ -131,7 +132,7 @@
                 Comment Count:
                 </p>
                 <p class="imageDetailLineText imageCommentCount">
-                    {COMMENT COUNT}
+                   Loading...
                 </p>
             </div>
         </div>
@@ -143,6 +144,16 @@
     </div>
   </div>
 
+  <div id="notification" class="hidden">
+    <p id="message"></p>
+    <button id="close-button" onClick="closeNotification()">
+      Close
+    </button>
+    <button id="restart-button" onClick="restartApp()" class="hidden">
+      Restart
+    </button>
+  </div>
+  
   <script src="index.js"></script>
 </body>
 

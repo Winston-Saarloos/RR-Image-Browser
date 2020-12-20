@@ -1,7 +1,7 @@
 {
   "name": "rr-image-browser",
   "version": "0.1.0",
-  "description": "Adding bonus functionality to Rec.net",
+  "description": "Adding bonus functionality to Rec.net photo library.",
   "main": "main.js",
   "scripts": {
     "start": "electron-forge start",
@@ -27,6 +27,7 @@
     "electron-settings": "^4.0.2",
     "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^6.0.1",
+    "electron-updater": "^4.3.5",
     "fs": "0.0.1-security",
     "jquery": "^3.5.1",
     "masonry-layout": "^4.2.2",
@@ -62,5 +63,11 @@
         }
       ]
     }
-  }
+  },
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/97rocko/RR-Image-Browser.git"
+  },
+  "build": "electron-builder build --win --publish never",
+  "deploy": "electron-builder build --win --publish always"
 }

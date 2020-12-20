@@ -1,6 +1,7 @@
 // https://www.tutorialspoint.com/electron/electron_file_handling.htm
 const { app, BrowserWindow } = require('electron');
-const ipc = require('electron').ipcMain;
+const { autoUpdater } = require('electron-updater');
+const ipcMain = require('electron').ipcMain;
 
 function createWindow () {
   const win = new BrowserWindow({
@@ -12,6 +13,10 @@ function createWindow () {
       nodeIntegration: true
     }
   })
+
+  win.once('ready-to-show', () => {
+    autoUpdater.checkForUpdatesAndNotify();
+  });
 
   win.loadFile('src/index.html')
   win.removeMenu()
@@ -40,3 +45,19 @@ app.on('activate', () => {
     createWindow()
   }
 })
+
+ipcMain.on('app_version', (event) => {
+  event.sender.send('app_version', { version: app.getVersion() });
+});
+
+autoUpdater.on('update-available', () => {
+  mainWindow.webContents.send('update_available');
+});
+
+autoUpdater.on('update-downloaded', () => {
+  mainWindow.webContents.send('update_downloaded');
+});
+
+ipcMain.on('restart_app', () => {
+  autoUpdater.quitAndInstall();
+});

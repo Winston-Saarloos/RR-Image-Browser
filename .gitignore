@@ -2,3 +2,5 @@ node_modules
 bower_components
 images
 appdata/cache
+electron-builder.yml
+dist

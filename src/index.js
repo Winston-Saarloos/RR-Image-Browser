@@ -1,4 +1,4 @@
-const { electron, app, ipcMain } = require('electron');
+const { electron, app, ipcRenderer } = require('electron');
 const axios = require('axios');
 const fs = require('fs');
 const Path = require('path');
@@ -19,6 +19,38 @@ let photoSync = require('../appdata/photosync/ImageSyncData.json');
 var inProgress = false;
 var USER_ID = 0;
 var PAGE_NUM = 0;
+
+const version = document.getElementById('versionNumber');    
+ipcRenderer.send('app_version');
+ipcRenderer.on('app_version', (event, arg) => {
+  ipcRenderer.removeAllListeners('app_version');
+  version.innerText = 'V' + arg.version;
+});
+
+const notification = document.getElementById('notification');
+const message = document.getElementById('message');
+const restartButton = document.getElementById('restart-button');
+
+ipcRenderer.on('update_available', () => {
+  ipcRenderer.removeAllListeners('update_available');
+  message.innerText = 'A new update is available. Downloading now...';
+  notification.classList.remove('hidden');
+});
+
+ipcRenderer.on('update_downloaded', () => {
+  ipcRenderer.removeAllListeners('update_downloaded');
+  message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
+  restartButton.classList.remove('hidden');
+  notification.classList.remove('hidden');
+});
+
+function closeNotification() {
+    notification.classList.add('hidden');
+}
+
+function restartApp() {
+    ipcRenderer.send('restart_app');
+}
 
 // var Masonry = require('masonry-layout');
 
@@ -694,20 +726,14 @@ function clearImageSource() { // TODO figure out how to keep the image size so i
 
 
 async function loadDataImageDetailModal(imageId) {
-    console.log("Modal Image ID: " + imageId);
-
     var username = document.getElementById("txtUsername").value; // This could be re written to not pull data if it is already available
     var userId = await getUserId(username);
     var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
     var imageData = {};
     var i = 0;
     for (i = 0; i < userPhotoLibrary.length; i++) {
-        console.log("Current Iteration: " + i);
-        console.log("Send Image ID: " + imageId);
-        console.log("Current Image ID I'm looking at: " + userPhotoLibrary[i].Id);
         if (userPhotoLibrary[i].Id === imageId) {
             imageData = userPhotoLibrary[i];
-            console.log("Image Match Found.");
             break;
         }
     };
@@ -719,12 +745,10 @@ async function loadDataImageDetailModal(imageId) {
         var imageUrl = 'https://img.rec.net/' + imageData.ImageName;
         console.log(imageUrl);
         modalDisplayImage.src = imageUrl;
-        console.log(modalDisplayImage.src);
     }
 
     var modalImageId = document.getElementById("imageId");
     if (modalImageId) {
-        console.log('Set image ID on modal.');
         modalImageId.innerText = imageId;
     }
 }
