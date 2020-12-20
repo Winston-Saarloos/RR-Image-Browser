@@ -3,7 +3,7 @@ const axios = require('axios');
 const fs = require('fs');
 const Path = require('path');
 var http = require('http');
-var request = require('request');
+//var request = require('request');
 const { shell } = require('electron');
 //const sleep = require('util').promisify(setTimeout);
 // Electron-Store for saving preferences
@@ -52,138 +52,122 @@ function restartApp() {
     ipcRenderer.send('restart_app');
 }
 
-// var Masonry = require('masonry-layout');
-
-// window.onload = () => {
-//     const grid = document.querySelector('.grid');
-
-//     const masonry = new Masonry(grid, {
-//         itemSelector: '.grid-item',
-//         gutter: 10,
-//         transitionDuration: 0
-//     });
-// }
-
-//TODO
-// Save Feed JSON to folder on machine
-//  - read top most item and see if it is a day old if so run sync
-
 // Photo Sync (Run every 5 seconds for 50 requests/downloads each)
-var z = 0;
-function startSyncTick(){
-    var interval = setInterval(async function(){ 
-        //this code runs every second 
-        console.log('Interval set..');
-        if (!inProgress){
-            clearInterval(interval);
-            console.log("Stopped photo sync for now..");
-        } else {
-            console.log("Syncing... " + z);
+// var z = 0;
+// function startSyncTick(){
+//     var interval = setInterval(async function(){ 
+//         //this code runs every second 
+//         console.log('Interval set..');
+//         if (!inProgress){
+//             clearInterval(interval);
+//             console.log("Stopped photo sync for now..");
+//         } else {
+//             console.log("Syncing... " + z);
     
-            // Read File Sync Data to variables
-            if (USER_ID < 0) 
-            {
-                console.log("Error occurred in sync process: User ID cannot be 0.");
-                inProgress = false;
-                return;
-            };
+//             // Read File Sync Data to variables
+//             if (USER_ID < 0) 
+//             {
+//                 console.log("Error occurred in sync process: User ID cannot be 0.");
+//                 inProgress = false;
+//                 return;
+//             };
     
-            var photoSyncJson = photoSync;
-            var index = photoSyncJson.ImageSyncData.findIndex(x => x.userId === USER_ID);
-            if (index === -1){
-                console.log('Error occured in sync process: Invalid Index.');
-                inProgress = false;
-                return;
-            }
+//             var photoSyncJson = photoSync;
+//             var index = photoSyncJson.ImageSyncData.findIndex(x => x.userId === USER_ID);
+//             if (index === -1){
+//                 console.log('Error occured in sync process: Invalid Index.');
+//                 inProgress = false;
+//                 return;
+//             }
             
-            //get variable values
-            var page = photoSyncJson.ImageSyncData[index].page;
-            var imageNameArray = [];
-            console.log('Page Number: ' + page);
+//             //get variable values
+//             var page = photoSyncJson.ImageSyncData[index].page;
+//             var imageNameArray = [];
+//             console.log('Page Number: ' + page);
     
-            // for each to process in batches of images
-            // getAnArray of image names to send out async
-            // imageNumStart = page * 1;
-            var rawUserImageData = fs.readFileSync('./appdata/cache/' + USER_ID + '/publicImageLibrary.json');
-            var ImageJson = JSON.parse(rawUserImageData);
-            //console.log("Image JSON: ");
-            //console.log(ImageJson);
+//             // for each to process in batches of images
+//             // getAnArray of image names to send out async
+//             // imageNumStart = page * 1;
+//             var rawUserImageData = fs.readFileSync('./appdata/cache/' + USER_ID + '/publicImageLibrary.json');
+//             var ImageJson = JSON.parse(rawUserImageData);
+//             //console.log("Image JSON: ");
+//             //console.log(ImageJson);
     
-            var i;
-            for (i = PAGE_NUM; i < ImageJson.length; i++) {
-                if (i >= ImageJson.length) {
-                    console.log(ImageJson.length);
-                    console.log('Index did not exist in image JSON.. Exiting.. ' + i);
-                    break;
-                }
-                var imageName = ImageJson[i].ImageName;
-                var imageExists = await checkIfImageExists(imageName, USER_ID);
+//             var i;
+//             for (i = PAGE_NUM; i < ImageJson.length; i++) {
+//                 if (i >= ImageJson.length) {
+//                     console.log(ImageJson.length);
+//                     console.log('Index did not exist in image JSON.. Exiting.. ' + i);
+//                     break;
+//                 }
+//                 var imageName = ImageJson[i].ImageName;
+//                 var imageExists = await checkIfImageExists(imageName, USER_ID);
 
-                if (imageExists) {
-                    console.log('Image already exists on disk: ' + imageName);
-                    continue;
-                }
-                console.log("Image did not exist.. Adding image to array.. " + i);
+//                 if (imageExists) {
+//                     console.log('Image already exists on disk: ' + imageName);
+//                     continue;
+//                 }
+//                 console.log("Image did not exist.. Adding image to array.. " + i);
     
-                imageNameArray.push(imageName);
+//                 imageNameArray.push(imageName);
     
-                if (imageNameArray.length === 50){
-                    console.log("Image array contains 50 images.");
-                    break;
-                }
-            }
+//                 if (imageNameArray.length === 50){
+//                     console.log("Image array contains 50 images.");
+//                     break;
+//                 }
+//             }
     
-            if (imageNameArray.length < 50){
-                inProgress = false;
-                PAGE_NUM = 0;
-                // add 50 to page (rename page to LastItemIndex)
+//             if (imageNameArray.length < 50){
+//                 inProgress = false;
+//                 PAGE_NUM = 0;
+//                 // add 50 to page (rename page to LastItemIndex)
     
-                // realistically write out some data to that file as well..
-            }    
-            // Add 50 to page (LastItemIndex)
+//                 // realistically write out some data to that file as well..
+//             }    
+//             // Add 50 to page (LastItemIndex)
         
     
-            // Download Images from RecNet and write to disk.
-            //var ImageData = getImageData(imageNameArray[element]);
+//             // Download Images from RecNet and write to disk.
+//             //var ImageData = getImageData(imageNameArray[element]);
     
-            // For each item in the array call an async function to download and write file to disk
-            imageNameArray.forEach(image => downloadImageAndWriteFile(image, USER_ID)); // <== Put that fancy async business here
+//             // For each item in the array call an async function to download and write file to disk
+//             imageNameArray.forEach(image => downloadImageAndWriteFile(image, USER_ID)); // <== Put that fancy async business here
     
-            PAGE_NUM = PAGE_NUM + 50;
+//             PAGE_NUM = PAGE_NUM + 50;
 
-            // write back out at some point to the last sync file
-            //syncUserPhotoLibrary();
-            z++;
-        }
-    }, 5000);    
-}
+//             // write back out at some point to the last sync file
+//             //syncUserPhotoLibrary();
+//             z++;
+//         }
+//     }, 5000);    
+// }
 
-function downloadImageAndWriteFile(imageName, userId) { 
-    console.log('Attempting to download and store.. ' + imageName);
+// function downloadImageAndWriteFile(imageName, userId) { 
+//     console.log('Attempting to download and store.. ' + imageName);
 
-    var IMAGE_URL = 'https://img.rec.net/' + imageName;
-    var szPath = appDataPath + dataCache + userId + '/Images/' + imageName;
+//     var IMAGE_URL = 'https://img.rec.net/' + imageName;
+//     var szPath = appDataPath + dataCache + userId + '/Images/' + imageName;
 
-    //console.log(IMAGE_URL);
-    var imageNameNoExt = imageName;
-    if (imageNameNoExt.includes(".jpg")){
-        imageNameNoExt = imageNameNoExt.replace('.jpg','');
-    }
+//     //console.log(IMAGE_URL);
+//     var imageNameNoExt = imageName;
+//     if (imageNameNoExt.includes(".jpg")){
+//         imageNameNoExt = imageNameNoExt.replace('.jpg','');
+//     }
 
-    //console.log('Image Name no Extention: ' + imageNameNoExt);
-    //console.log(appDataPath + dataCache + userId + '/Images/' + imageNameNoExt + ".jpeg");
+//     //console.log('Image Name no Extention: ' + imageNameNoExt);
+//     //console.log(appDataPath + dataCache + userId + '/Images/' + imageNameNoExt + ".jpeg");
 
-    downloadFile({
-        remoteFile: IMAGE_URL,
-        localFile: appDataPath + dataCache + userId + '/Images/' + imageNameNoExt + ".jpeg",
-        //onProgress: function (received,total){
-        //    var percentage = (received * 100) / total;
-        //    console.log(percentage + "% | " + received + " bytes out of " + total + " bytes.");
-        //}
-    }).then(function () {
-        console.log("File succesfully downloaded");
-    });
-}
+//     downloadFile({
+//         remoteFile: IMAGE_URL,
+//         localFile: appDataPath + dataCache + userId + '/Images/' + imageNameNoExt + ".jpeg",
+//         //onProgress: function (received,total){
+//         //    var percentage = (received * 100) / total;
+//         //    console.log(percentage + "% | " + received + " bytes out of " + total + " bytes.");
+//         //}
+//     }).then(function () {
+//         console.log("File succesfully downloaded");
+//     });
+// }
 
 // Order...
 // Get look at photo name in array..
@@ -194,38 +178,38 @@ function downloadImageAndWriteFile(imageName, userId) {
 //            Write the photo to disk
 
 
-async function checkIfImageExists(imageName, userId) {
-    // Add actual IMAGE folder to this path
+// async function checkIfImageExists(imageName, userId) {
+//     // Add actual IMAGE folder to this path
 
-    var imageNameNoExt = imageName;
-    if (imageNameNoExt.includes(".jpg")){
-        imageNameNoExt = imageNameNoExt.replace('.jpg','');
-    }
+//     var imageNameNoExt = imageName;
+//     if (imageNameNoExt.includes(".jpg")){
+//         imageNameNoExt = imageNameNoExt.replace('.jpg','');
+//     }
 
-    var imageNameCorrected = imageNameNoExt + '.jpeg';
+//     var imageNameCorrected = imageNameNoExt + '.jpeg';
 
-    var szPath = appDataPath + dataCache + userId + '/Images/' + imageNameCorrected;
+//     var szPath = appDataPath + dataCache + userId + '/Images/' + imageNameCorrected;
 
-    //console.log('PATH: ' + szPath);
+//     //console.log('PATH: ' + szPath);
 
-    if (!fs.existsSync(appDataPath + dataCache + userId + '/Images/')) {
-        console.log("Creating image folder for user: " + userId + ".");
-        fs.mkdirSync(appDataPath + dataCache + userId + '/Images/');
-    }
+//     if (!fs.existsSync(appDataPath + dataCache + userId + '/Images/')) {
+//         console.log("Creating image folder for user: " + userId + ".");
+//         fs.mkdirSync(appDataPath + dataCache + userId + '/Images/');
+//     }
 
-    try {
-        if (fs.existsSync(szPath)) {
-            //file exists
-            console.log('Image Exists.. Skipping it..');
-            return true;
-        } else {
-            console.log('Image does not exist..');
-            return false;
-        }
-    } catch (err) {
-        console.error(err)
-    }
-}
+//     try {
+//         if (fs.existsSync(szPath)) {
+//             //file exists
+//             console.log('Image Exists.. Skipping it..');
+//             return true;
+//         } else {
+//             console.log('Image does not exist..');
+//             return false;
+//         }
+//     } catch (err) {
+//         console.error(err)
+//     }
+// }
 
 function readPhotoSyncJson(startSync, userId) {
     console.log("ReadPhotoSyncJson Fired!");
@@ -261,225 +245,225 @@ function readPhotoSyncJson(startSync, userId) {
     }
 }
 
-async function syncUserPhotoLibrary() {
-    console.log("Running Sync...");
-    var username = document.getElementById("txtUsername").value;
-    var userId = await getUserId(username);
-    var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
+// async function syncUserPhotoLibrary() {
+//     console.log("Running Sync...");
+//     var username = document.getElementById("txtUsername").value;
+//     var userId = await getUserId(username);
+//     var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
 
-    writeJsonFileToFolder(appDataPath + dataCache, userPhotoLibrary,'publicImageLibrary.json', userId);
+//     writeJsonFileToFolder(appDataPath + dataCache, userPhotoLibrary,'publicImageLibrary.json', userId);
 
-    console.log('Username: ' + username);
+//     console.log('Username: ' + username);
     
-    //console.log('User ID: ' + userId);
-    document.getElementById("userId").innerHTML = userId;
+//     //console.log('User ID: ' + userId);
+//     document.getElementById("userId").innerHTML = userId;
 
-    //console.log('User Photo Library Size: ' + userPhotoLibrary.length);
-    document.getElementById("totalPhotos").innerHTML = userPhotoLibrary.length;
+//     //console.log('User Photo Library Size: ' + userPhotoLibrary.length);
+//     document.getElementById("totalPhotos").innerHTML = userPhotoLibrary.length;
 
-    //organizePhotosForDownload(userPhotoLibrary);
-    readPhotoSyncJson(true, await userId);
-}
+//     //organizePhotosForDownload(userPhotoLibrary);
+//     readPhotoSyncJson(true, await userId);
+// }
 
 // Get the image data from REC NET
-async function getImageData(imageName) {
-    var IMAGE_URL = 'https://img.rec.net/' + imageName;
+// async function getImageData(imageName) {
+//     var IMAGE_URL = 'https://img.rec.net/' + imageName;
 
-    console.log(IMAGE_URL);
+//     console.log(IMAGE_URL);
 
-    // 'https://api.rec.net/api/images/v4/player/PLAYER_ID?skip=0&take=50000'
-    axios.get(IMAGE_URL)
-        .then(function (response) {
-            // handle success
-            console.log('Successfully retreived image from image database.');
-            return response.data;
-        })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-        })
-        .then(function () {
-            // always executed
-        });
-}
+//     // 'https://api.rec.net/api/images/v4/player/PLAYER_ID?skip=0&take=50000'
+//     axios.get(IMAGE_URL)
+//         .then(function (response) {
+//             // handle success
+//             console.log('Successfully retreived image from image database.');
+//             return response.data;
+//         })
+//         .catch(function (error) {
+//             // handle error
+//             console.log(error);
+//         })
+//         .then(function () {
+//             // always executed
+//         });
+// }
 
 // Can this be kept syncronous?
-function organizePhotosForDownload(photoJSON) {
-    var numOfConcurrency = 50;
-    var numOfCollections = photoJSON.length / numOfConcurrency;
-    var numOfCollectionsMod = photoJSON.length % numOfConcurrency;
-    var collectionOfBuckets = [];
+// function organizePhotosForDownload(photoJSON) {
+//     var numOfConcurrency = 50;
+//     var numOfCollections = photoJSON.length / numOfConcurrency;
+//     var numOfCollectionsMod = photoJSON.length % numOfConcurrency;
+//     var collectionOfBuckets = [];
 
-    console.log("Division: " + Math.floor(numOfCollections));
-    console.log("Modulus: " + numOfCollectionsMod);
+//     console.log("Division: " + Math.floor(numOfCollections));
+//     console.log("Modulus: " + numOfCollectionsMod);
 
-    var i;
-    for (i = 0; i < Math.floor(numOfCollections); i++) {
-        collectionOfBuckets.push(new Array);
-    }
-    if (numOfCollectionsMod > 0) {
-        collectionOfBuckets.push(new Array);
-    }
+//     var i;
+//     for (i = 0; i < Math.floor(numOfCollections); i++) {
+//         collectionOfBuckets.push(new Array);
+//     }
+//     if (numOfCollectionsMod > 0) {
+//         collectionOfBuckets.push(new Array);
+//     }
 
-    // Put each image name into the collection
-    var n = 0; // Iterator for collectionOfBuckets
-    photoJSON.forEach(element => {
-        console.log("ELEMENT: " + element.ImageName);
-        console.log("N = " + n);
-        collectionOfBuckets[n].push(element.ImageName)
-        if (collectionOfBuckets[n].length >= numOfConcurrency) {
-            n++;
-        }
-    });
+//     // Put each image name into the collection
+//     var n = 0; // Iterator for collectionOfBuckets
+//     photoJSON.forEach(element => {
+//         console.log("ELEMENT: " + element.ImageName);
+//         console.log("N = " + n);
+//         collectionOfBuckets[n].push(element.ImageName)
+//         if (collectionOfBuckets[n].length >= numOfConcurrency) {
+//             n++;
+//         }
+//     });
 
-    console.log(photoJSON[0].ImageName);
-    console.log(collectionOfBuckets.length);
-    console.log(collectionOfBuckets);
+//     console.log(photoJSON[0].ImageName);
+//     console.log(collectionOfBuckets.length);
+//     console.log(collectionOfBuckets);
 
-    // Next Step: put each promise into a collection so it can be sent off.
-    //https://stackoverflow.com/questions/53948280/how-to-throttle-promise-all-to-5-promises-per-second
+//     // Next Step: put each promise into a collection so it can be sent off.
+//     //https://stackoverflow.com/questions/53948280/how-to-throttle-promise-all-to-5-promises-per-second
 
-    var goOn = true;
-    var i = 0;
-    do {
-        console.log("Error issue: " + collectionOfBuckets[0].length);
-        // Iterate through items in the given set
-        collectionOfBuckets[i].forEach(element => console.log("WHAT IS THIS?!: " + element.length));
+//     var goOn = true;
+//     var i = 0;
+//     do {
+//         console.log("Error issue: " + collectionOfBuckets[0].length);
+//         // Iterate through items in the given set
+//         collectionOfBuckets[i].forEach(element => console.log("WHAT IS THIS?!: " + element.length));
 
-        // time out function
-        setTimeout(function () {
-            console.log("Time out complete");
-            return true;
-         }, 5000);
+//         // time out function
+//         setTimeout(function () {
+//             console.log("Time out complete");
+//             return true;
+//          }, 5000);
 
-        // increment to next collection
-        if (i = (collectionOfBuckets.length - 1)) {
-            console.log("We have reached the last collection. i = " + i + " Array Length: " + collectionOfBuckets.length);
-            goOn  = false;
-        }
+//         // increment to next collection
+//         if (i = (collectionOfBuckets.length - 1)) {
+//             console.log("We have reached the last collection. i = " + i + " Array Length: " + collectionOfBuckets.length);
+//             goOn  = false;
+//         }
 
-        i = i + 1;
-    } 
-    while (goOn = true);
-}
+//         i = i + 1;
+//     } 
+//     while (goOn = true);
+// }
 
-function syncUserPhotos(userId) {
-    //if (!bUserDisabledPhotoSync) {
-    // look in their file system and see if the folder exists
-    axios.get('https://api.rec.net/api/images/v4/player/' + userId + '?skip=0&take=50000')
-        .then(function (response) {
-            // handle success
-            console.log(response);
-            console.log(response.data.length);
-            document.getElementById("totalPhotos").innerHTML = response.data.length;
+// function syncUserPhotos(userId) {
+//     //if (!bUserDisabledPhotoSync) {
+//     // look in their file system and see if the folder exists
+//     axios.get('https://api.rec.net/api/images/v4/player/' + userId + '?skip=0&take=50000')
+//         .then(function (response) {
+//             // handle success
+//             console.log(response);
+//             console.log(response.data.length);
+//             document.getElementById("totalPhotos").innerHTML = response.data.length;
 
-            var count = 0;
-            response.data.forEach(element => {
+//             var count = 0;
+//             response.data.forEach(element => {
 
-                //if (count > 2) {
-                    sleep(10000).then(() => {
-                        console.log("one second has elapsed");
-                        count = 0;
-                    });
-                //};
+//                 //if (count > 2) {
+//                     sleep(10000).then(() => {
+//                         console.log("one second has elapsed");
+//                         count = 0;
+//                     });
+//                 //};
 
-                count++;
-                console.log(count);
+//                 count++;
+//                 console.log(count);
 
-                //console.log(response.data[i].ImageName);
-                var imageName = element.ImageName;
-                var IMAGE_URL = 'https://img.rec.net/' + imageName;
-                console.log(element.ImageName);
-                // axios download code here        
-                //downloadFile(IMAGE_URL, './images/' + element.imageName + '.png');
-                downloadFile({
-                    remoteFile: IMAGE_URL,
-                    localFile: "F:\\AugmentedRR\\images\\" + element.ImageName + ".jpeg",
-                    //onProgress: function (received,total){
-                    //    var percentage = (received * 100) / total;
-                    //    console.log(percentage + "% | " + received + " bytes out of " + total + " bytes.");
-                    //}
-                }).then(function () {
-                    console.log("File succesfully downloaded");
-                });
+//                 //console.log(response.data[i].ImageName);
+//                 var imageName = element.ImageName;
+//                 var IMAGE_URL = 'https://img.rec.net/' + imageName;
+//                 console.log(element.ImageName);
+//                 // axios download code here        
+//                 //downloadFile(IMAGE_URL, './images/' + element.imageName + '.png');
+//                 downloadFile({
+//                     remoteFile: IMAGE_URL,
+//                     localFile: "F:\\AugmentedRR\\images\\" + element.ImageName + ".jpeg",
+//                     //onProgress: function (received,total){
+//                     //    var percentage = (received * 100) / total;
+//                     //    console.log(percentage + "% | " + received + " bytes out of " + total + " bytes.");
+//                     //}
+//                 }).then(function () {
+//                     console.log("File succesfully downloaded");
+//                 });
 
-                // axios({
-                //   method: 'get',
-                //   url: IMAGE_URL,
-                //   responseType: 'stream'
-                // })
-                //   .then(function (response) {
-                //     response.data.pipe(fs.createWriteStream('./images/ada_lovelace.jpg'))
-                //   });
+//                 // axios({
+//                 //   method: 'get',
+//                 //   url: IMAGE_URL,
+//                 //   responseType: 'stream'
+//                 // })
+//                 //   .then(function (response) {
+//                 //     response.data.pipe(fs.createWriteStream('./images/ada_lovelace.jpg'))
+//                 //   });
 
-                //downloadFile(IMAGE_URL, '../images/');
+//                 //downloadFile(IMAGE_URL, '../images/');
 
-                // has some downloading issues...
+//                 // has some downloading issues...
 
-                //   download.image(options)
-                //     .then(({ filename }) => {
-                //       console.log('Saved to', filename)  // saved to /path/to/dest/image.jpg
-                //     })
-                //     .catch((err) => console.error(err))
+//                 //   download.image(options)
+//                 //     .then(({ filename }) => {
+//                 //       console.log('Saved to', filename)  // saved to /path/to/dest/image.jpg
+//                 //     })
+//                 //     .catch((err) => console.error(err))
 
 
-                //var k = data[i].ImageName
-                //download('https://img.rec.net/' + data[i].ImageName, 'image' + i + '.png', function(){})
-            });
-        })
-        .catch(function (error) {
-            // handle error
-            console.log(error);
-        })
-        .then(function () {
-            // always executed
-        });
-    // if not create the folder and download all images to place inside of the folder
+//                 //var k = data[i].ImageName
+//                 //download('https://img.rec.net/' + data[i].ImageName, 'image' + i + '.png', function(){})
+//             });
+//         })
+//         .catch(function (error) {
+//             // handle error
+//             console.log(error);
+//         })
+//         .then(function () {
+//             // always executed
+//         });
+//     // if not create the folder and download all images to place inside of the folder
 
-    //else if the folder exists.  For each photo returned by recnet verify it exists in the file system
-    // if it does not then download it from the image database and write the file to disc
-    // Make a request for a user with a given ID
-}
+//     //else if the folder exists.  For each photo returned by recnet verify it exists in the file system
+//     // if it does not then download it from the image database and write the file to disc
+//     // Make a request for a user with a given ID
+// }
 
-function downloadFile(configuration) {
-    return new Promise(function (resolve, reject) {
-        // Save variable to know progress
-        var received_bytes = 0;
-        var total_bytes = 0;
+// function downloadFile(configuration) {
+//     return new Promise(function (resolve, reject) {
+//         // Save variable to know progress
+//         var received_bytes = 0;
+//         var total_bytes = 0;
 
-        var req = request({
-            method: 'GET',
-            uri: configuration.remoteFile
-        });
+//         var req = request({
+//             method: 'GET',
+//             uri: configuration.remoteFile
+//         });
 
-        var out = fs.createWriteStream(configuration.localFile);
-        req.pipe(out);
+//         var out = fs.createWriteStream(configuration.localFile);
+//         req.pipe(out);
 
-        req.on('response', function (data) {
-            // Change the total bytes value to get progress later.
-            total_bytes = parseInt(data.headers['content-length']);
-        });
+//         req.on('response', function (data) {
+//             // Change the total bytes value to get progress later.
+//             total_bytes = parseInt(data.headers['content-length']);
+//         });
 
-        // Get progress if callback exists
-        if (configuration.hasOwnProperty("onProgress")) {
-            req.on('data', function (chunk) {
-                // Update the received bytes
-                received_bytes += chunk.length;
+//         // Get progress if callback exists
+//         if (configuration.hasOwnProperty("onProgress")) {
+//             req.on('data', function (chunk) {
+//                 // Update the received bytes
+//                 received_bytes += chunk.length;
 
-                configuration.onProgress(received_bytes, total_bytes);
-            });
-        } else {
-            req.on('data', function (chunk) {
-                // Update the received bytes
-                received_bytes += chunk.length;
-            });
-        }
+//                 configuration.onProgress(received_bytes, total_bytes);
+//             });
+//         } else {
+//             req.on('data', function (chunk) {
+//                 // Update the received bytes
+//                 received_bytes += chunk.length;
+//             });
+//         }
 
-        req.on('end', function () {
-            resolve();
-        });
-    });
-}
+//         req.on('end', function () {
+//             resolve();
+//         });
+//     });
+// }
 
 // #######################################################################################
 //                            NEW GENERIC REUSABLE FUNCTIONS
@@ -493,14 +477,14 @@ function downloadFile(configuration) {
 // Generic function for returning a list of files in a directory
 // folderPath = './images'
 // Returns: array of string
-function listFilesInFolder(folderPath) {
-    var fileList = [];
-    fs.readdirSync(folder).forEach(file => {
-        fileList.push(file);
-    });
-    console.log(fileList);
-    return fileList;
-}
+// function listFilesInFolder(folderPath) {
+//     var fileList = [];
+//     fs.readdirSync(folder).forEach(file => {
+//         fileList.push(file);
+//     });
+//     console.log(fileList);
+//     return fileList;
+// }
 
 // Function takes in a RecNet Display name and converts it to a RecNet user ID.
 async function getUserId(recNetDisplayName) {
@@ -512,7 +496,7 @@ async function getUserId(recNetDisplayName) {
         axios.get(url)
             .then(function (response) {
                 // handle success
-                console.log('Successfully retrieved USER_ID (' + response.data.accountId + ') for user ' + recNetDisplayName);
+                //console.log('Successfully retrieved USER_ID (' + response.data.accountId + ') for user ' + recNetDisplayName);
                 //return response.data.accountId;
                 resolve(response.data.accountId);
             })
@@ -537,7 +521,7 @@ async function getUserPublicPhotoLibrary(userId) {
             axios.get(url)
                 .then(function (response) {
                     // handle success
-                    console.log('Successfully retreived photos for USER_ID: '+ userId + ' Count: ' + response.data.length);
+                    //console.log('Successfully retreived photos for USER_ID: '+ userId + ' Count: ' + response.data.length);
                     //return response.data.accountId;
                     resolve(response.data);
                 })
@@ -636,13 +620,13 @@ async function loadImagesOntoPage() {
     //document.getElementById("userId").innerHTML = userId;
     //document.getElementById("totalPhotos").innerHTML = userPhotoLibrary.length;
     var dateOrder = document.getElementById("btnOldestToNewest");
-    console.log("normal");
-    console.log(userPhotoLibrary);
-    console.log(dateOrder.value);
+    //console.log("normal");
+    //console.log(userPhotoLibrary);
+    //console.log(dateOrder.value);
     if (dateOrder.value == "1") { // Oldest to Newest
         userPhotoLibrary = userPhotoLibrary.reverse();
-        console.log("Reversed");
-        console.log(userPhotoLibrary);
+        //console.log("Reversed");
+        //console.log(userPhotoLibrary);
     }
 
     var imageDiv = document.getElementById("grid");

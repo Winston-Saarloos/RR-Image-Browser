@@ -21,15 +21,6 @@ function createWindow () {
   win.loadFile('src/index.html')
   win.removeMenu()
   //win.webContents.openDevTools()
-
-  const child = new BrowserWindow({ parent: win, modal: false, show: false, width: 1920, height: 1080})
-  child.loadURL('file://' + __dirname + '/imagePreview/imagePreview.html');
-  // child.once('ready-to-show', () => {
-  //   child.show()
-  // })
-
-  child.removeMenu()
-  child.webContents.openDevTools();
 }
 
 app.whenReady().then(createWindow)

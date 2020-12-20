@@ -3,11 +3,9 @@
 
 <head>
   <meta charset="UTF-8">
-  <title>Rec Room Photo Viewer (+)</title>
+  <title>RR Image Browser</title>
   <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
   <script>window.$ = window.jQuery = require('jquery');</script>
-  <!-- <script>window.m = window.Masonry = require('masonry-layout');</script> -->
-  <script src="../node_modules/masonry-layout/masonry.js"></script>
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
     integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
   <link rel="stylesheet" href="index.css">
@@ -19,7 +17,7 @@
 
 <body class="body">
   <nav class="navbar navbar-expand navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">Photo Viewer (+)</a>
+    <a class="navbar-brand" id="versionNumber" href="#">Unable to load version</a>
     <button type="button" class="btn btn-secondary oldestNewest" onClick="toggleButtonOldestNewest(); return false;"
       id="btnOldestToNewest" value="0">Newest to Oldest</button>
 
@@ -27,7 +25,6 @@
       <input class="form-control mr-sm-2" type="text" placeholder="Enter RR '@' name" aria-label="@ RecNet Username"
         id="txtUsername" value="LuminousPanther617">
       <button class="btn btn-success my-2 my-sm-0" onclick="loadImagesOntoPage(); return false;">Load</button>
-      <p id="versionNumber">V0.1.0</p>
     </form>
   </nav>
   <!-- <h5>User ID:</h5>
@@ -153,7 +150,7 @@
       Restart
     </button>
   </div>
-  
+
   <script src="index.js"></script>
 </body>
 
