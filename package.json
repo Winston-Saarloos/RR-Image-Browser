@@ -17,7 +17,8 @@
     "@electron-forge/maker-rpm": "^6.0.0-beta.54",
     "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
     "@electron-forge/maker-zip": "^6.0.0-beta.54",
-    "electron": "^10.1.6"
+    "electron": "^10.2.0",
+    "electron-builder": "^22.9.1"
   },
   "dependencies": {
     "axios": "^0.21.0",
@@ -65,8 +66,8 @@
     }
   },
   "repository": {
-    "type" : "git",
-    "url" : "https://github.com/97rocko/RR-Image-Browser.git"
+    "type": "git",
+    "url": "https://github.com/97rocko/RR-Image-Browser.git"
   },
   "build": "electron-builder build --win --publish never",
   "deploy": "electron-builder build --win --publish always"

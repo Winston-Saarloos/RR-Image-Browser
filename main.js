@@ -20,7 +20,7 @@ function createWindow () {
 
   win.loadFile('src/index.html')
   win.removeMenu()
-  win.webContents.openDevTools()
+  //win.webContents.openDevTools()
 
   const child = new BrowserWindow({ parent: win, modal: false, show: false, width: 1920, height: 1080})
   child.loadURL('file://' + __dirname + '/imagePreview/imagePreview.html');
