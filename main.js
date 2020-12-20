@@ -14,13 +14,11 @@ function createWindow () {
     }
   })
 
-  win.once('ready-to-show', () => {
-    autoUpdater.checkForUpdatesAndNotify();
-  });
-
   win.loadFile('src/index.html')
   win.removeMenu()
-  //win.webContents.openDevTools()
+  win.webContents.openDevTools()
+
+  autoUpdater.checkForUpdatesAndNotify();
 }
 
 app.whenReady().then(createWindow)

@@ -32,12 +32,14 @@ const message = document.getElementById('message');
 const restartButton = document.getElementById('restart-button');
 
 ipcRenderer.on('update_available', () => {
+  console.log('update available');
   ipcRenderer.removeAllListeners('update_available');
   message.innerText = 'A new update is available. Downloading now...';
   notification.classList.remove('hidden');
 });
 
 ipcRenderer.on('update_downloaded', () => {
+  console.log('update downloaded');
   ipcRenderer.removeAllListeners('update_downloaded');
   message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
   restartButton.classList.remove('hidden');
@@ -211,39 +213,39 @@ function restartApp() {
 //     }
 // }
 
-function readPhotoSyncJson(startSync, userId) {
-    console.log("ReadPhotoSyncJson Fired!");
-    var photoSyncJson = photoSync;
-    var index = photoSyncJson.ImageSyncData.findIndex(x => x.userId === userId);
+// function readPhotoSyncJson(startSync, userId) {
+//     console.log("ReadPhotoSyncJson Fired!");
+//     var photoSyncJson = photoSync;
+//     var index = photoSyncJson.ImageSyncData.findIndex(x => x.userId === userId);
 
-    //console.log(index);
+//     //console.log(index);
 
-    if (startSync) {
-        inProgress = true;
-        USER_ID = userId;
-        if (index === -1) {
-            console.log("Adding new user to array...");
-            photoSyncJson['ImageSyncData'].push({"lastSync":new Date(), "page":0, "syncCurrentlyInprogress": true, "userId": userId});
-        } else {
-            console.log("Editing existing user in array...");
-            photoSyncJson.ImageSyncData[index].lastSync = new Date();
-            photoSyncJson.ImageSyncData[index].page = 0;
-            photoSyncJson.ImageSyncData[index].syncCurrentlyInprogress = true;
-            photoSyncJson.ImageSyncData[index].userId = userId;
-        }
-        let fileData = JSON.stringify(photoSyncJson);
+//     if (startSync) {
+//         inProgress = true;
+//         USER_ID = userId;
+//         if (index === -1) {
+//             console.log("Adding new user to array...");
+//             photoSyncJson['ImageSyncData'].push({"lastSync":new Date(), "page":0, "syncCurrentlyInprogress": true, "userId": userId});
+//         } else {
+//             console.log("Editing existing user in array...");
+//             photoSyncJson.ImageSyncData[index].lastSync = new Date();
+//             photoSyncJson.ImageSyncData[index].page = 0;
+//             photoSyncJson.ImageSyncData[index].syncCurrentlyInprogress = true;
+//             photoSyncJson.ImageSyncData[index].userId = userId;
+//         }
+//         let fileData = JSON.stringify(photoSyncJson);
 
-        console.log(fileData);
+//         console.log(fileData);
 
-        var filePath = './appdata/photosync/ImageSyncData.json';
+//         var filePath = './appdata/photosync/ImageSyncData.json';
 
-        fs.writeFileSync(filePath, fileData);
-        console.log('Updated file values.');
+//         fs.writeFileSync(filePath, fileData);
+//         console.log('Updated file values.');
 
-        // Trigger the interval function to run and process photos
-        startSyncTick();
-    }
-}
+//         // Trigger the interval function to run and process photos
+//         startSyncTick();
+//     }
+// }
 
 // async function syncUserPhotoLibrary() {
 //     console.log("Running Sync...");
