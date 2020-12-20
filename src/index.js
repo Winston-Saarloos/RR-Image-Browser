@@ -615,6 +615,14 @@ function toggleButtonOldestNewest() {
 
 async function loadImagesOntoPage() {
     var username = document.getElementById("txtUsername").value;
+    var imageDiv = document.getElementById("grid");
+    if (username === "") {
+        while(imageDiv.firstChild) { 
+            imageDiv.removeChild(imageDiv.firstChild); 
+        } 
+        return;
+    }
+
     var userId = await getUserId(username);
     var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
     //document.getElementById("userId").innerHTML = userId;
@@ -623,13 +631,14 @@ async function loadImagesOntoPage() {
     //console.log("normal");
     //console.log(userPhotoLibrary);
     //console.log(dateOrder.value);
+
+
     if (dateOrder.value == "1") { // Oldest to Newest
         userPhotoLibrary = userPhotoLibrary.reverse();
         //console.log("Reversed");
         //console.log(userPhotoLibrary);
     }
 
-    var imageDiv = document.getElementById("grid");
     while(imageDiv.firstChild) { 
         imageDiv.removeChild(imageDiv.firstChild); 
     } 
