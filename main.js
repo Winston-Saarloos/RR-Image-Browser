@@ -16,7 +16,7 @@ function createWindow () {
 
   win.loadFile('src/index.html')
   win.removeMenu()
-  win.webContents.openDevTools()
+  //win.webContents.openDevTools()
 
   autoUpdater.checkForUpdatesAndNotify();
 }
