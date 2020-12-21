@@ -392,7 +392,7 @@ async function loadDataImageDetailModal(imageId) {
             var szActivityName = roomData[0].Name;
             modalImageActivityName.innerText = szActivityName;
         } else {
-            modalImageActivityName.innerText = "N/A (Room is not public)"
+            modalImageActivityName.innerText = "Unavailable, room is not public."
         }
     }
 
