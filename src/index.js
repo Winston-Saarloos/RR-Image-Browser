@@ -2,7 +2,6 @@ const { electron, app, ipcRenderer } = require('electron');
 const axios = require('axios');
 const fs = require('fs');
 const Path = require('path');
-var http = require('http');
 //var request = require('request');
 const { shell } = require('electron');
 //const sleep = require('util').promisify(setTimeout);
@@ -11,11 +10,11 @@ var userAccountId = 0;
 
 //var filePath = app.getPath("userData");
 var INDEVELOPMENTMODE = true;
-var filePath = 'C:/RNC/';
-var appDataPath = './appData/';
-var dataCache = 'cache/';
+//var filePath = 'C:/RNC/';
+//var appDataPath = './appData/';
+//var dataCache = 'cache/';
 
-let photoSync = require('../appdata/photosync/ImageSyncData.json');
+//let photoSync = require('../appdata/photosync/ImageSyncData.json');
 var inProgress = false;
 var USER_ID = 0;
 var PAGE_NUM = 0;
