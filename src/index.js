@@ -4,6 +4,7 @@ const fs = require('fs');
 const Path = require('path');
 //var request = require('request');
 const { shell } = require('electron');
+const { isNullOrUndefined } = require('util');
 //const sleep = require('util').promisify(setTimeout);
 // Electron-Store for saving preferences
 var userAccountId = 0;
@@ -78,17 +79,27 @@ async function getRoomInfo(roomId) {
 
 // https://accounts.rec.net/account/bulk
 // Form Data = ID Array
-async function getUsernameFromId(arrayOfUserIds) {
-    var url = 'https://accounts.rec.net/account/bulk';
+async function getUsernameFromId(listOfUserIds) {
+    var apiUrl = 'https://accounts.rec.net/account/bulk';
 
     return new Promise(function (resolve, reject) {
+        var formData = new FormData();
 
+        listOfUserIds.forEach(item => formData.append("id", item));
+
+        console.log('Form Data: ' + formData);
         // https://accounts.rec.net/account?username=rocko
-        axios.get(url)
+        axios({
+            method: 'post',
+            url: apiUrl,
+            data: formData,
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+        })
             .then(function (response) {
                 // handle success
                 //return response.data.accountId;
-                resolve(response.data.accountId);
+                console.log(response.data);
+                resolve(response.data);
             })
             .catch(function (error) {
                 // handle error
@@ -154,7 +165,9 @@ async function getUserPublicPhotoLibrary(userId) {
 // function takes in a imageName and returns the image associated
 // returns image data (separate function for downloading)
 async function getImageData(imageName) {
+    console.log("Image Name: " + imageName);
     var IMAGE_URL = 'https://img.rec.net/' + imageName;
+    console.log("Image Name: " + IMAGE_URL);
 
     // 'https://api.rec.net/api/images/v4/player/PLAYER_ID?skip=0&take=50000'
     axios.get(IMAGE_URL)
@@ -332,7 +345,6 @@ function clearImageSource() { // TODO figure out how to keep the image size so i
     }
 }
 
-
 async function loadDataImageDetailModal(imageId) {
     // Modal Elements
     const LOADING_TEXT = "Loading...";
@@ -346,6 +358,10 @@ async function loadDataImageDetailModal(imageId) {
     var modalImageActivityName = document.getElementById("imageActivity");
     modalImageActivityName.innerText = LOADING_TEXT;
 
+    // List of tagged players
+    var modalImageTaggedPlayers = document.getElementById("imageTaggedPlayers");
+    modalImageTaggedPlayers.innerText = LOADING_TEXT;
+
     // Event Name
     var modalImageEventName = document.getElementById("imageEvent");
     modalImageEventName.innerText = LOADING_TEXT;
@@ -355,6 +371,9 @@ async function loadDataImageDetailModal(imageId) {
 
     var modalImageCommentCount = document.getElementById("imageCommentCount");
     modalImageCommentCount.innerText = LOADING_TEXT;
+
+    var modalImageRnLink = document.getElementById("imageRecNetLink");
+    modalImageRnLink.innerText = LOADING_TEXT;
     
     var username = document.getElementById("txtUsername").value; // This could be re written to not pull data if it is already available
     var userId = await getUserId(username);
@@ -368,14 +387,13 @@ async function loadDataImageDetailModal(imageId) {
         }
     };
 
+    console.log("Image Data: ");
     console.log(imageData);
-    var roomData = await getRoomInfo(imageData.RoomId);
-    console.log(roomData);
 
     // Image Display
     if (modalDisplayImage) {
         var imageUrl = 'https://img.rec.net/' + imageData.ImageName;
-        console.log(imageUrl);
+        //console.log(imageUrl);
         modalDisplayImage.src = imageUrl;
     }
 
@@ -386,6 +404,7 @@ async function loadDataImageDetailModal(imageId) {
     }
 
     // Activity Name
+    var roomData = await getRoomInfo(imageData.RoomId);
     if (modalImageActivityName) {
         if (roomData.length >= 1) {
             var szActivityName = roomData[0].Name;
@@ -398,7 +417,30 @@ async function loadDataImageDetailModal(imageId) {
     // Event Name
     if (modalImageEventName) {
         var szEventName = imageData.PlayerEventId;
-        modalImageCheerCount.innerText = szCheerCount;
+        if (szEventName === null || szEventName === undefined) {
+            szEventName = "No event data.";
+        }
+        modalImageEventName.innerText = szEventName;
+    }
+
+    // Tagged Players
+    if (imageData.TaggedPlayerIds.length > 0) {
+        var playerInfoJson = await getUsernameFromId(imageData.TaggedPlayerIds);
+        console.log(playerInfoJson);
+        if (modalImageTaggedPlayers) {
+            var szTaggedPlayers = "";
+            var i = 0;
+            playerInfoJson.forEach(item => {
+                if (i === playerInfoJson.length) {
+                    szTaggedPlayers = szTaggedPlayers + (item.displayName + " (@" + item.username + ") \r\n");
+                } else {
+                    szTaggedPlayers = szTaggedPlayers + (item.displayName + " (@" + item.username + "), \r\n");
+                }
+            });
+            modalImageTaggedPlayers.innerText = szTaggedPlayers;
+        }
+    } else {
+        modalImageTaggedPlayers.innerText = "No players were tagged.";
     }
 
     // Cheer Count
@@ -411,6 +453,12 @@ async function loadDataImageDetailModal(imageId) {
     if (modalImageCommentCount) {
         var szCommentCount = imageData.CommentCount;
         modalImageCommentCount.innerText = szCommentCount;
+    }
+
+    // RN Image Link
+    if (modalImageRnLink) {
+        var szUrl = "https://rec.net/image/" + imageData.Id;
+        modalImageRnLink.innerText = szUrl;
     }
 }
 

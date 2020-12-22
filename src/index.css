@@ -104,3 +104,8 @@ h2, p {
   .hidden {
     display: none;
   }
+
+#imageDisplay {
+    min-height: 545px;
+    background-color: rgb(42, 55, 83);
+}

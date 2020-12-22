@@ -13,6 +13,7 @@
   <script>let $ = require('jquery');</script>
   <script>require('popper.js');</script>
   <script>require('bootstrap');</script>
+  <script>require('@fortawesome/fontawesome-free');</script>
 </head>
 
 <body class="body">
@@ -26,6 +27,7 @@
         id="txtUsername" value="">
         <!-- LuminousPanther617 -->
       <button class="btn btn-success my-2 my-sm-0" onclick="loadImagesOntoPage(); return false;">Load</button>
+
     </form>
   </nav>
   <!-- <h5>User ID:</h5>
@@ -128,6 +130,14 @@
                    Loading...
                 </p>
             </div>
+            <div class="imageDetailLine">
+              <p class="imageDetailLineLabel">
+              RN Link:
+              </p>
+              <p id="imageRecNetLink" class="imageDetailLineText">
+                 Loading...
+              </p>
+          </div>
         </div>
         </div>
         <div class="modal-footer">

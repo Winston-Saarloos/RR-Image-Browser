@@ -23,6 +23,7 @@
     "electron-builder": "^22.9.1"
   },
   "dependencies": {
+    "@fortawesome/fontawesome-free": "^5.15.1",
     "axios": "^0.21.0",
     "bootstrap": "^4.5.3",
     "delay": "^4.4.0",
