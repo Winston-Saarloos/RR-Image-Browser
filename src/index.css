@@ -109,3 +109,35 @@ h2, p {
     min-height: 545px;
     background-color: rgb(42, 55, 83);
 }
+
+.filtersDiv {
+    background-color: grey;
+}
+
+.filtersToggle {
+    text-align: center;
+    color:rgb(255, 255, 255);
+    background-color: rgb(55, 50, 109);
+}
+
+.filtersToggle:hover {
+    color: lightgrey;
+    background-color: rgb(69, 9, 138);
+}
+
+.containsPlayer {
+    background-color: lightskyblue;
+}
+
+.setFilterContainer {
+    border: 2px solid pink;
+    display: block;
+}
+
+.filterVisualDisplay {
+    display: block;
+}
+
+.filtersContainer{
+    display: flexbox;
+}

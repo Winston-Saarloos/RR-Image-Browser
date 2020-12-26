@@ -5,6 +5,7 @@ const Path = require('path');
 //var request = require('request');
 const { shell } = require('electron');
 const { isNullOrUndefined } = require('util');
+const open = require('open');
 //const sleep = require('util').promisify(setTimeout);
 // Electron-Store for saving preferences
 var userAccountId = 0;
@@ -279,11 +280,52 @@ async function loadImagesOntoPage() {
         imageDiv.removeChild(imageDiv.firstChild); 
     } 
 
+    // Generate Master Lists
+    getMasterLists(userPhotoLibrary);
+
     // Generate image HTML
     loadImagesIntoPage(userPhotoLibrary);
 }
 
-function loadImagesIntoPage(userPhotoLibrary) {
+async function getMasterLists(userPhotoLibrary) {
+
+    // Obtain Unique lists
+    var activityUniqueIdList = [];
+    var playerUniqueIdList = [];
+    var eventUniqueIdList = [];
+    userPhotoLibrary.forEach(image => {
+        //console.log(image);
+        // Activity
+        if ((!activityUniqueIdList.includes(image.RoomId)) && (image.RoomId)) {
+            activityUniqueIdList.push(image.RoomId);
+        };
+
+        // Players
+        if (image.TaggedPlayerIds.length > 0) {
+            var listOfPlayers = image.TaggedPlayerIds;
+
+            listOfPlayers.forEach(player => {
+                //console.log(player);
+                //activityUniqueIdList.push(image.RoomId);
+                if ((!playerUniqueIdList.includes(player)) && (player)) {
+                    playerUniqueIdList.push(player);
+                };
+            });
+            //console.log(image.TaggedPlayerIds.length);
+            //playerUniqueIdList.push(image.RoomId);
+        };
+
+        // Events
+        if ((!eventUniqueIdList.includes(image.PlayerEventId)) && (image.PlayerEventId)) {
+            eventUniqueIdList.push(image.PlayerEventId);
+        };
+    });
+    console.log(activityUniqueIdList);
+    console.log(playerUniqueIdList);
+    console.log(eventUniqueIdList);
+}
+
+async function loadImagesIntoPage(userPhotoLibrary) {
     var imageDiv = document.getElementById("grid");
     while (imageDiv.firstChild) {
         imageDiv.removeChild(imageDiv.firstChild);
@@ -306,10 +348,11 @@ function loadImagesIntoPage(userPhotoLibrary) {
         divGridItem.setAttribute('onclick', 'loadDataImageDetailModal(' + userPhotoLibrary[i].Id + '); return false;');
         divGridItem.appendChild(img);
 
-        var pImageLink = document.createElement("p");
-        pImageLink.classList.add("imageLink");
-        pImageLink.innerText = "https://rec.net/image/" + userPhotoLibrary[i].Id;
-        divGridItem.appendChild(pImageLink);
+        // var pImageLink = document.createElement("p");
+        // pImageLink.classList.add("imageLink");
+        // pImageLink.innerText = "https://rec.net/image/" + userPhotoLibrary[i].Id;
+        // pImageLink.setAttribute("onclick", "openImageInBrowser(" + userPhotoLibrary[i].Id +"); return false;");
+        // divGridItem.appendChild(pImageLink);
 
         var src = document.getElementById("grid");
         src.appendChild(divGridItem); // append Div
@@ -467,7 +510,13 @@ async function loadDataImageDetailModal(imageId) {
     if (modalImageRnLink) {
         var szUrl = "https://rec.net/image/" + imageData.Id;
         modalImageRnLink.innerText = szUrl;
+        modalImageRnLink.setAttribute("onclick", "openImageInBrowser(" + imageData.Id +"); return false;");
     }
+}
+
+function openImageInBrowser(imageId) {
+    var szUrl = "https://rec.net/image/" + imageId;
+    open(szUrl);
 }
 
 
