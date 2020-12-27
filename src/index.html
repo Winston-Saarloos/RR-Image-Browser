@@ -29,25 +29,26 @@
       <button class="btn btn-success my-2 my-sm-0" onclick="loadImagesOntoPage(); return false;">Load</button>
     </form>
     </nav>
-    <div class="filtersContainer">
-      <div class="filtersDiv">
-        <div class="setFilterContainer">
-          <div class="setFilterBlock">
-            <form>
-              <button class="btn my-sm-0 containsPlayer"
-                onclick="console.log('button clicked...'); return false;">Contains</button>
-            </form>
+    <div class="mainFilterContainer container-fluid">
+      <div id="filterCategoryContainer" class="filterCategoryContainer row">
+        <div class="filterSubCategoryContainer col-7">
+          <div class="subCategory row">
+            Text
           </div>
-          <div class="setFilterBlock">
-            Another Filter Block
+          <div class="subCategory row">
+            Text
           </div>
         </div>
-        <div class="filterVisualDisplay">
-          Text
+        <div class="filterVisualArea col-5">
+          Current Filter Criteria:
+          <div id="currentFilterCriteria" class="container-fluid">
+          </div>
         </div>
       </div>
-      <div class="filtersToggle">
-        Expand
+      <div class="row filtersToggle">
+        <a id="expandCollapseFiltersButton" class="container-fluid" href="#" onclick="toggleFilterDisplay(); return false;">
+          Expand
+        </a>
       </div>
     </div>
     <!-- <h5>User ID:</h5>

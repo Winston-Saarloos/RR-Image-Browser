@@ -125,19 +125,64 @@ h2, p {
     background-color: rgb(69, 9, 138);
 }
 
-.containsPlayer {
-    background-color: lightskyblue;
+.mainFilterContainer {
+    border: solid 2px violet;
 }
 
-.setFilterContainer {
-    border: 2px solid pink;
-    display: block;
+.filterCategoryContainer {
+    border: solid 2px greenyellow;
 }
 
-.filterVisualDisplay {
-    display: block;
+.filterSubCategoryContainer {
+    border: solid 2px purple;
 }
 
-.filtersContainer{
-    display: flexbox;
+.filterVisualArea {
+    border: solid 2px grey;
+}
+
+.subCategory {
+    border: solid 2px salmon;
+}
+
+#expandCollapseFiltersButton {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+/* unvisited link */
+a:link {
+    text-decoration:none;
+    color: white;
+}
+
+/* visited link */
+a:visited {
+    text-decoration:none;
+    color: white;
+}
+
+/* mouse over link */
+a:hover {
+    text-decoration:none;
+    color: white;
+}
+
+/* selected link */
+a:active {
+    text-decoration:none;
+    color: white;
+}
+
+.displayNone {
+    display: none;
+}
+
+.filterVisualArea {
+    color: white;
+}
+
+#currentFilterCriteria {
+    border: lightgrey 1px solid;
+    min-height: 50px;
 }

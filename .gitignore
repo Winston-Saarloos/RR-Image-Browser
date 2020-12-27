@@ -2,6 +2,6 @@ node_modules
 bower_components
 images
 appdata
-electron-builder.yaml
+electron-builder.yml
 dist
-dev-app-update.yaml
+dev-app-update.yml

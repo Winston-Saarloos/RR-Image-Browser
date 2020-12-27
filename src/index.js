@@ -519,6 +519,20 @@ function openImageInBrowser(imageId) {
     open(szUrl);
 }
 
+function toggleFilterDisplay() {
+    var btnToggleFilters = document.getElementById("expandCollapseFiltersButton");
+    var filterContainer = document.getElementById("filterCategoryContainer");
+    if (btnToggleFilters && filterContainer) {
+        if (btnToggleFilters.innerText === "Expand") {
+            filterContainer.classList.remove("displayNone");
+            btnToggleFilters.innerText = "Collapse";
+        } else {
+            filterContainer.classList.add("displayNone");
+            btnToggleFilters.innerText = "Expand";
+        }
+    }
+}
+
 
 // Function for each filter that takes in a JSON object and returns out a JSON sorted object
 
