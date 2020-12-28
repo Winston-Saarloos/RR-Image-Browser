@@ -142,7 +142,7 @@ h2, p {
 }
 
 .subCategory {
-    border: solid 2px salmon;
+    border: solid 2px orange;
 }
 
 #expandCollapseFiltersButton {
@@ -185,4 +185,27 @@ a:active {
 #currentFilterCriteria {
     border: lightgrey 1px solid;
     min-height: 50px;
+}
+
+.criteriaTitle {
+    border: pink 2px solid;
+    color: white;
+}
+
+.criteriaCollection {
+    border:blue 2px solid;
+}
+
+.col {
+    border: yellowgreen 2px solid;
+}
+
+.col-6 {
+    border: yellowgreen 2px solid;
+}
+
+.toggleFilter {
+    min-width: 100px;
+    color: white;
+    background-color: lightslategrey;
 }

@@ -32,12 +32,56 @@
     <div class="mainFilterContainer container-fluid">
       <div id="filterCategoryContainer" class="filterCategoryContainer row">
         <div class="filterSubCategoryContainer col-7">
-          <div class="subCategory row">
-            Text
+          <div class="subCategory container-fluid">
+            <div class="criteriaTitle row">
+              Look for photos taken in a specific room:
+            </div>
+            <div class="criteriaCollection row">
+              <div class="col" align="center">
+                <button class="btn toggleFilter" onclick="console.log('Add button clicked'); return false;">In</button>
+              </div>
+              <div class="col-6" align="center">
+                Select activity from list =]
+              </div>
+              <div class="col" align="center">
+                <button class="btn btn-success" onclick="console.log('Add button clicked'); return false;">Add Filter</button>
+              </div>
+            </div>
           </div>
-          <div class="subCategory row">
-            Text
+
+          <div class="subCategory container-fluid">
+            <div class="criteriaTitle row">
+              Look for photos that contain or do not contain certain players:
+            </div>
+            <div class="criteriaCollection row">
+              <div class="col" align="center">
+                <button class="btn toggleFilter" onclick="console.log('Add button clicked'); return false;">Contains</button>
+              </div>
+              <div class="col-6" align="center">
+                <input class="form-control mr-sm-2" type="text" placeholder="@" aria-label="@ RecNet Username">
+              </div>
+              <div class="col" align="center">
+                <button class="btn btn-success" onclick="console.log('Add button clicked'); return false;">Add Filter</button>
+              </div>
+            </div>
           </div>
+          <div class="subCategory container-fluid">
+            <div class="criteriaTitle row">
+              Another Category:
+            </div>
+            <div class="criteriaCollection row">
+              <div class="col" align="center">
+                <button class="btn toggleFilter" onclick="console.log('Add button clicked'); return false;">Contains</button>
+              </div>
+              <div class="col-6" align="center">
+                <input class="form-control mr-sm-2" type="text" placeholder="@" aria-label="@ RecNet Username">
+              </div>
+              <div class="col" align="center">
+                <button class="btn btn-success" onclick="console.log('Add button clicked'); return false;">Add Filter</button>
+              </div>
+            </div>
+          </div>
+
         </div>
         <div class="filterVisualArea col-5">
           Current Filter Criteria:
