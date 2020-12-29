@@ -23,8 +23,13 @@
       id="btnOldestToNewest" value="0">Newest to Oldest</button>
 
     <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="text" placeholder="Enter RR '@' name" aria-label="@ RecNet Username"
-        id="txtUsername" value="LuminousPanther617">
+      <div class="input-group mb-3">
+        <div class="input-group-prepend">
+          <span class="input-group-text" id="basic-addon1">@</span>
+        </div>
+        <input class="form-control mr-sm-2" type="text" placeholder="RR username" aria-label="@ RecNet Username"
+          id="txtUsername" value="LuminousPanther617">
+      </div>
         <!-- LuminousPanther617 -->
       <button class="btn btn-success my-2 my-sm-0" onclick="loadImagesOntoPage(); return false;">Load</button>
     </form>
@@ -37,30 +42,29 @@
               Look for photos taken in a specific room:
             </div>
             <div class="criteriaCollection row">
-              <div class="col" align="center">
-                <button class="btn toggleFilter" onclick="console.log('Add button clicked'); return false;">In</button>
+              <div class="col filterControl" align="center">
+                <button id="activityFilterToggleButton" class="btn toggleFilter" onclick="toggleActivityFilter(); return false;">In</button>
               </div>
-              <div class="col-6" align="center">
-                Select activity from list =]
+              <div class="col-6 filterControl" align="center" style="color:white;">
+                Select activity from list =] (might hook into search bar (but probably not))
               </div>
-              <div class="col" align="center">
+              <div class="col filterControl" align="center">
                 <button class="btn btn-success" onclick="console.log('Add button clicked'); return false;">Add Filter</button>
               </div>
             </div>
           </div>
-
           <div class="subCategory container-fluid">
             <div class="criteriaTitle row">
               Look for photos that contain or do not contain certain players:
             </div>
             <div class="criteriaCollection row">
               <div class="col" align="center">
-                <button class="btn toggleFilter" onclick="console.log('Add button clicked'); return false;">Contains</button>
+                <button id="playerFilterToggleButton" class="btn toggleFilter" onclick="togglePlayerFilter(); return false;">Contains:</button>
               </div>
-              <div class="col-6" align="center">
-                <input class="form-control mr-sm-2" type="text" placeholder="@" aria-label="@ RecNet Username">
+              <div class="col-6 filterControl" align="center">
+                <input class="form-control mr-sm-2" type="text" placeholder="RR @ Name" aria-label="@ RecNet Username">
               </div>
-              <div class="col" align="center">
+              <div class="col filterControl" align="center">
                 <button class="btn btn-success" onclick="console.log('Add button clicked'); return false;">Add Filter</button>
               </div>
             </div>
@@ -73,10 +77,10 @@
               <div class="col" align="center">
                 <button class="btn toggleFilter" onclick="console.log('Add button clicked'); return false;">Contains</button>
               </div>
-              <div class="col-6" align="center">
+              <div class="col-6 filterControl" align="center">
                 <input class="form-control mr-sm-2" type="text" placeholder="@" aria-label="@ RecNet Username">
               </div>
-              <div class="col" align="center">
+              <div class="col filterControl" align="center">
                 <button class="btn btn-success" onclick="console.log('Add button clicked'); return false;">Add Filter</button>
               </div>
             </div>
@@ -86,6 +90,22 @@
         <div class="filterVisualArea col-5">
           Current Filter Criteria:
           <div id="currentFilterCriteria" class="container-fluid">
+            <div class="criteriaItem">
+              <div class="criteriaItemText">Contains User: Boethiah</div>
+              <div class="criteriaRemove"> X </div>
+            </div>
+            <div class="criteriaItem">
+              <div class="criteriaItemText">Does Not Contain User: Rocko</div>
+              <div class="criteriaRemove"> X </div>
+            </div>
+            <div class="criteriaItem">
+              <div class="criteriaItemText">In Activity: Rec Center</div>
+              <div class="criteriaRemove"> X </div>
+            </div>
+            <div class="criteriaItem">
+              <div class="criteriaItemText">During: 11/20/2020 - 12/29/2020</div>
+              <div class="criteriaRemove"> X </div>
+            </div>
           </div>
         </div>
       </div>

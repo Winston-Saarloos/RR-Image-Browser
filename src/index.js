@@ -533,6 +533,28 @@ function toggleFilterDisplay() {
     }
 }
 
+function toggleActivityFilter() {
+    var btnActivity = document.getElementById("activityFilterToggleButton");
+    if (btnActivity){
+        if (btnActivity.innerText === "Not in:") {
+            btnActivity.innerText = "In:";
+        } else {
+            btnActivity.innerText = "Not in:";
+        }
+    }
+}
+
+function togglePlayerFilter() {
+    var btnPlayer = document.getElementById("playerFilterToggleButton");
+    if (btnPlayer){
+        if (btnPlayer.innerText === "Does not contain:") {
+            btnPlayer.innerText = "Contains:";
+        } else {
+            btnPlayer.innerText = "Does not contain:";
+        }
+    }
+}
+
 
 // Function for each filter that takes in a JSON object and returns out a JSON sorted object
 

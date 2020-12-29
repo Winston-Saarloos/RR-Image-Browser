@@ -182,11 +182,6 @@ a:active {
     color: white;
 }
 
-#currentFilterCriteria {
-    border: lightgrey 1px solid;
-    min-height: 50px;
-}
-
 .criteriaTitle {
     border: pink 2px solid;
     color: white;
@@ -208,4 +203,51 @@ a:active {
     min-width: 100px;
     color: white;
     background-color: lightslategrey;
+}
+
+#currentFilterCriteria {
+    border: lightgrey 1px solid;
+    flex-wrap: wrap;
+    min-height: 50px;
+    height: auto;
+    width: 100%;
+    display: flex;
+    flex: auto;
+    float: left;
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+/* Criteria Items */
+.criteriaItem {
+    flex-direction: row;
+    max-height: 40px;
+    text-align: center;
+    padding: 5px;
+    border-radius: 3px;
+    background-color: cornflowerblue;
+    display: flex;
+    margin: 5px;
+}
+
+.criteriaItemText {
+    line-height: 30px;
+    margin: auto;
+}
+
+.criteriaRemove {
+    display: inline-block;
+    line-height: 30px;
+    margin: auto;
+    padding-left: 10px;
+    color:rgb(255, 255, 255);
+    font-size: 20px;
+}
+
+.criteriaRemove:hover {
+    color: lightslategrey;
+}
+
+.filterControl {
+    margin: auto;
 }
