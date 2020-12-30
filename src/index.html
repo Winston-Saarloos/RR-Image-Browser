@@ -23,99 +23,120 @@
       id="btnOldestToNewest" value="0">Newest to Oldest</button>
 
     <form class="form-inline my-2 my-lg-0">
-      <div class="input-group mb-3">
+      <div class="input-group">
         <div class="input-group-prepend">
           <span class="input-group-text" id="basic-addon1">@</span>
         </div>
         <input class="form-control mr-sm-2" type="text" placeholder="RR username" aria-label="@ RecNet Username"
           id="txtUsername" value="LuminousPanther617">
       </div>
-        <!-- LuminousPanther617 -->
+      <!-- LuminousPanther617 -->
       <button class="btn btn-success my-2 my-sm-0" onclick="loadImagesOntoPage(); return false;">Load</button>
     </form>
-    </nav>
-    <div class="mainFilterContainer container-fluid">
-      <div id="filterCategoryContainer" class="filterCategoryContainer row">
-        <div class="filterSubCategoryContainer col-7">
-          <div class="subCategory container-fluid">
-            <div class="criteriaTitle row">
-              Look for photos taken in a specific room:
+  </nav>
+  <div class="mainFilterContainer container-fluid">
+    <div id="filterCategoryContainer" class="filterCategoryContainer row">
+      <div class="filterSubCategoryContainer col-7">
+        <div class="subCategory container-fluid">
+          <div class="criteriaTitle row">
+            Look for photos taken in a specific room:
+          </div>
+          <div class="criteriaCollection row">
+            <div class="col filterControl" align="center">
+              <button id="activityFilterToggleButton" class="btn toggleFilter"
+                onclick="toggleActivityFilter(); return false;">In</button>
             </div>
-            <div class="criteriaCollection row">
-              <div class="col filterControl" align="center">
-                <button id="activityFilterToggleButton" class="btn toggleFilter" onclick="toggleActivityFilter(); return false;">In</button>
+            <div class="col-6 filterControl" align="center" style="color:white;">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="basic-addon1">^</span>
+                </div>
+                <input class="form-control mr-sm-2" type="text" placeholder="Room/Activity Name"
+                  aria-label="Rec Room Activity/Room Name" id="txtFilterActivityName" value="">
               </div>
-              <div class="col-6 filterControl" align="center" style="color:white;">
-                Select activity from list =] (might hook into search bar (but probably not))
-              </div>
-              <div class="col filterControl" align="center">
-                <button class="btn btn-success" onclick="console.log('Add button clicked'); return false;">Add Filter</button>
-              </div>
+            </div>
+            <div class="col filterControl" align="center">
+              <button class="btn btn-success" onclick="console.log('Add button clicked'); return false;">Add
+                Filter</button>
             </div>
           </div>
-          <div class="subCategory container-fluid">
-            <div class="criteriaTitle row">
-              Look for photos that contain or do not contain certain players:
-            </div>
-            <div class="criteriaCollection row">
-              <div class="col" align="center">
-                <button id="playerFilterToggleButton" class="btn toggleFilter" onclick="togglePlayerFilter(); return false;">Contains:</button>
-              </div>
-              <div class="col-6 filterControl" align="center">
-                <input class="form-control mr-sm-2" type="text" placeholder="RR @ Name" aria-label="@ RecNet Username">
-              </div>
-              <div class="col filterControl" align="center">
-                <button class="btn btn-success" onclick="console.log('Add button clicked'); return false;">Add Filter</button>
-              </div>
-            </div>
-          </div>
-          <div class="subCategory container-fluid">
-            <div class="criteriaTitle row">
-              Another Category:
-            </div>
-            <div class="criteriaCollection row">
-              <div class="col" align="center">
-                <button class="btn toggleFilter" onclick="console.log('Add button clicked'); return false;">Contains</button>
-              </div>
-              <div class="col-6 filterControl" align="center">
-                <input class="form-control mr-sm-2" type="text" placeholder="@" aria-label="@ RecNet Username">
-              </div>
-              <div class="col filterControl" align="center">
-                <button class="btn btn-success" onclick="console.log('Add button clicked'); return false;">Add Filter</button>
-              </div>
-            </div>
-          </div>
-
         </div>
-        <div class="filterVisualArea col-5">
-          Current Filter Criteria:
-          <div id="currentFilterCriteria" class="container-fluid">
-            <div class="criteriaItem">
-              <div class="criteriaItemText">Contains User: Boethiah</div>
-              <div class="criteriaRemove"> X </div>
+        <div class="subCategory container-fluid">
+          <div class="criteriaTitle row">
+            Look for photos that do or do not contain certain players:
+          </div>
+          <div class="criteriaCollection row">
+            <div class="col" align="center">
+              <button id="playerFilterToggleButton" class="btn toggleFilter"
+                onclick="togglePlayerFilter(); return false;">Contains:</button>
             </div>
-            <div class="criteriaItem">
-              <div class="criteriaItemText">Does Not Contain User: Rocko</div>
-              <div class="criteriaRemove"> X </div>
+            <div class="col-6 filterControl" align="center">
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="filterUserTextbox">@</span>
+                </div>
+                <input class="form-control mr-sm-2" type="text" placeholder="RR username" aria-label="@ RecNet Username"
+                  id="txtFilterUser" value="">
+              </div>
             </div>
-            <div class="criteriaItem">
-              <div class="criteriaItemText">In Activity: Rec Center</div>
-              <div class="criteriaRemove"> X </div>
+            <div class="col filterControl" align="center">
+              <button class="btn btn-success" onclick="console.log('Add button clicked'); return false;">Add
+                Filter</button>
             </div>
-            <div class="criteriaItem">
-              <div class="criteriaItemText">During: 11/20/2020 - 12/29/2020</div>
-              <div class="criteriaRemove"> X </div>
+          </div>
+        </div>
+        <div class="subCategory container-fluid">
+          <div class="criteriaTitle row">
+            Another Category:
+          </div>
+          <div class="criteriaCollection row">
+            <div class="col" align="center">
+              <button class="btn toggleFilter"
+                onclick="console.log('Add button clicked'); return false;">Contains</button>
+            </div>
+            <div class="col-6 filterControl" align="center">
+              <input class="form-control mr-sm-2" type="text" placeholder="@" aria-label="@ RecNet Username">
+            </div>
+            <div class="col filterControl" align="center">
+              <button class="btn btn-success" onclick="addFilterCriteriaItem('bogus', 'text'); return false;">Add
+                Filter</button>
             </div>
           </div>
         </div>
       </div>
-      <div class="row filtersToggle">
-        <a id="expandCollapseFiltersButton" class="container-fluid" href="#" onclick="toggleFilterDisplay(); return false;">
-          Expand
-        </a>
+      <div class="filterVisualArea col-5">
+        Current Filter Criteria:
+        <div id="currentFilterCriteria" class="container-fluid">
+          <div class="criteriaItem" id="filterCriteria1">
+            <div class="criteriaItemText">Contains User: Boethiah</div>
+            <div class="criteriaRemove" onclick="deleteFilterCriteriaItem('filterCriteria1'); return false;"> X </div>
+          </div>
+          <div class="criteriaItem">
+            <div class="criteriaItemText">Does Not Contain User: Rocko</div>
+            <div class="criteriaRemove"> X </div>
+          </div>
+          <div class="criteriaItem">
+            <div class="criteriaItemText">In Activity: Rec Center</div>
+            <div class="criteriaRemove"> X </div>
+          </div>
+          <div class="criteriaItem">
+            <div class="criteriaItemText">During: 11/20/2020 - 12/29/2020</div>
+            <div class="criteriaRemove"> X </div>
+          </div>
+        </div>
+        <div id="filterCriteriaCountContainer">
+          <p id="filterCriteriaCount">Filter Criteria used: 0/10</p>
+        </div>
       </div>
     </div>
-    <!-- <h5>User ID:</h5>
+    <div class="row filtersToggle">
+      <a id="expandCollapseFiltersButton" class="container-fluid" href="#"
+        onclick="toggleFilterDisplay(); return false;">
+        Expand
+      </a>
+    </div>
+  </div>
+  <!-- <h5>User ID:</h5>
   <p id="userId">000000</p>
   <h5>Total Public Photos:</h5>
   <p id="totalPhotos">000000</p>
@@ -149,7 +170,7 @@
       <div class="grid container col-md" id="grid" style="height:auto;">
       </div>
     </div>
-    </div>
+  </div>
 
   <!-- Image Detail Modal -->
   <div class="modal" id="imageDetailModal" tabindex="-1" role="dialog" aria-labelledby="imageDetailModal"
@@ -158,66 +179,67 @@
       <div class="modal-content">
         <div class="modal-header">
           <h5 class="modal-title">Image Details</h5>
-          <button type="button" class="close" onclick="clearImageSource(); return false;" data-dismiss="modal" aria-label="Close">
+          <button type="button" class="close" onclick="clearImageSource(); return false;" data-dismiss="modal"
+            aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
         <div class="modal-body">
           <div class="container-fluid imagePanel" style="display: flex;"">
-            <img src="" id="imageDisplay" style="height: auto; width: 100%;">
-        </div>
-        <div class="container-fluid imageDetails" style="display: flex; flex-direction: column;">
+            <img src="" id=" imageDisplay" style="height: auto; width: 100%;">
+          </div>
+          <div class="container-fluid imageDetails" style="display: flex; flex-direction: column;">
             <div class="imageDetailLine">
-                <p class="imageDetailLineLabel">
+              <p class="imageDetailLineLabel">
                 Image ID:
-                </p>
-                <p id="imageId" class="imageDetailLineText">
-                    Loading...
-                </p>
-            </div>
-            <div class="imageDetailLine">
-                <p class="imageDetailLineLabel">
-                Activity:
-                </p>
-                <p id="imageActivity" class="imageDetailLineText">
-                   Loading...
-                </p>
-            </div>
-            <div class="imageDetailLine">
-                <p class="imageDetailLineLabel">
-                Event Name:
-                </p>
-                <p id="imageEvent" class="imageDetailLineText">
-                   Loading...
-                </p>
-            </div>
-            <div class="imageDetailLine">
-                <p class="imageDetailLineLabel">
-                Tagged Players:
-                </p>
-                <p id="imageTaggedPlayers" class="imageDetailLineText">
-                   Loading...
-                </p>
-            </div>
-            <div class="imageDetailLine">
-                <p class="imageDetailLineLabel">
-                Cheer Count:
-                </p>
-                <p id="imageCheerCount" class="imageDetailLineText">
-                   Loading...
-                </p>
-            </div>
-            <div class="imageDetailLine">
-                <p class="imageDetailLineLabel">
-                Comment Count:
-                </p>
-                <p id="imageCommentCount" class="imageDetailLineText">
-                   Loading...
-                </p>
+              </p>
+              <p id="imageId" class="imageDetailLineText">
+                Loading...
+              </p>
             </div>
             <div class="imageDetailLine">
               <p class="imageDetailLineLabel">
-              RN Link:
+                Activity:
+              </p>
+              <p id="imageActivity" class="imageDetailLineText">
+                Loading...
+              </p>
+            </div>
+            <div class="imageDetailLine">
+              <p class="imageDetailLineLabel">
+                Event Name:
+              </p>
+              <p id="imageEvent" class="imageDetailLineText">
+                Loading...
+              </p>
+            </div>
+            <div class="imageDetailLine">
+              <p class="imageDetailLineLabel">
+                Tagged Players:
+              </p>
+              <p id="imageTaggedPlayers" class="imageDetailLineText">
+                Loading...
+              </p>
+            </div>
+            <div class="imageDetailLine">
+              <p class="imageDetailLineLabel">
+                Cheer Count:
+              </p>
+              <p id="imageCheerCount" class="imageDetailLineText">
+                Loading...
+              </p>
+            </div>
+            <div class="imageDetailLine">
+              <p class="imageDetailLineLabel">
+                Comment Count:
+              </p>
+              <p id="imageCommentCount" class="imageDetailLineText">
+                Loading...
+              </p>
+            </div>
+            <div class="imageDetailLine">
+              <p class="imageDetailLineLabel">
+                RN Link:
               </p>
               <!-- <p id="imageRecNetLink" class="imageDetailLineText">
                  Loading...
@@ -225,11 +247,12 @@
               <a href="#" onclick="" id="imageRecNetLink" class="imageDetailLineText">
                 Loading...
               </a>
+            </div>
           </div>
         </div>
-        </div>
         <div class="modal-footer">
-          <p>Data may take a second to load.  It runs as fast as REC.NET will allow.  Several things are happening to make this work =]</p>
+          <p>Data may take a second to load. It runs as fast as REC.NET will allow. Several things are happening to make
+            this work =]</p>
         </div>
       </div>
     </div>

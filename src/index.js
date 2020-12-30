@@ -555,6 +555,49 @@ function togglePlayerFilter() {
     }
 }
 
+function deleteFilterCriteriaItem(criteriaId) {
+    removeElement(criteriaId);
+}
+
+function removeElement(id) {
+    var elem = document.getElementById(id);
+    return elem.parentNode.removeChild(elem);
+}
+
+function addFilterCriteriaItem(filterCriteriaText, filterCriteriaValue){
+    const criteriaDisplay = document.getElementById('currentFilterCriteria');
+    var count = criteriaDisplay.childElementCount;
+
+    // Creates the filter criteria item container
+    const criteriaItem = document.createElement("div");
+    criteriaItem.classList.add("criteriaItem");
+    criteriaItem.setAttribute('id', 'filterCriteria' + count);
+
+    // Creates the div inside of the criteria item
+    const criteriaItemText = document.createElement("div");
+    criteriaItemText.classList.add("criteriaItemText");
+    criteriaItemText.innerText = filterCriteriaText + ': ' + filterCriteriaValue;
+    criteriaItem.appendChild(criteriaItemText);
+
+    // Creates the 'X' on the filter criteria item
+    const criteriaRemove = document.createElement("div");
+    criteriaRemove.classList.add("criteriaRemove");
+    var funcArg = "filterCriteria" + count;
+    criteriaRemove.setAttribute('onclick', 'deleteFilterCriteriaItem("' + funcArg + '"); return false;');
+    criteriaRemove.innerText = ' X ';
+    criteriaItem.appendChild(criteriaRemove);
+
+    // Add the item to the div displaying all current filter criteria
+    criteriaDisplay.appendChild(criteriaItem);
+
+    // Update the count below the visual display so users know how much criteria they can enter/
+    updateFilterCriteriaDisplay(count);
+}
+
+function updateFilterCriteriaDisplay(count) {
+    const filterCriteriaCount = document.getElementById('filterCriteriaCount');
+    filterCriteriaCount.innerText = 'Filter Criteria Used: ' + count + '/10';
+}
 
 // Function for each filter that takes in a JSON object and returns out a JSON sorted object
 
