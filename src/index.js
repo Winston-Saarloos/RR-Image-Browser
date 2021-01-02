@@ -262,18 +262,48 @@ async function loadImagesOntoPage() {
 
     var userId = await getUserId(username);
     var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
-    //document.getElementById("userId").innerHTML = userId;
-    //document.getElementById("totalPhotos").innerHTML = userPhotoLibrary.length;
+
+    // Apply Filters
+    var filterValues = await swapFilterValuesWithIds();
+    var newFilteredUserPhotoLibrary = [];
+    //console.log(filterValues);
+
+    // for each image
+    userPhotoLibrary.forEach(image => {
+        // for each filter item (verify image has the corret criteria)
+        filterValues.forEach(filter => {
+            var filterParts = filter.split("|");
+            console.log(filterParts);
+
+            switch (filterParts[0]) {
+                case 'A':
+                    // Activity
+                    // Example Value: A|GoldenTrophy
+                    console.log('Image Room ID: ' + image.RoomId);
+                    console.log('Filter Criteria: ' + filterParts[1]);
+                    console.log(image.RoomId == filterParts[1]);
+                    if (image.RoomId == filterParts[1]) {
+                        console.log("Image Match");
+                        newFilteredUserPhotoLibrary.push(image);
+                    }
+                    break;
+                default:
+                    //error occured log to console
+                    console.log("An error occured parsing filter type: " + filterType);
+            }
+        });
+    });
+
+    console.log('New Image Array: ');
+    console.log(newFilteredUserPhotoLibrary);
+
+    if (newFilteredUserPhotoLibrary.length > 0) {
+        userPhotoLibrary = newFilteredUserPhotoLibrary;
+    }
+
     var dateOrder = document.getElementById("btnOldestToNewest");
-    //console.log("normal");
-    //console.log(userPhotoLibrary);
-    //console.log(dateOrder.value);
-
-
     if (dateOrder.value == "1") { // Oldest to Newest
         userPhotoLibrary = userPhotoLibrary.reverse();
-        //console.log("Reversed");
-        //console.log(userPhotoLibrary);
     }
 
     while(imageDiv.firstChild) { 
@@ -320,9 +350,9 @@ async function getMasterLists(userPhotoLibrary) {
             eventUniqueIdList.push(image.PlayerEventId);
         };
     });
-    console.log(activityUniqueIdList);
-    console.log(playerUniqueIdList);
-    console.log(eventUniqueIdList);
+    //console.log(activityUniqueIdList);
+    //console.log(playerUniqueIdList);
+    //console.log(eventUniqueIdList);
 }
 
 async function loadImagesIntoPage(userPhotoLibrary) {
@@ -557,6 +587,9 @@ function togglePlayerFilter() {
 
 function deleteFilterCriteriaItem(criteriaId) {
     removeElement(criteriaId);
+    const criteriaDisplay = document.getElementById('currentFilterCriteria');
+    var count = criteriaDisplay.childElementCount;
+    updateFilterCriteriaDisplay(count);
 }
 
 function removeElement(id) {
@@ -564,19 +597,65 @@ function removeElement(id) {
     return elem.parentNode.removeChild(elem);
 }
 
-function addFilterCriteriaItem(filterCriteriaText, filterCriteriaValue){
+function addActivityCriteria() {
+    // Button
+    const activityButton = document.getElementById('activityFilterToggleButton');
+    const criteriaText = activityButton.innerText;
+    // Textbox value
+    const activityTextbox = document.getElementById('txtFilterActivityName');
+    const criteriaValue = activityTextbox.value;
+
+    const errorBox = document.getElementById('filterErrorText');
+    if (criteriaValue.length == 0) {
+        if (errorBox) {
+            errorBox.classList.remove("displayNone");
+            errorBox.innerText = "Error: Room/Activity name cannot be blank! Please enter a room/activity name!";
+            return;
+        }
+    }
+    errorBox.classList.add("displayNone");
+    addFilterCriteriaItem(criteriaText, criteriaValue, 1);
+}
+
+function addFilterCriteriaItem(filterCriteriaText, filterCriteriaValue, filterCriteriaType){
     const criteriaDisplay = document.getElementById('currentFilterCriteria');
     var count = criteriaDisplay.childElementCount;
+    var filterString = ''; // Function that returns this
+
+    switch(filterCriteriaType) {
+        case 1:
+            // Filter by Activity
+            // Example Value: A|GoldenTrophy
+            if (filterCriteriaText === "In:"){
+                filterString = 'A|' + filterCriteriaValue;
+            } else if (filterCriteriaText === "Not in:"){
+                filterString = 'A!|' + filterCriteriaValue;
+            }
+            break;
+        default:
+            //error occured log to console
+            console.log("An error occured generating the filter string. FilterCriteriaType: " + filterCriteriaType);
+    }
+
+    if (checkForDuplicateFilterValues(filterString)) {
+        const errorBox = document.getElementById('filterErrorText');
+        errorBox.classList.remove("displayNone");
+        errorBox.innerText = "Error: This filter criteria item has already been added to the list.";
+        return;
+    }
+
+    count = count + 1
 
     // Creates the filter criteria item container
     const criteriaItem = document.createElement("div");
     criteriaItem.classList.add("criteriaItem");
     criteriaItem.setAttribute('id', 'filterCriteria' + count);
+    criteriaItem.setAttribute('filterValue', filterString);
 
     // Creates the div inside of the criteria item
     const criteriaItemText = document.createElement("div");
     criteriaItemText.classList.add("criteriaItemText");
-    criteriaItemText.innerText = filterCriteriaText + ': ' + filterCriteriaValue;
+    criteriaItemText.innerText = filterCriteriaText + ' ' + filterCriteriaValue;
     criteriaItem.appendChild(criteriaItemText);
 
     // Creates the 'X' on the filter criteria item
@@ -598,6 +677,84 @@ function updateFilterCriteriaDisplay(count) {
     const filterCriteriaCount = document.getElementById('filterCriteriaCount');
     filterCriteriaCount.innerText = 'Filter Criteria Used: ' + count + '/10';
 }
+
+function checkForDuplicateFilterValues(valueToAdd) {
+    var currentFilterCriteria = getFilterValues();
+    return currentFilterCriteria.includes(valueToAdd);
+}
+
+function getFilterValues() {
+    const criteriaDisplay = document.getElementById('currentFilterCriteria');
+    var filterItems = document.getElementsByClassName("criteriaItem");
+    var values = [];
+    for (i = 0; i < criteriaDisplay.childElementCount; i++) {
+        values.push(filterItems[i].getAttribute('filterValue'));
+    }
+    //console.log(values);
+    return values;
+}
+
+async function asyncForEach(array, callback) {
+    for (let index = 0; index < array.length; index++) {
+        await callback(array[index], index, array);
+    }
+}
+
+async function swapFilterValuesWithIds() {
+    var userInputValues = getFilterValues();
+    var newFilterArray = [];
+    console.log('Old Filter Array: ')
+    console.log(userInputValues);
+    //userInputValues.forEach(filter async => {
+    for (const filter of userInputValues) {
+        var filterParts = filter.split("|");
+        var filterType = filterParts[0];
+        var filterValue = filterParts[1];
+
+        console.log("Filter Parts: " + filterParts);
+
+        switch (filterType) {
+            case 'A':
+                // Activity
+                // Example Value: A|GoldenTrophy
+                //console.log("Activity");
+                var activityData = await getActivityIdFromName(filterValue);
+                newFilterArray.push(filterType + '|' + activityData.RoomId);
+                break;
+
+            default:
+                //error occured log to console
+                console.log("An error occured parsing filter type: " + filterType);
+        }
+    };
+    return newFilterArray;
+}
+
+async function test1 () {
+    
+}
+
+async function getActivityIdFromName(activityName) {
+    var url = 'https://api.rec.net/roomserver/rooms?name=' + activityName;
+
+    return new Promise(function (resolve, reject) {
+        axios.get(url)
+            .then(function (response) {
+                // handle success
+                resolve(response.data);
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+                reject(error);
+            })
+            .then(function () {
+                // always executed
+            });
+    });
+}
+
+
 
 // Function for each filter that takes in a JSON object and returns out a JSON sorted object
 

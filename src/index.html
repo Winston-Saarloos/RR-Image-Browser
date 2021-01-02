@@ -35,7 +35,10 @@
     </form>
   </nav>
   <div class="mainFilterContainer container-fluid">
-    <div id="filterCategoryContainer" class="filterCategoryContainer row">
+    <div class="row col-md displayNone" id="filterErrorText">
+      Error: Why is this shown right now?
+    </div>
+    <div id="filterCategoryContainer" class="filterCategoryContainer row displayNone">
       <div class="filterSubCategoryContainer col-7">
         <div class="subCategory container-fluid">
           <div class="criteriaTitle row">
@@ -44,7 +47,7 @@
           <div class="criteriaCollection row">
             <div class="col filterControl" align="center">
               <button id="activityFilterToggleButton" class="btn toggleFilter"
-                onclick="toggleActivityFilter(); return false;">In</button>
+                onclick="toggleActivityFilter(); return false;">In: </button>
             </div>
             <div class="col-6 filterControl" align="center" style="color:white;">
               <div class="input-group">
@@ -52,11 +55,11 @@
                   <span class="input-group-text" id="basic-addon1">^</span>
                 </div>
                 <input class="form-control mr-sm-2" type="text" placeholder="Room/Activity Name"
-                  aria-label="Rec Room Activity/Room Name" id="txtFilterActivityName" value="">
+                  aria-label="Rec Room Activity/Room Name" id="txtFilterActivityName" value="RecCenter">
               </div>
             </div>
             <div class="col filterControl" align="center">
-              <button class="btn btn-success" onclick="console.log('Add button clicked'); return false;">Add
+              <button class="btn btn-success" onclick="addActivityCriteria(); return false;">Add
                 Filter</button>
             </div>
           </div>
@@ -76,29 +79,11 @@
                   <span class="input-group-text" id="filterUserTextbox">@</span>
                 </div>
                 <input class="form-control mr-sm-2" type="text" placeholder="RR username" aria-label="@ RecNet Username"
-                  id="txtFilterUser" value="">
+                  id="txtFilterUser" >
               </div>
             </div>
             <div class="col filterControl" align="center">
-              <button class="btn btn-success" onclick="console.log('Add button clicked'); return false;">Add
-                Filter</button>
-            </div>
-          </div>
-        </div>
-        <div class="subCategory container-fluid">
-          <div class="criteriaTitle row">
-            Another Category:
-          </div>
-          <div class="criteriaCollection row">
-            <div class="col" align="center">
-              <button class="btn toggleFilter"
-                onclick="console.log('Add button clicked'); return false;">Contains</button>
-            </div>
-            <div class="col-6 filterControl" align="center">
-              <input class="form-control mr-sm-2" type="text" placeholder="@" aria-label="@ RecNet Username">
-            </div>
-            <div class="col filterControl" align="center">
-              <button class="btn btn-success" onclick="addFilterCriteriaItem('bogus', 'text'); return false;">Add
+              <button class="btn btn-success" onclick="getFilterValues(); return false;//addActivityCriteria(); return false;">Add
                 Filter</button>
             </div>
           </div>
@@ -107,22 +92,6 @@
       <div class="filterVisualArea col-5">
         Current Filter Criteria:
         <div id="currentFilterCriteria" class="container-fluid">
-          <div class="criteriaItem" id="filterCriteria1">
-            <div class="criteriaItemText">Contains User: Boethiah</div>
-            <div class="criteriaRemove" onclick="deleteFilterCriteriaItem('filterCriteria1'); return false;"> X </div>
-          </div>
-          <div class="criteriaItem">
-            <div class="criteriaItemText">Does Not Contain User: Rocko</div>
-            <div class="criteriaRemove"> X </div>
-          </div>
-          <div class="criteriaItem">
-            <div class="criteriaItemText">In Activity: Rec Center</div>
-            <div class="criteriaRemove"> X </div>
-          </div>
-          <div class="criteriaItem">
-            <div class="criteriaItemText">During: 11/20/2020 - 12/29/2020</div>
-            <div class="criteriaRemove"> X </div>
-          </div>
         </div>
         <div id="filterCriteriaCountContainer">
           <p id="filterCriteriaCount">Filter Criteria used: 0/10</p>
@@ -186,7 +155,7 @@
         </div>
         <div class="modal-body">
           <div class="container-fluid imagePanel" style="display: flex;"">
-            <img src="" id=" imageDisplay" style="height: auto; width: 100%;">
+            <img src="" id="imageDisplay" style="height: auto; width: 100%;">
           </div>
           <div class="container-fluid imageDetails" style="display: flex; flex-direction: column;">
             <div class="imageDetailLine">
