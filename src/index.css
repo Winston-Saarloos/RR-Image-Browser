@@ -106,8 +106,9 @@ h2, p {
   }
 
 #imageDisplay {
-    min-height: 545px;
+    height: auto;
     background-color: rgb(42, 55, 83);
+    object-fit:contain;
 }
 
 .filtersDiv {
@@ -144,6 +145,10 @@ h2, p {
 .subCategory {
     border: solid 2px orange;
 } */
+
+.filterSubCategoryContainer {
+    margin-bottom: 10px;
+}
 
 #expandCollapseFiltersButton {
     margin-top: 0;
@@ -257,4 +262,19 @@ a:active {
     color:crimson;
     font-size: large;
     font-weight: 500;
+}
+
+#btnOldestToNewest {
+    margin-right: 10px;
+}
+
+#imageResultNumber {
+    color: white;
+    font-size: 1.3em;
+    margin-left: auto;
+    margin-right: 10px;
+}
+
+#txtUsername {
+    min-width: 300px;
 }

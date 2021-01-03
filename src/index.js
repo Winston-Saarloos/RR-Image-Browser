@@ -6,6 +6,7 @@ const Path = require('path');
 const { shell } = require('electron');
 const { isNullOrUndefined } = require('util');
 const open = require('open');
+var moment = require('moment');
 //const sleep = require('util').promisify(setTimeout);
 // Electron-Store for saving preferences
 var userAccountId = 0;
@@ -68,6 +69,9 @@ async function getRoomInfo(roomId) {
     var url = 'https://api.rec.net/roomserver/rooms/bulk?Id=' + roomId;
 
     return new Promise(function (resolve, reject) {
+        if (!roomId) {
+            resolve('null');
+        }
 
         // https://accounts.rec.net/account?username=rocko
         axios.get(url)
@@ -107,33 +111,8 @@ async function getUsernameFromId(listOfUserIds) {
             .then(function (response) {
                 // handle success
                 //return response.data.accountId;
-                console.log(response.data);
+                //console.log(response.data);
                 resolve(response.data);
-            })
-            .catch(function (error) {
-                // handle error
-                console.log(error);
-                reject(error);
-            })
-            .then(function () {
-                // always executed
-            });
-    });
-}
-
-// Function takes in a RecNet Display name and converts it to a RecNet user ID.
-async function getUserId(recNetDisplayName) {
-    var url = 'https://accounts.rec.net/account?username=' + recNetDisplayName;
-
-    return new Promise(function (resolve, reject) {
-
-        // https://accounts.rec.net/account?username=rocko
-        axios.get(url)
-            .then(function (response) {
-                // handle success
-                //console.log('Successfully retrieved USER_ID (' + response.data.accountId + ') for user ' + recNetDisplayName);
-                //return response.data.accountId;
-                resolve(response.data.accountId);
             })
             .catch(function (error) {
                 // handle error
@@ -238,7 +217,7 @@ function writeJsonFileToFolder(path, fileData, fileName, userId) {
 
 function toggleButtonOldestNewest() {
     var button = document.getElementById("btnOldestToNewest");
-    
+
     if (button) {
         if (button.value === "1") {
             button.value = "0";
@@ -254,9 +233,9 @@ async function loadImagesOntoPage() {
     var username = document.getElementById("txtUsername").value;
     var imageDiv = document.getElementById("grid");
     if (username === "") {
-        while(imageDiv.firstChild) { 
-            imageDiv.removeChild(imageDiv.firstChild); 
-        } 
+        while (imageDiv.firstChild) {
+            imageDiv.removeChild(imageDiv.firstChild);
+        }
         return;
     }
 
@@ -269,36 +248,94 @@ async function loadImagesOntoPage() {
     //console.log(filterValues);
 
     // for each image
-    userPhotoLibrary.forEach(image => {
-        // for each filter item (verify image has the corret criteria)
-        filterValues.forEach(filter => {
-            var filterParts = filter.split("|");
-            console.log(filterParts);
+    if (filterValues.length != 0) {
+        userPhotoLibrary.forEach(image => {
+            // for each filter item (verify image has the corret criteria)
+            var imageMustMatchAllFilters = true; // TO DO MAKE THIS TOGGLEABLE ON THE UI
+            var imageMatchesAllFilterCriteria = true;
 
-            switch (filterParts[0]) {
-                case 'A':
-                    // Activity
-                    // Example Value: A|GoldenTrophy
-                    console.log('Image Room ID: ' + image.RoomId);
-                    console.log('Filter Criteria: ' + filterParts[1]);
-                    console.log(image.RoomId == filterParts[1]);
-                    if (image.RoomId == filterParts[1]) {
-                        console.log("Image Match");
-                        newFilteredUserPhotoLibrary.push(image);
-                    }
-                    break;
-                default:
-                    //error occured log to console
-                    console.log("An error occured parsing filter type: " + filterType);
+            var imageMatchedAtleastOneCriteria = false;
+            filterValues.forEach(filter => {
+                var filterParts = filter.split("|");
+
+                switch (filterParts[0]) {
+                    case 'A':
+                        // Activity
+                        // Example Value: A|GoldenTrophy
+                        if (image.RoomId == filterParts[1]) {
+                            imageMatchedAtleastOneCriteria = true;
+                        } else if (imageMustMatchAllFilters) {
+                            imageMatchesAllFilterCriteria = false;
+                        }
+                        break;
+
+                    case '!A':
+                        // Not Activity
+                        // Example Value: !A|GoldenTrophy
+                        if (image.RoomId != filterParts[1]) {
+                            imageMatchedAtleastOneCriteria = true;
+                        } else if (imageMustMatchAllFilters) {
+                            imageMatchesAllFilterCriteria = false;
+                        }
+                        break;
+
+                    case 'P':
+                        // Person
+                        // Example Value: P|Boethiah
+                        //console.log(image.TaggedPlayerIds.length);
+                        if (image.TaggedPlayerIds.length === 0) {
+                            imageMatchesAllFilterCriteria = false;
+                            break;
+                        }
+
+                        var taggedPlayers = [];
+                        image.TaggedPlayerIds.forEach(player => { taggedPlayers.push(player) });
+                        if ((taggedPlayers.findIndex((player) => player == filterParts[1]) > -1) && imageMatchesAllFilterCriteria) {
+                            imageMatchedAtleastOneCriteria = true;
+                            //newFilteredUserPhotoLibrary.push(image);
+                        } else if (imageMustMatchAllFilters) {
+                            imageMatchesAllFilterCriteria = false;
+                        }
+                        break;
+
+                    case '!P':
+                        // Not Person
+                        // Example Value: !P|Boethiah
+                        if (image.TaggedPlayerIds.length === 0) {
+                            imageMatchesAllFilterCriteria = false;
+                            break;
+                        }
+
+                        var taggedPlayers = [];
+                        image.TaggedPlayerIds.forEach(player => { taggedPlayers.push(player) });
+                        if (!(taggedPlayers.findIndex((player) => player == filterParts[1]) > -1) && imageMatchesAllFilterCriteria) {
+                            imageMatchedAtleastOneCriteria = true;
+                            //newFilteredUserPhotoLibrary.push(image);
+                        } else if (imageMustMatchAllFilters) {
+                            imageMatchesAllFilterCriteria = false;
+                        }
+                        break;
+
+                    default:
+                        //error occured log to console
+                        console.log("An error occured parsing filter type: " + filterType);
+                }
+            });
+            if (imageMustMatchAllFilters && imageMatchesAllFilterCriteria) {
+                newFilteredUserPhotoLibrary.push(image);
+            } else if (!(imageMustMatchAllFilters) && imageMatchedAtleastOneCriteria) {
+                newFilteredUserPhotoLibrary.push(image);
             }
         });
-    });
-
-    console.log('New Image Array: ');
-    console.log(newFilteredUserPhotoLibrary);
+    };
 
     if (newFilteredUserPhotoLibrary.length > 0) {
         userPhotoLibrary = newFilteredUserPhotoLibrary;
+    }
+
+    const imageResults = document.getElementById('imageResultNumber');
+    if (imageResults) {
+        imageResults.innerText = 'Image Results: ' + userPhotoLibrary.length;
     }
 
     var dateOrder = document.getElementById("btnOldestToNewest");
@@ -318,7 +355,6 @@ async function loadImagesOntoPage() {
 }
 
 async function getMasterLists(userPhotoLibrary) {
-
     // Obtain Unique lists
     var activityUniqueIdList = [];
     var playerUniqueIdList = [];
@@ -377,12 +413,6 @@ async function loadImagesIntoPage(userPhotoLibrary) {
         divGridItem.setAttribute('data-target', '#imageDetailModal');
         divGridItem.setAttribute('onclick', 'loadDataImageDetailModal(' + userPhotoLibrary[i].Id + '); return false;');
         divGridItem.appendChild(img);
-
-        // var pImageLink = document.createElement("p");
-        // pImageLink.classList.add("imageLink");
-        // pImageLink.innerText = "https://rec.net/image/" + userPhotoLibrary[i].Id;
-        // pImageLink.setAttribute("onclick", "openImageInBrowser(" + userPhotoLibrary[i].Id +"); return false;");
-        // divGridItem.appendChild(pImageLink);
 
         var src = document.getElementById("grid");
         src.appendChild(divGridItem); // append Div
@@ -453,6 +483,9 @@ async function loadDataImageDetailModal(imageId) {
     var modalImageCommentCount = document.getElementById("imageCommentCount");
     modalImageCommentCount.innerText = LOADING_TEXT;
 
+    var modalImageDate = document.getElementById("imageDate");
+    modalImageDate.innerText = LOADING_TEXT;
+
     var modalImageRnLink = document.getElementById("imageRecNetLink");
     modalImageRnLink.innerText = LOADING_TEXT;
     
@@ -467,9 +500,6 @@ async function loadDataImageDetailModal(imageId) {
             break;
         }
     };
-
-    console.log("Image Data: ");
-    console.log(imageData);
 
     // Image Display
     if (modalDisplayImage) {
@@ -490,6 +520,8 @@ async function loadDataImageDetailModal(imageId) {
         if (roomData.length >= 1) {
             var szActivityName = roomData[0].Name;
             modalImageActivityName.innerText = szActivityName;
+        } else if (roomData === 'null') {
+            modalImageActivityName.innerText = 'Null';
         } else {
             modalImageActivityName.innerText = "Unavailable, room is not public."
         }
@@ -534,6 +566,12 @@ async function loadDataImageDetailModal(imageId) {
     if (modalImageCommentCount) {
         var szCommentCount = imageData.CommentCount;
         modalImageCommentCount.innerText = szCommentCount;
+    }
+
+    // Image Date
+    if (modalImageDate) {
+        var szDate = imageData.CreatedAt;
+        modalImageDate.innerText = moment(szDate).format('MMMM Do YYYY, h:mm a') + ' (' + moment(szDate, "YYYYMMDD").fromNow() + ')';
     }
 
     // RN Image Link
@@ -597,6 +635,26 @@ function removeElement(id) {
     return elem.parentNode.removeChild(elem);
 }
 
+function addPlayerCriteria() {
+    // Button
+    const playerButton = document.getElementById('playerFilterToggleButton');
+    const criteriaText = playerButton.innerText;
+    // Textbox value
+    const playerTextbox = document.getElementById('txtFilterUser');
+    const criteriaValue = playerTextbox.value;
+
+    const errorBox = document.getElementById('filterErrorText');
+    if (criteriaValue.length == 0) {
+        if (errorBox) {
+            errorBox.classList.remove("displayNone");
+            errorBox.innerText = "Error: Player name cannot be blank! Please enter a Player name!";
+            return;
+        }
+    }
+    errorBox.classList.add("displayNone");
+    addFilterCriteriaItem(criteriaText, criteriaValue, 2);
+}
+
 function addActivityCriteria() {
     // Button
     const activityButton = document.getElementById('activityFilterToggleButton');
@@ -620,6 +678,15 @@ function addActivityCriteria() {
 function addFilterCriteriaItem(filterCriteriaText, filterCriteriaValue, filterCriteriaType){
     const criteriaDisplay = document.getElementById('currentFilterCriteria');
     var count = criteriaDisplay.childElementCount;
+
+    if (count === 10) {
+        const errorBox = document.getElementById('filterErrorText');
+        if (errorBox) {
+            errorBox.classList.remove("displayNone");
+            errorBox.innerText = "Error: Max criteria limit reached!";
+            return;
+        }
+    }
     var filterString = ''; // Function that returns this
 
     switch(filterCriteriaType) {
@@ -629,9 +696,20 @@ function addFilterCriteriaItem(filterCriteriaText, filterCriteriaValue, filterCr
             if (filterCriteriaText === "In:"){
                 filterString = 'A|' + filterCriteriaValue;
             } else if (filterCriteriaText === "Not in:"){
-                filterString = 'A!|' + filterCriteriaValue;
+                filterString = '!A|' + filterCriteriaValue;
             }
             break;
+
+        case 2:
+            // Filter by Player
+            // Example Value: P|Rocko
+            if (filterCriteriaText === "Contains:"){
+                filterString = 'P|' + filterCriteriaValue;
+            } else if (filterCriteriaText === "Does not contain:"){
+                filterString = '!P|' + filterCriteriaValue;
+            }
+            break;
+
         default:
             //error occured log to console
             console.log("An error occured generating the filter string. FilterCriteriaType: " + filterCriteriaType);
@@ -694,32 +772,44 @@ function getFilterValues() {
     return values;
 }
 
-async function asyncForEach(array, callback) {
-    for (let index = 0; index < array.length; index++) {
-        await callback(array[index], index, array);
-    }
-}
-
 async function swapFilterValuesWithIds() {
     var userInputValues = getFilterValues();
     var newFilterArray = [];
-    console.log('Old Filter Array: ')
-    console.log(userInputValues);
+    //console.log('Old Filter Array: ')
+    //console.log(userInputValues);
     //userInputValues.forEach(filter async => {
     for (const filter of userInputValues) {
         var filterParts = filter.split("|");
         var filterType = filterParts[0];
         var filterValue = filterParts[1];
 
-        console.log("Filter Parts: " + filterParts);
-
         switch (filterType) {
             case 'A':
                 // Activity
                 // Example Value: A|GoldenTrophy
-                //console.log("Activity");
                 var activityData = await getActivityIdFromName(filterValue);
                 newFilterArray.push(filterType + '|' + activityData.RoomId);
+                break;
+            
+            case '!A':
+                // !Activity
+                // Example Value: !A|GoldenTrophy
+                var activityData = await getActivityIdFromName(filterValue);
+                newFilterArray.push(filterType + '|' + activityData.RoomId);
+                break;
+
+            case 'P':
+                // Player
+                // Example Value: P|Boethiah
+                var playerId = await getUserId(filterValue);
+                newFilterArray.push(filterType + '|' + playerId);
+                break;
+
+            case '!P':
+                // Not Player
+                // Example Value: !P|Boethiah
+                var playerId = await getUserId(filterValue);
+                newFilterArray.push(filterType + '|' + playerId);
                 break;
 
             default:
@@ -730,8 +820,29 @@ async function swapFilterValuesWithIds() {
     return newFilterArray;
 }
 
-async function test1 () {
-    
+// Function takes in a RecNet Display name and converts it to a RecNet user ID.
+async function getUserId(recNetDisplayName) {
+    var url = 'https://accounts.rec.net/account?username=' + recNetDisplayName;
+
+    return new Promise(function (resolve, reject) {
+
+        // https://accounts.rec.net/account?username=rocko
+        axios.get(url)
+            .then(function (response) {
+                // handle success
+                //console.log('Obtained User ID!');
+                //return response.data.accountId;
+                resolve(response.data.accountId);
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+                reject(error);
+            })
+            .then(function () {
+                // always executed
+            });
+    });
 }
 
 async function getActivityIdFromName(activityName) {

@@ -1,6 +1,6 @@
 {
   "name": "rr-image-browser",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "description": "Adding bonus functionality to Rec.net photo library.",
   "main": "main.js",
   "scripts": {
@@ -34,6 +34,7 @@
     "electron-updater": "^4.3.5",
     "fs": "0.0.1-security",
     "jquery": "^3.5.1",
+    "moment": "^2.29.1",
     "open": "^7.3.0",
     "path": "^0.12.7",
     "popper.js": "^1.16.1",
