@@ -245,7 +245,7 @@ async function loadImagesOntoPage() {
     // Apply Filters
     var filterValues = await swapFilterValuesWithIds();
     var newFilteredUserPhotoLibrary = [];
-    //console.log(filterValues);
+    console.log(filterValues);
 
     // for each image
     if (filterValues.length != 0) {
@@ -329,13 +329,20 @@ async function loadImagesOntoPage() {
         });
     };
 
-    if (newFilteredUserPhotoLibrary.length > 0) {
+    console.log(filterValues.length);
+    console.log(newFilteredUserPhotoLibrary.length);
+
+    if (filterValues.length > 0) {
         userPhotoLibrary = newFilteredUserPhotoLibrary;
     }
 
     const imageResults = document.getElementById('imageResultNumber');
     if (imageResults) {
-        imageResults.innerText = 'Image Results: ' + userPhotoLibrary.length;
+        if (userPhotoLibrary.length === 0) {
+            imageResults.innerText = 'No Images Found!';
+        } else {
+            imageResults.innerText = 'Image Results: ' + userPhotoLibrary.length;
+        }
     }
 
     var dateOrder = document.getElementById("btnOldestToNewest");
