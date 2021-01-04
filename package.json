@@ -26,6 +26,7 @@
     "@fortawesome/fontawesome-free": "^5.15.1",
     "axios": "^0.21.0",
     "bootstrap": "^4.5.3",
+    "custom-electron-titlebar": "^3.2.5",
     "delay": "^4.4.0",
     "electron-log": "^4.3.1",
     "electron-settings": "^4.0.2",

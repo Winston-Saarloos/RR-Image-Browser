@@ -1,8 +1,9 @@
 // https://www.tutorialspoint.com/electron/electron_file_handling.htm
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, Menu } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const ipcMain = require('electron').ipcMain;
 const log = require('electron-log');
+const path = require('path');
 
 //autoUpdater.allowPrerelease = true;
 autoUpdater.logger = log;
@@ -16,14 +17,17 @@ function createWindow () {
     height: 1080,
     minWidth: 1050,
     minHeight: 600,
+    frame: false,
     webPreferences: {
+      preload: path.join(__dirname, '/src/preload.js'),
+      enableRemoteModule: true,
       nodeIntegration: true
     }
   })
 
   win.loadFile('src/index.html')
   win.removeMenu()
-  //win.webContents.openDevTools()
+  win.webContents.openDevTools()
   //autoUpdater.checkForUpdatesAndNotify();
 }
 
