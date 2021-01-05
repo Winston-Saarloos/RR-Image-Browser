@@ -1,27 +1,12 @@
 const { electron, app, ipcRenderer } = require('electron');
 const axios = require('axios');
 const fs = require('fs');
-const Path = require('path');
-//var request = require('request');
 const { shell } = require('electron');
-const { isNullOrUndefined } = require('util');
 const open = require('open');
 var moment = require('moment');
-//const sleep = require('util').promisify(setTimeout);
 // Electron-Store for saving preferences
-var userAccountId = 0;
 
-//var filePath = app.getPath("userData");
-var INDEVELOPMENTMODE = true;
-//var filePath = 'C:/RNC/';
-//var appDataPath = './appData/';
-//var dataCache = 'cache/';
-
-//let photoSync = require('../appdata/photosync/ImageSyncData.json');
-var inProgress = false;
-var USER_ID = 0;
-var PAGE_NUM = 0;
-
+// Auto Update Related Function
 const version = document.getElementById('versionNumber');    
 ipcRenderer.send('app_version');
 ipcRenderer.on('app_version', (event, arg) => {
@@ -64,6 +49,7 @@ ipcRenderer.on('message', function(event, text) {
   container.appendChild(message);
 })
 
+// Takes in a room id and returns out data for that room
 // https://api.rec.net/roomserver/rooms/bulk?Id=12028058
 async function getRoomInfo(roomId) {
     var url = 'https://api.rec.net/roomserver/rooms/bulk?Id=' + roomId;
@@ -73,7 +59,6 @@ async function getRoomInfo(roomId) {
             resolve('null');
         }
 
-        // https://accounts.rec.net/account?username=rocko
         axios.get(url)
             .then(function (response) {
                 // handle success
@@ -90,6 +75,7 @@ async function getRoomInfo(roomId) {
     });
 }
 
+// Pass in an array of user IDs and receive back out user information
 // https://accounts.rec.net/account/bulk
 // Form Data = ID Array
 async function getUsernameFromId(listOfUserIds) {
@@ -97,11 +83,8 @@ async function getUsernameFromId(listOfUserIds) {
 
     return new Promise(function (resolve, reject) {
         var formData = new FormData();
-
         listOfUserIds.forEach(item => formData.append("id", item));
 
-        console.log('Form Data: ' + formData);
-        // https://accounts.rec.net/account?username=rocko
         axios({
             method: 'post',
             url: apiUrl,
@@ -110,8 +93,6 @@ async function getUsernameFromId(listOfUserIds) {
         })
             .then(function (response) {
                 // handle success
-                //return response.data.accountId;
-                //console.log(response.data);
                 resolve(response.data);
             })
             .catch(function (error) {
@@ -125,39 +106,72 @@ async function getUsernameFromId(listOfUserIds) {
     });
 }
 
-// Function takes a userID and returns back a user's entire public photo library
-async function getUserPublicPhotoLibrary(userId) {
-    var url = 'https://api.rec.net/api/images/v4/player/' + userId + '?skip=0&take=50000'
+// Toggles text/value of button for toggling between displaying user feed vs user photo library
+function toggleButtonFeedLibrary() {
+    var button = document.getElementById("btnFeedLibrary");
 
-        return new Promise(function (resolve, reject) {
-
-            // https://accounts.rec.net/account?username=rocko
-            axios.get(url)
-                .then(function (response) {
-                    // handle success
-                    //console.log('Successfully retreived photos for USER_ID: '+ userId + ' Count: ' + response.data.length);
-                    //return response.data.accountId;
-                    resolve(response.data);
-                })
-                .catch(function (error) {
-                    // handle error
-                    console.log(error);
-                    reject(error);
-                })
-                .then(function () {
-                    // always executed
-                });
-        })
+    if (button) {
+        if (button.value === "1") {
+            button.value = "0";
+            button.innerText = "User Photo Feed";
+        } else {
+            button.value = "1";
+            button.innerText = "User Photo Library";
+        }
+    }
 }
 
-// function takes in a imageName and returns the image associated
+// Toggles text/value on form button for displaying newest to oldest or vice versa
+function toggleButtonOldestNewest() {
+    var button = document.getElementById("btnOldestToNewest");
+
+    if (button) {
+        if (button.value === "1") {
+            button.value = "0";
+            button.innerText = "Newest to Oldest";
+        } else {
+            button.value = "1";
+            button.innerText = "Oldest to Newest";
+        }
+    }
+}
+
+// Function takes a userID and returns back a user's entire public photo library
+async function getUserPublicPhotoLibrary(userId) {
+    var urlUserPhotos = 'https://api.rec.net/api/images/v4/player/' + userId + '?skip=0&take=100000';
+    var urlUserFeed = 'https://api.rec.net/api/images/v3/feed/player/' + userId + '?skip=0&take=100000';
+    var url = '';
+    var button = document.getElementById("btnFeedLibrary");
+
+    if (button.value === 1) {
+        url = urlUserPhotos;
+    } else {
+        url = urlUserFeed;
+    }
+
+    return new Promise(function (resolve, reject) {
+
+        axios.get(url)
+            .then(function (response) {
+                // handle success
+                resolve(response.data);
+            })
+            .catch(function (error) {
+                // handle error
+                console.log(error);
+                reject(error);
+            })
+            .then(function () {
+                // always executed
+            });
+    })
+}
+
+// function takes in a imageName and returns the associated image
 // returns image data (separate function for downloading)
 async function getImageData(imageName) {
-    console.log("Image Name: " + imageName);
     var IMAGE_URL = 'https://img.rec.net/' + imageName;
-    console.log("Image Name: " + IMAGE_URL);
 
-    // 'https://api.rec.net/api/images/v4/player/PLAYER_ID?skip=0&take=50000'
     axios.get(IMAGE_URL)
         .then(function (response) {
             // handle success
@@ -173,62 +187,7 @@ async function getImageData(imageName) {
         });
 }
 
-
-// Writes JSON data to a specific users folder based on the user's RR ID.
-function writeJsonFileToFolder(path, fileData, fileName, userId) {
-    let data = JSON.stringify(fileData);
-    var filePath = path + userId;
-    if (!fs.existsSync(filePath)) {
-        console.log("Creating cache folder for user: " + userId + ".");
-        fs.mkdirSync(filePath);
-    }
-    fs.writeFileSync(filePath + '/' + fileName, data);
-    // Update last sync time
-}
-
-//swap all functions to be generic and re useable
-
-// redo feed API function to be more generic
-
-//======================================================================
-// Image Download above
-//======================================================================
-// New sorting code for rendering images on the page
-
-// async function syncUserPhotoLibrary() {
-//     console.log("Running Sync...");
-//     var username = document.getElementById("txtUsername").value;
-//     var userId = await getUserId(username);
-//     var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
-
-//     writeJsonFileToFolder(appDataPath + dataCache, userPhotoLibrary,'publicImageLibrary.json', userId);
-
-//     console.log('Username: ' + username);
-    
-//     //console.log('User ID: ' + userId);
-//     document.getElementById("userId").innerHTML = userId;
-
-//     //console.log('User Photo Library Size: ' + userPhotoLibrary.length);
-//     document.getElementById("totalPhotos").innerHTML = userPhotoLibrary.length;
-
-//     //organizePhotosForDownload(userPhotoLibrary);
-//     readPhotoSyncJson(true, await userId);
-// }
-
-function toggleButtonOldestNewest() {
-    var button = document.getElementById("btnOldestToNewest");
-
-    if (button) {
-        if (button.value === "1") {
-            button.value = "0";
-            button.innerText = "Newest to Oldest";
-        } else {
-            button.value = "1";
-            button.innerText = "Oldest to Newest";
-        }
-    }
-}
-
+// Function processes filters and creates the UserPhotoLibrary object that will be displayed on the page
 async function loadImagesOntoPage() {
     var username = document.getElementById("txtUsername").value;
     var imageDiv = document.getElementById("grid");
@@ -292,7 +251,6 @@ async function loadImagesOntoPage() {
                         image.TaggedPlayerIds.forEach(player => { taggedPlayers.push(player) });
                         if ((taggedPlayers.findIndex((player) => player == filterParts[1]) > -1) && imageMatchesAllFilterCriteria) {
                             imageMatchedAtleastOneCriteria = true;
-                            //newFilteredUserPhotoLibrary.push(image);
                         } else if (imageMustMatchAllFilters) {
                             imageMatchesAllFilterCriteria = false;
                         }
@@ -310,7 +268,6 @@ async function loadImagesOntoPage() {
                         image.TaggedPlayerIds.forEach(player => { taggedPlayers.push(player) });
                         if (!(taggedPlayers.findIndex((player) => player == filterParts[1]) > -1) && imageMatchesAllFilterCriteria) {
                             imageMatchedAtleastOneCriteria = true;
-                            //newFilteredUserPhotoLibrary.push(image);
                         } else if (imageMustMatchAllFilters) {
                             imageMatchesAllFilterCriteria = false;
                         }
@@ -328,9 +285,6 @@ async function loadImagesOntoPage() {
             }
         });
     };
-
-    console.log(filterValues.length);
-    console.log(newFilteredUserPhotoLibrary.length);
 
     if (filterValues.length > 0) {
         userPhotoLibrary = newFilteredUserPhotoLibrary;
@@ -361,31 +315,25 @@ async function loadImagesOntoPage() {
     loadImagesIntoPage(userPhotoLibrary);
 }
 
+// Function that gets every User, Activity, and Event where a photo was taken.
 async function getMasterLists(userPhotoLibrary) {
     // Obtain Unique lists
     var activityUniqueIdList = [];
     var playerUniqueIdList = [];
     var eventUniqueIdList = [];
     userPhotoLibrary.forEach(image => {
-        //console.log(image);
         // Activity
         if ((!activityUniqueIdList.includes(image.RoomId)) && (image.RoomId)) {
             activityUniqueIdList.push(image.RoomId);
         };
-
         // Players
         if (image.TaggedPlayerIds.length > 0) {
             var listOfPlayers = image.TaggedPlayerIds;
-
             listOfPlayers.forEach(player => {
-                //console.log(player);
-                //activityUniqueIdList.push(image.RoomId);
                 if ((!playerUniqueIdList.includes(player)) && (player)) {
                     playerUniqueIdList.push(player);
                 };
             });
-            //console.log(image.TaggedPlayerIds.length);
-            //playerUniqueIdList.push(image.RoomId);
         };
 
         // Events
@@ -398,6 +346,7 @@ async function getMasterLists(userPhotoLibrary) {
     //console.log(eventUniqueIdList);
 }
 
+// Displays the iamges on the page in the div.  Uses lazy loading to only display images visible in the viewport
 async function loadImagesIntoPage(userPhotoLibrary) {
     var imageDiv = document.getElementById("grid");
     while (imageDiv.firstChild) {
@@ -426,7 +375,6 @@ async function loadImagesIntoPage(userPhotoLibrary) {
     }
 
     const targets = document.querySelectorAll('img');
-
     const lazyLoad = target => {
         let observer = {
             threshold: 1
@@ -451,11 +399,7 @@ async function loadImagesIntoPage(userPhotoLibrary) {
     targets.forEach(lazyLoad);
 };
 
-
-function openRecNetExternalLink(url){
-    shell.openExternal(url);
-}
-
+// Clears out the image src when the modal is opened and closed
 function clearImageSource() { // TODO figure out how to keep the image size so it doesnt jump up when the image loads in
     var modalDisplayImage = document.getElementById("imageDisplay");
     if (modalDisplayImage) {
@@ -463,6 +407,7 @@ function clearImageSource() { // TODO figure out how to keep the image size so i
     }
 }
 
+// Loads data into the image modal when a user clicks on an image
 async function loadDataImageDetailModal(imageId) {
     // Modal Elements
     const LOADING_TEXT = "Loading...";
@@ -589,11 +534,13 @@ async function loadDataImageDetailModal(imageId) {
     }
 }
 
+// Opens a recnet link in a user's default browser
 function openImageInBrowser(imageId) {
     var szUrl = "https://rec.net/image/" + imageId;
     open(szUrl);
 }
 
+// Toggles filter display button text when expanding and collapsing the filter panel
 function toggleFilterDisplay() {
     var btnToggleFilters = document.getElementById("expandCollapseFiltersButton");
     var filterContainer = document.getElementById("filterCategoryContainer");
@@ -608,6 +555,7 @@ function toggleFilterDisplay() {
     }
 }
 
+// Toggles text on Activity Filter button
 function toggleActivityFilter() {
     var btnActivity = document.getElementById("activityFilterToggleButton");
     if (btnActivity){
@@ -619,6 +567,7 @@ function toggleActivityFilter() {
     }
 }
 
+// Toggles text on Player filter button
 function togglePlayerFilter() {
     var btnPlayer = document.getElementById("playerFilterToggleButton");
     if (btnPlayer){
@@ -630,6 +579,7 @@ function togglePlayerFilter() {
     }
 }
 
+// Deletes a criteria item
 function deleteFilterCriteriaItem(criteriaId) {
     removeElement(criteriaId);
     const criteriaDisplay = document.getElementById('currentFilterCriteria');
@@ -637,11 +587,13 @@ function deleteFilterCriteriaItem(criteriaId) {
     updateFilterCriteriaDisplay(count);
 }
 
+// Removes element from parent element based on ID
 function removeElement(id) {
     var elem = document.getElementById(id);
     return elem.parentNode.removeChild(elem);
 }
 
+// Adds player criteria based on value in textbox and button value
 function addPlayerCriteria() {
     // Button
     const playerButton = document.getElementById('playerFilterToggleButton');
@@ -662,6 +614,7 @@ function addPlayerCriteria() {
     addFilterCriteriaItem(criteriaText, criteriaValue, 2);
 }
 
+// Adds activity criteria based on value in textbox an dbutton value
 function addActivityCriteria() {
     // Button
     const activityButton = document.getElementById('activityFilterToggleButton');
@@ -682,6 +635,7 @@ function addActivityCriteria() {
     addFilterCriteriaItem(criteriaText, criteriaValue, 1);
 }
 
+// Adds filter criteria item to visual filter criteria display on page
 function addFilterCriteriaItem(filterCriteriaText, filterCriteriaValue, filterCriteriaType){
     const criteriaDisplay = document.getElementById('currentFilterCriteria');
     var count = criteriaDisplay.childElementCount;
@@ -758,16 +712,19 @@ function addFilterCriteriaItem(filterCriteriaText, filterCriteriaValue, filterCr
     updateFilterCriteriaDisplay(count);
 }
 
+// Updates the count for total filter criteria used
 function updateFilterCriteriaDisplay(count) {
     const filterCriteriaCount = document.getElementById('filterCriteriaCount');
     filterCriteriaCount.innerText = 'Filter Criteria Used: ' + count + '/10';
 }
 
+// Checks for duplicate filter criteria and blocks if it is
 function checkForDuplicateFilterValues(valueToAdd) {
     var currentFilterCriteria = getFilterValues();
     return currentFilterCriteria.includes(valueToAdd);
 }
 
+// Gets the filter values from the filter visual display
 function getFilterValues() {
     const criteriaDisplay = document.getElementById('currentFilterCriteria');
     var filterItems = document.getElementsByClassName("criteriaItem");
@@ -775,10 +732,10 @@ function getFilterValues() {
     for (i = 0; i < criteriaDisplay.childElementCount; i++) {
         values.push(filterItems[i].getAttribute('filterValue'));
     }
-    //console.log(values);
     return values;
 }
 
+// Swaps the filter values entered by the user with actual room and player IDs
 async function swapFilterValuesWithIds() {
     var userInputValues = getFilterValues();
     var newFilterArray = [];
@@ -852,6 +809,7 @@ async function getUserId(recNetDisplayName) {
     });
 }
 
+// Gets activity/room ID from room name
 async function getActivityIdFromName(activityName) {
     var url = 'https://api.rec.net/roomserver/rooms?name=' + activityName;
 
@@ -871,26 +829,3 @@ async function getActivityIdFromName(activityName) {
             });
     });
 }
-
-
-
-// Function for each filter that takes in a JSON object and returns out a JSON sorted object
-
-// Room Info
-// https://api.rec.net/roomserver/rooms/bulk?Id=9515154
-
-// Image Comments
-//https://api.rec.net//api/images/v1/44549961/comments
-
-// Sorts
-
-// Sort Images by Date
-//  sortByDate = 1
-//  sortByPlayerNumber = 2
-//  sortByCommentAmount = 3
-//  sortByCheerAmount = 4
-// function sortPhotosBy (photoLibaray, sortType, mostNewestFirst) {
-
-// }
-
-// Searches

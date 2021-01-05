@@ -278,3 +278,7 @@ a:active {
 #txtUsername {
     min-width: 300px;
 }
+
+.feedOrLibrary {
+    margin-right: 10px;
+}
