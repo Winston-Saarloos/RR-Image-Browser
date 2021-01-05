@@ -143,7 +143,7 @@ async function getUserPublicPhotoLibrary(userId) {
     var url = '';
     var button = document.getElementById("btnFeedLibrary");
 
-    if (button.value === 1) {
+    if (button.value == 1) {
         url = urlUserPhotos;
     } else {
         url = urlUserFeed;
