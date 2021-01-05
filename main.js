@@ -28,7 +28,6 @@ function createWindow () {
   win.loadFile('src/index.html')
   win.removeMenu()
   win.webContents.openDevTools()
-  //autoUpdater.checkForUpdatesAndNotify();
 }
 
 app.whenReady().then(createWindow)
@@ -48,24 +47,6 @@ app.on('activate', () => {
 ipcMain.on('app_version', (event) => {
   event.sender.send('app_version', { version: app.getVersion() });
 });
-
-// if (win) {
-//   autoUpdater.on('update-available', () => {
-//     win.webContents.send('update_available');
-//   });
-
-//   autoUpdater.on('update-downloaded', () => {
-//     win.webContents.send('update_downloaded');
-//   });
-
-//   ipcMain.on('restart_app', () => {
-//     win.quitAndInstall();
-//   });
-// }
-
-// app.on('ready', function()  {
-//   autoUpdater.checkForUpdatesAndNotify();
-// });
 
 //--------------------------------------------------
 // Auto Updates

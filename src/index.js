@@ -204,7 +204,6 @@ async function loadImagesOntoPage() {
     // Apply Filters
     var filterValues = await swapFilterValuesWithIds();
     var newFilteredUserPhotoLibrary = [];
-    console.log(filterValues);
 
     // for each image
     if (filterValues.length != 0) {
