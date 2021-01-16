@@ -369,6 +369,26 @@ async function loadImagesIntoPage(userPhotoLibrary) {
         divGridItem.setAttribute('onclick', 'loadDataImageDetailModal(' + userPhotoLibrary[i].Id + '); return false;');
         divGridItem.appendChild(img);
 
+        if (userPhotoLibrary[i].CheerCount >= 1) {
+            var divCheerContainer = document.createElement("div");
+            divCheerContainer.classList.add("imageCheerContainer");
+            divGridItem.appendChild(divCheerContainer);
+
+            var cheerIcon = document.createElement("img");
+            cheerIcon.classList.add("imageCheerIcon");
+            cheerIcon.setAttribute('src', './images/cheer.png');
+
+            // add image to container
+            divCheerContainer.appendChild(cheerIcon);
+
+            var cheerCount = document.createElement("div");
+            cheerCount.classList.add("imageCheerText");
+            cheerCount.innerText = userPhotoLibrary[i].CheerCount;
+
+            // add div to container
+            divCheerContainer.appendChild(cheerCount);
+        }
+
         var src = document.getElementById("grid");
         src.appendChild(divGridItem); // append Div
     }
@@ -495,7 +515,7 @@ async function loadDataImageDetailModal(imageId) {
             var szTaggedPlayers = "";
             var i = 0;
             playerInfoJson.forEach(item => {
-                if (i === playerInfoJson.length) {
+                if (i == playerInfoJson.length - 1) {
                     szTaggedPlayers = szTaggedPlayers + (item.displayName + " (@" + item.username + ") \r\n");
                 } else {
                     szTaggedPlayers = szTaggedPlayers + (item.displayName + " (@" + item.username + "), \r\n");

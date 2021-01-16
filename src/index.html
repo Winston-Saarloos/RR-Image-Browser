@@ -134,13 +134,20 @@
           </form>
         </div>
       </nav> -->
-
-    <!-- Left Sidebar -->
-    <div class="row" id="photoGrid">
-      <div class="grid container col-md" id="grid" style="height:auto;">
+<!-- Left Sidebar -->
+<div class="row" id="photoGrid">
+  <div class="grid container col-md" id="grid" style="height:auto;">
+    <div class="grid-item" type="button" data-toggle="modal" data-target="#imageDetailModal"
+      onclick="loadDataImageDetailModal(51072025); return false;">
+      <img data-src="https://img.rec.net/14c43cf8d5ae4f3b9ae7d536a8efe7e7.jpg?width=500" class="grid-image"
+        src="https://img.rec.net/14c43cf8d5ae4f3b9ae7d536a8efe7e7.jpg?width=500">
+      <div class="imageCheerContainer">
+        <img class="imageCheerIcon" src="./images/cheer.png">
+        <div class="imageCheerText">100</div>
       </div>
     </div>
   </div>
+</div>
 
   <!-- Image Detail Modal -->
   <div class="modal" id="imageDetailModal" tabindex="-1" role="dialog" aria-labelledby="imageDetailModal"

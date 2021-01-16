@@ -27,6 +27,7 @@ h5, p {
 .grid-item {
   display: flex;
   flex-direction: column;
+  position:relative;
   flex: auto;
   float: left;
   /*height: auto;
@@ -40,8 +41,32 @@ h5, p {
   background-color:rgb(65, 84, 121);
 }
 
+.imageCheerContainer {
+    z-index: 100;
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    font-size: 18px;
+}
+
+.imageCheerText {
+    color: white;
+    float: right;
+    margin: 5px;
+    font-weight: bold;
+    font-size: 20px;
+}
+
+.imageCheerIcon {
+    height: auto;
+    width: 30px;
+    margin-right: 2px;
+    margin-top: 3px;
+    background-color: transparent;
+}
+
 .grid-item:hover {
-    background-color:rgb(42, 55, 83);
+    border-color:rgb(255, 255, 255);
 }
 
 .imageLink {

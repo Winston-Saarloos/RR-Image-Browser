@@ -11,7 +11,7 @@ autoUpdater.logger.transports.file.level = 'info';
 log.info('App starting...');
 
 let win;
-function createWindow () {
+function createWindow() {
   win = new BrowserWindow({
     width: 1920,
     height: 1080,
@@ -25,9 +25,10 @@ function createWindow () {
     }
   })
 
+  //win.maximize();
   win.loadFile('src/index.html')
   win.removeMenu()
-  //win.webContents.openDevTools()
+  win.webContents.openDevTools()
 }
 
 app.whenReady().then(createWindow)
