@@ -1,6 +1,5 @@
 node_modules
 bower_components
-images
 appdata
 electron-builder.yml
 dist

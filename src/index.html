@@ -10,9 +10,9 @@
     integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
   <link rel="stylesheet" href="index.css">
 
-<script>let $ = require('jquery');</script>
-<script>require('popper.js');</script>
-<script>require('bootstrap');</script>
+  <script>let $ = require('jquery');</script>
+  <script>require('popper.js');</script>
+  <script>require('bootstrap');</script>
   <script>require('@fortawesome/fontawesome-free');</script>
 </head>
 
@@ -20,17 +20,21 @@
   <nav class="navbar navbar-expand navbar-dark bg-dark">
     <a class="navbar-brand" id="versionNumber" href="#">Unable to load version</a>
     <div id="imageResultNumber"></div>
-    <button type="button" class="btn btn-secondary feedOrLibrary" onClick="toggleButtonFeedLibrary(); return false;" id="btnFeedLibrary" value="0">User Photo Feed</button>
+    <button type="button" class="btn btn-secondary feedOrLibrary" onClick="toggleButtonFeedLibrary(); return false;"
+      id="btnFeedLibrary" value="0">User Photo Feed</button>
     <button type="button" class="btn btn-secondary oldestNewest" onClick="toggleButtonOldestNewest(); return false;"
       id="btnOldestToNewest" value="0">Newest to Oldest</button>
+    <a class="favoriteUser" href="#">
+      <img class="favoriteUserIcon" onmouseover="onMouseEnterFavBtn(this);" onmouseout="onMouseExitFavBtn(this);" src="./images/star_outline.png">
+    </a>
     <form class="form-inline my-2 my-lg-0">
-      <div class="input-group">
-        <div class="input-group-prepend">
-          <span class="input-group-text" id="basic-addon1">@</span>
-        </div>
-        <input class="form-control mr-sm-2" type="text" placeholder="RR username" aria-label="@ RecNet Username"
-          id="txtUsername" value="">
-      </div>
+        <input list="testItems" class="form-control mr-sm-2" type="text" placeholder="RR username"
+          aria-label="@ RecNet Username" id="txtUsername" value="">
+        <datalist id="testItems">
+          <option value="Rocko">Favorite</option>
+          <option value="Boethiah">Favorite</option>
+          <option value="Moloko.">Favorite</option>
+        </datalist>
       <!-- LuminousPanther617 -->
       <button class="btn btn-success my-2 my-sm-0" onclick="loadImagesOntoPage(); return false;">Load</button>
     </form>
@@ -80,7 +84,7 @@
                   <span class="input-group-text" id="filterUserTextbox">@</span>
                 </div>
                 <input class="form-control mr-sm-2" type="text" placeholder="RR username" aria-label="@ RecNet Username"
-                  id="txtFilterUser" >
+                  id="txtFilterUser">
               </div>
             </div>
             <div class="col filterControl" align="center">
@@ -134,123 +138,125 @@
           </form>
         </div>
       </nav> -->
-<!-- Left Sidebar -->
-<div class="row" id="photoGrid">
-  <div class="grid container col-md" id="grid" style="height:auto;">
-    <div class="grid-item" type="button" data-toggle="modal" data-target="#imageDetailModal"
-      onclick="loadDataImageDetailModal(51072025); return false;">
-      <img data-src="https://img.rec.net/14c43cf8d5ae4f3b9ae7d536a8efe7e7.jpg?width=500" class="grid-image"
-        src="https://img.rec.net/14c43cf8d5ae4f3b9ae7d536a8efe7e7.jpg?width=500">
-      <div class="imageCheerContainer">
-        <img class="imageCheerIcon" src="./images/cheer.png">
-        <div class="imageCheerText">100</div>
-      </div>
-    </div>
-  </div>
-</div>
-
-  <!-- Image Detail Modal -->
-  <div class="modal" id="imageDetailModal" tabindex="-1" role="dialog" aria-labelledby="imageDetailModal"
-    aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title">Image Details</h5>
-          <button type="button" class="close" onclick="clearImageSource(); return false;" data-dismiss="modal"
-            aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-        <div class="modal-body">
-          <div class="container-fluid imagePanel" style="display: flex;"">
-            <img src="" id="imageDisplay" style="height: auto; width: 100%;">
+    <!-- Left Sidebar -->
+    <div class="row" id="photoGrid">
+      <div class="grid container col-md" id="grid" style="height:auto;">
+        <div class="grid-item" type="button" data-toggle="modal" data-target="#imageDetailModal"
+          onclick="loadDataImageDetailModal(51072025); return false;">
+          <img data-src="https://img.rec.net/14c43cf8d5ae4f3b9ae7d536a8efe7e7.jpg?width=500" class="grid-image"
+            src="https://img.rec.net/14c43cf8d5ae4f3b9ae7d536a8efe7e7.jpg?width=500">
+          <div class="imageCheerContainer">
+            <img class="imageCheerIcon" src="./images/cheer.png">
+            <div class="imageCheerText">100</div>
           </div>
-          <div class="container-fluid imageDetails" style="display: flex; flex-direction: column;">
-            <div class="imageDetailLine">
-              <p class="imageDetailLineLabel">
-                Image ID:
-              </p>
-              <p id="imageId" class="imageDetailLineText">
-                Loading...
-              </p>
-            </div>
-            <div class="imageDetailLine">
-              <p class="imageDetailLineLabel">
-                Activity:
-              </p>
-              <p id="imageActivity" class="imageDetailLineText">
-                Loading...
-              </p>
-            </div>
-            <div class="imageDetailLine">
-              <p class="imageDetailLineLabel">
-                Event Name:
-              </p>
-              <p id="imageEvent" class="imageDetailLineText">
-                Loading...
-              </p>
-            </div>
-            <div class="imageDetailLine">
-              <p class="imageDetailLineLabel">
-                Tagged Players:
-              </p>
-              <p id="imageTaggedPlayers" class="imageDetailLineText">
-                Loading...
-              </p>
-            </div>
-            <div class="imageDetailLine">
-              <p class="imageDetailLineLabel">
-                Cheer Count:
-              </p>
-              <p id="imageCheerCount" class="imageDetailLineText">
-                Loading...
-              </p>
-            </div>
-            <div class="imageDetailLine">
-              <p class="imageDetailLineLabel">
-                Comment Count:
-              </p>
-              <p id="imageCommentCount" class="imageDetailLineText">
-                Loading...
-              </p>
-            </div>
-            <div class="imageDetailLine">
-              <p class="imageDetailLineLabel">
-                Date:
-              </p>
-              <p id="imageDate" class="imageDetailLineText">
-                Loading...
-              </p>
-            </div>
-            <div class="imageDetailLine">
-              <p class="imageDetailLineLabel">
-                RN Link:
-              </p>
-              <a href="#" onclick="" id="imageRecNetLink" class="imageDetailLineText">
-                Loading...
-              </a>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <p>Data may take a second to load. It runs as fast as REC.NET will allow. Several things are happening to make
-            this work =]</p>
         </div>
       </div>
     </div>
-  </div>
 
-  <div id="notification" class="hidden">
-    <p id="message"></p>
-    <button id="close-button" onClick="closeNotification()">
-      Close
-    </button>
-    <button id="restart-button" onClick="restartApp()" class="hidden">
-      Restart
-    </button>
+    <!-- Image Detail Modal -->
+    <div class="modal" id="imageDetailModal" tabindex="-1" role="dialog" aria-labelledby="imageDetailModal"
+      aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Image Details</h5>
+            <button type="button" class="close" onclick="clearImageSource(); return false;" data-dismiss="modal"
+              aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            <div class="container-fluid imagePanel" style="display: flex;"">
+            <img src="" id=" imageDisplay" style="height: auto; width: 100%;">
+            </div>
+            <div class="container-fluid imageDetails" style="display: flex; flex-direction: column;">
+              <div class="imageDetailLine">
+                <p class="imageDetailLineLabel">
+                  Image ID:
+                </p>
+                <p id="imageId" class="imageDetailLineText">
+                  Loading...
+                </p>
+              </div>
+              <div class="imageDetailLine">
+                <p class="imageDetailLineLabel">
+                  Activity:
+                </p>
+                <p id="imageActivity" class="imageDetailLineText">
+                  Loading...
+                </p>
+              </div>
+              <div class="imageDetailLine">
+                <p class="imageDetailLineLabel">
+                  Event Name:
+                </p>
+                <p id="imageEvent" class="imageDetailLineText">
+                  Loading...
+                </p>
+              </div>
+              <div class="imageDetailLine">
+                <p class="imageDetailLineLabel">
+                  Tagged Players:
+                </p>
+                <p id="imageTaggedPlayers" class="imageDetailLineText">
+                  Loading...
+                </p>
+              </div>
+              <div class="imageDetailLine">
+                <p class="imageDetailLineLabel">
+                  Cheer Count:
+                </p>
+                <p id="imageCheerCount" class="imageDetailLineText">
+                  Loading...
+                </p>
+              </div>
+              <div class="imageDetailLine">
+                <p class="imageDetailLineLabel">
+                  Comment Count:
+                </p>
+                <p id="imageCommentCount" class="imageDetailLineText">
+                  Loading...
+                </p>
+              </div>
+              <div class="imageDetailLine">
+                <p class="imageDetailLineLabel">
+                  Date:
+                </p>
+                <p id="imageDate" class="imageDetailLineText">
+                  Loading...
+                </p>
+              </div>
+              <div class="imageDetailLine">
+                <p class="imageDetailLineLabel">
+                  RN Link:
+                </p>
+                <a href="#" onclick="" id="imageRecNetLink" class="imageDetailLineText">
+                  Loading...
+                </a>
+              </div>
+            </div>
+          </div>
+          <div class="modal-footer">
+            <p>Data may take a second to load. It runs as fast as REC.NET will allow. Several things are happening to
+              make
+              this work =]</p>
+          </div>
+        </div>
+      </div>
     </div>
-    
+
+    <div id="notification" class="hidden">
+      <p id="message"></p>
+      <button id="close-button" onClick="closeNotification()">
+        Close
+      </button>
+      <button id="restart-button" onClick="restartApp()" class="hidden">
+        Restart
+      </button>
+    </div>
+
     <div id="messages" style="color: white;"></div>
     <script src="index.js"></script>
-    </body>
+</body>
+
 </html>

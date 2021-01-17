@@ -848,3 +848,11 @@ async function getActivityIdFromName(activityName) {
             });
     });
 }
+
+function onMouseEnterFavBtn(element) {
+    element.setAttribute('src', './images/star_solid.png');
+}
+
+function onMouseExitFavBtn(element) {
+    element.setAttribute('src', './images/star_outline.png');
+}
