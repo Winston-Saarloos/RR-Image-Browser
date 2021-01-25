@@ -19,6 +19,7 @@
 <body class="body">
   <nav class="navbar navbar-expand navbar-dark bg-dark">
     <a class="navbar-brand" id="versionNumber" href="#">Unable to load version</a>
+    <a href="../src/review.html">link text</a>
     <div id="imageResultNumber"></div>
     <button type="button" class="btn btn-secondary feedOrLibrary" onClick="toggleButtonFeedLibrary(); return false;"
       id="btnFeedLibrary" value="0">User Photo Feed</button>
@@ -28,12 +29,9 @@
       <img class="favoriteUserIcon" onmouseover="onMouseEnterFavBtn(this);" onmouseout="onMouseExitFavBtn(this);" src="./images/star_outline.png">
     </a>
     <form class="form-inline my-2 my-lg-0">
-        <input list="testItems" class="form-control mr-sm-2" type="text" placeholder="RR username"
-          aria-label="@ RecNet Username" id="txtUsername" value="">
-        <datalist id="testItems">
-          <option value="Rocko">Favorite</option>
-          <option value="Boethiah">Favorite</option>
-          <option value="Moloko.">Favorite</option>
+        <input list="favUsers" class="form-control mr-sm-2" type="text" placeholder="RR username"
+          aria-label="@ RecNet Username" id="txtUsername" value="" onclick="loadFavoriteList(); return false;">
+        <datalist id="favUsers">
         </datalist>
       <!-- LuminousPanther617 -->
       <button class="btn btn-success my-2 my-sm-0" onclick="loadImagesOntoPage(); return false;">Load</button>
@@ -167,7 +165,7 @@
           </div>
           <div class="modal-body">
             <div class="container-fluid imagePanel" style="display: flex;"">
-            <img src="" id=" imageDisplay" style="height: auto; width: 100%;">
+            <img src="" id="imageDisplay" style="height: auto; width: 100%;">
             </div>
             <div class="container-fluid imageDetails" style="display: flex; flex-direction: column;">
               <div class="imageDetailLine">

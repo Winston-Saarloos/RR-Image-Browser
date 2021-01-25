@@ -4,6 +4,9 @@ const fs = require('fs');
 const { shell } = require('electron');
 const open = require('open');
 var moment = require('moment');
+
+// Files where data is stored
+
 // Electron-Store for saving preferences
 
 // Auto Update Related Function
@@ -431,7 +434,7 @@ async function loadDataImageDetailModal(imageId) {
     // Modal Elements
     const LOADING_TEXT = "Loading...";
     var modalDisplayImage = document.getElementById("imageDisplay");
-    modalDisplayImage.src = ""; // Clear out image source so the old image is not there still
+    modalDisplayImage.setAttribute('src', ''); // Clear out image source so the old image is not there still
 
     var modalImageId = document.getElementById("imageId");
     modalImageId.innerText = LOADING_TEXT;
@@ -855,4 +858,38 @@ function onMouseEnterFavBtn(element) {
 
 function onMouseExitFavBtn(element) {
     element.setAttribute('src', './images/star_outline.png');
+}
+
+function loadFavoriteList() {
+    fs.readFile('./data/favorite.json', 'utf8', (err, favList) => {
+        if (err) {
+            console.log("File read failed:", err)
+            return
+        }
+
+        var fileData = JSON.parse(favList);
+
+        console.log('File data:', fileData);
+
+        for (var index in fileData.favoriteUsers) {
+            console.log(fileData.favoriteUsers[index].username);
+        };
+        // favList.forEach(user => {
+        //     // Skip Empty Entries
+        //     //if (user === "") continue;
+        //     const favUserDataList = document.getElementById('favUsers');
+        //     const favUserDataListItem = document.createElement("option");
+        //     favUserDataListItem.setAttribute('value', user);
+        //     favUserDataListItem.innerText = 'Favorite';
+        //     favUserDataList.appendChild(favUserDataListItem);
+        // });
+    });
+}
+
+function writeFavToFile() {
+
+}
+
+function removeFavFromFile() {
+
 }
