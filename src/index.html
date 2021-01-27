@@ -25,12 +25,12 @@
       id="btnFeedLibrary" value="0">User Photo Feed</button>
     <button type="button" class="btn btn-secondary oldestNewest" onClick="toggleButtonOldestNewest(); return false;"
       id="btnOldestToNewest" value="0">Newest to Oldest</button>
-    <a class="favoriteUser" href="#">
-      <img class="favoriteUserIcon" onmouseover="onMouseEnterFavBtn(this);" onmouseout="onMouseExitFavBtn(this);" src="./images/star_outline.png">
+    <a class="favoriteUser" href="#" onclick="writeFavToFile(); return false;">
+      <img class="favoriteUserIcon"  onmouseover="onMouseEnterFavBtn(this);" onmouseout="onMouseExitFavBtn(this);" src="./images/star_outline.png">
     </a>
     <form class="form-inline my-2 my-lg-0">
         <input list="favUsers" class="form-control mr-sm-2" type="text" placeholder="RR username"
-          aria-label="@ RecNet Username" id="txtUsername" value="" onclick="loadFavoriteList(); return false;">
+          aria-label="@ RecNet Username" id="txtUsername" value="Rocko">
         <datalist id="favUsers">
         </datalist>
       <!-- LuminousPanther617 -->

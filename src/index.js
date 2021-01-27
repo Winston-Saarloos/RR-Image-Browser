@@ -860,6 +860,8 @@ function onMouseExitFavBtn(element) {
     element.setAttribute('src', './images/star_outline.png');
 }
 
+exports.loadFavoriteList = loadFavoriteList;
+
 function loadFavoriteList() {
     fs.readFile('./data/favorite.json', 'utf8', (err, favList) => {
         if (err) {
@@ -868,26 +870,42 @@ function loadFavoriteList() {
         }
 
         var fileData = JSON.parse(favList);
-
-        console.log('File data:', fileData);
+        const favDataList = document.getElementById('favUsers');
+        while (favDataList.firstChild) {
+            favDataList.removeChild(favDataList.firstChild);
+        }
 
         for (var index in fileData.favoriteUsers) {
-            console.log(fileData.favoriteUsers[index].username);
+            console.log(fileData.favoriteUsers[index]);
+            const favOptionItem = document.createElement("option");
+            favOptionItem.setAttribute('value', fileData.favoriteUsers[index]);
+            favOptionItem.innerText = 'Favorite';
+            favDataList.appendChild(favOptionItem);
         };
-        // favList.forEach(user => {
-        //     // Skip Empty Entries
-        //     //if (user === "") continue;
-        //     const favUserDataList = document.getElementById('favUsers');
-        //     const favUserDataListItem = document.createElement("option");
-        //     favUserDataListItem.setAttribute('value', user);
-        //     favUserDataListItem.innerText = 'Favorite';
-        //     favUserDataList.appendChild(favUserDataListItem);
-        // });
     });
 }
 
 function writeFavToFile() {
-
+    var usernameTextbox = document.getElementById('txtUsername');
+    console.log(usernameTextbox.value);
+    if (usernameTextbox)
+    {
+        if (usernameTextbox.value != '') 
+        {
+            fs.readFile('./data/favorite.json', 'utf8', (err, favList) => {
+                if (err) {
+                    console.log("File read failed:", err)
+                    return
+                }
+                var txtUsername = document.getElementById('txtUsername');
+                var fileData = JSON.parse(favList);
+                if (!fileData.favoriteUsers.includes(txtUsername.value)){
+                    console.log('Value not already in favorites list.');
+                }
+                console.log(fileData.favoriteUsers);
+            });
+        }
+    }
 }
 
 function removeFavFromFile() {

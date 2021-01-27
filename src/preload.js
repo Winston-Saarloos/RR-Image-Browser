@@ -3,6 +3,7 @@
 // It has the same sandbox as a Chrome extension.
 const path = require('path');
 const url = require('url');
+const loadFav = require('./index');
 const customTitlebar = require('custom-electron-titlebar');
 
 window.addEventListener('DOMContentLoaded', () => {
@@ -11,6 +12,7 @@ window.addEventListener('DOMContentLoaded', () => {
     icon: url.format(path.join(__dirname, '/images', '/icon.png')),
   });
 
+  loadFav.loadFavoriteList();
 
   const replaceText = (selector, text) => {
     const element = document.getElementById(selector)
