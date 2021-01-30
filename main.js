@@ -26,7 +26,7 @@ function createWindow() {
   })
 
   //win.maximize();
-  win.loadFile('src/index.html')
+  win.loadFile('src/memories.html')
   win.removeMenu()
   win.webContents.openDevTools()
 }

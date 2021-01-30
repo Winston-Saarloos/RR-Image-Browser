@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+  <script>window.$ = window.jQuery = require('jquery');</script>
+  <link rel="stylesheet" href="./memories.css">
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+    integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+
+  <script>let $ = require('jquery');</script>
+  <script>require('popper.js');</script>
+  <script>require('bootstrap');</script>
+  <script>require('@fortawesome/fontawesome-free');</script>
+</head>
+
+<body>
+  <div id="pageBackground" class="backgroundColor">
+    <div class="enterYearPanel content">
+      <div class="usernameInput">
+        <form class="form-inline my-2 my-lg-0">
+          <input list="favUsers" class="form-control mr-sm-2" type="text" placeholder="RR username"
+            aria-label="@ RecNet Username" id="txtUsername" value="LuminousPanther617">
+          <!-- LuminousPanther617 -->
+          <button type="button" class="btn btn-success"
+            onClick="analyzePhotos(); return false;" id="btnFeedLibrary" value="0">Load</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script src="memories.js"></script>
+</body>
+</html>

@@ -4,9 +4,6 @@ const fs = require('fs');
 const { shell } = require('electron');
 const open = require('open');
 var moment = require('moment');
-
-// Files where data is stored
-
 // Electron-Store for saving preferences
 
 // Auto Update Related Function
@@ -871,8 +868,10 @@ function loadFavoriteList() {
 
         var fileData = JSON.parse(favList);
         const favDataList = document.getElementById('favUsers');
-        while (favDataList.firstChild) {
-            favDataList.removeChild(favDataList.firstChild);
+        if (favDataList) {
+            while (favDataList.firstChild) {
+                favDataList.removeChild(favDataList.firstChild);
+            }
         }
 
         for (var index in fileData.favoriteUsers) {
