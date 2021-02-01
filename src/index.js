@@ -872,15 +872,15 @@ function loadFavoriteList() {
             while (favDataList.firstChild) {
                 favDataList.removeChild(favDataList.firstChild);
             }
-        }
 
-        for (var index in fileData.favoriteUsers) {
-            console.log(fileData.favoriteUsers[index]);
-            const favOptionItem = document.createElement("option");
-            favOptionItem.setAttribute('value', fileData.favoriteUsers[index]);
-            favOptionItem.innerText = 'Favorite';
-            favDataList.appendChild(favOptionItem);
-        };
+            for (var index in fileData.favoriteUsers) {
+                console.log(fileData.favoriteUsers[index]);
+                const favOptionItem = document.createElement("option");
+                favOptionItem.setAttribute('value', fileData.favoriteUsers[index]);
+                favOptionItem.innerText = 'Favorite';
+                favDataList.appendChild(favOptionItem);
+            };    
+        }
     });
 }
 
