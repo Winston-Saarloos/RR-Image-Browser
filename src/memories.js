@@ -4,6 +4,7 @@ const fs = require('fs');
 const { shell } = require('electron');
 const open = require('open');
 const moment = require('moment');
+const anime = require('animejs');
 
 // Get photo data, calculate year options
 async function loadYearsToPage() {
@@ -98,33 +99,58 @@ async function getUserId(recNetDisplayName) {
 
 // Function will analyze photos and write data back to the user's disc
 async function analyzePhotos() {
-    var username = document.getElementById("txtUsername").value;
-    var userId = await getUserId(username);
-    var userPhotoLibrary = await getUserPhotos(userId, false);
-    var userPhotoFeed = await getUserPhotos(userId, true);
-
-    console.log(userId);
-
-    // Grabs only photos specific to the selected year
-    var newPhotoFeed = [];
-    userPhotoFeed.forEach((image) => {
-        if (moment(image.CreatedAt).isSame('2021-01-01', 'year')) {
-            newPhotoFeed.push(image);
-        } 
+    const txtUsername = document.getElementById('txtUsername');
+    var username = txtUsername.value;
+    
+    var yearCollection = ['2018','2019','2020', '2021'];
+    const yearSelectionBox = document.getElementById('yearSelectionContainer');
+    yearCollection.forEach((year) => {
+        if (yearSelectionBox) {
+            const singleYearContainer = document.createElement("div");
+            singleYearContainer.setAttribute('class', 'yearBtn');
+            singleYearContainer.innerText = year;
+            yearSelectionBox.appendChild(singleYearContainer);
+        }
     });
 
-    var newPhotoLibrary = [];
-    userPhotoLibrary.forEach((image) => {
-        if (moment(image.CreatedAt).isSame('2021-01-01', 'year')) {
-            newPhotoLibrary.push(image);
-        } 
+    document.getElementById("txtUsername").disabled = true;
+    document.getElementById("btnLoad").disabled = true;
+
+    let yearButtonAnimation = anime({
+        targets: '.yearBtn',
+        opacity: 1,
+        duration: 2000,
+        easing:'linear',
+        delay: anime.stagger(100)
     });
 
-    var totalPhotosShared = newPhotoLibrary.length;
-    var totalPhotosTaggedIn = newPhotoFeed.length;
-    console.log("Photo Feed: ")
-    console.log(newPhotoFeed.length);
+    yearButtonAnimation;
+    // var userId = await getUserId(username);
+    // var userPhotoLibrary = await getUserPhotos(userId, false);
+    // var userPhotoFeed = await getUserPhotos(userId, true);
 
-    console.log("Photo Library: ")
-    console.log(newPhotoLibrary.length);
+    // console.log(userId);
+
+    // // Grabs only photos specific to the selected year
+    // var newPhotoFeed = [];
+    // userPhotoFeed.forEach((image) => {
+    //     if (moment(image.CreatedAt).isSame('2021-01-01', 'year')) {
+    //         newPhotoFeed.push(image);
+    //     } 
+    // });
+
+    // var newPhotoLibrary = [];
+    // userPhotoLibrary.forEach((image) => {
+    //     if (moment(image.CreatedAt).isSame('2021-01-01', 'year')) {
+    //         newPhotoLibrary.push(image);
+    //     } 
+    // });
+
+    // var totalPhotosShared = newPhotoLibrary.length;
+    // var totalPhotosTaggedIn = newPhotoFeed.length;
+    // console.log("Photo Feed: ")
+    // console.log(newPhotoFeed.length);
+
+    // console.log("Photo Library: ")
+    // console.log(newPhotoLibrary.length);
 }

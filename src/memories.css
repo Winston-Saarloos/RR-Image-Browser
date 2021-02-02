@@ -101,8 +101,8 @@
 }
 
 .yearBtn {
-  border: 1px blue solid;
   font-family: 'Cutive Mono', monospace;
+  opacity: 0;
   color: white;
   font-weight: bold;
   font-size: 1.5rem;
