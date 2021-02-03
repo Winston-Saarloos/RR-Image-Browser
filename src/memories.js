@@ -8,40 +8,89 @@ const anime = require('animejs');
 
 // Get photo data, calculate year options
 async function loadYearsToPage() {
-    var username = document.getElementById("txtUsername").value;
-    var userId = await getUserId(username);
-    var userPhotoLibrary = await getUserPhotos(userId, false);
-    var userPhotoFeed = await getUserPhotos(userId, true);
+    try {
+        var usernameTextBox = document.getElementById("txtUsername");
+        var btnLoad = document.getElementById("btnLoad");
+        btnLoad.classList.add("is-loading");
 
-    console.log(userId);
-    //console.log(userPhotoLibrary);
-    //console.log("=========================================");
-    //console.log(userPhotoFeed);
-
-
-    // Creates a list of years for the user to choose from
-    var yearCollection = [];
-    userPhotoFeed.forEach((image) => {
-        var date = moment(image.CreatedAt).format("MM/DD/YYYY");
-        var year = moment(date).format("YYYY");
-        if (yearCollection.length == 0) {
-            yearCollection.push(year);
-        } else if (!yearCollection.includes(year)) {
-            yearCollection.push(year);
+        // Clear out old years
+        const yearSelectionBox = document.getElementById('yearSelectionContainer');
+        while (yearSelectionBox.firstChild) {
+            yearSelectionBox.removeChild(yearSelectionBox.firstChild);
         }
-    });
 
-    userPhotoLibrary.forEach((image) => {
-        var date = moment(image.CreatedAt).format("MM/DD/YYYY");
-        var year = moment(date).format("YYYY");
-        if (yearCollection.length == 0) {
-            yearCollection.push(year);
-        } else if (!yearCollection.includes(year)) {
-            yearCollection.push(year);
-        }
-    });
+        var userId = await getUserId(usernameTextBox.value);
+        var userPhotoLibrary = await getUserPhotos(userId, false);
+        var userPhotoFeed = await getUserPhotos(userId, true);
 
-    console.log(yearCollection);
+        // Disable the controls
+        document.getElementById("txtUsername").disabled = true;
+        document.getElementById("btnLoad").disabled = true;
+        console.log(userId);
+
+        // Creates a list of years for the user to choose from
+        var yearCollection = [];
+        userPhotoFeed.forEach((image) => {
+            var date = moment(image.CreatedAt).format("YYYY-MM-DD");
+            var year = moment(date).format("YYYY");
+            if (yearCollection.length == 0) {
+                yearCollection.push(year);
+            } else if (!yearCollection.includes(year)) {
+                yearCollection.push(year);
+            }
+        });
+
+        userPhotoLibrary.forEach((image) => {
+            var date = moment(image.CreatedAt).format("YYYY-MM-DD");
+            var year = moment(date).format("YYYY");
+            if (yearCollection.length == 0) {
+                yearCollection.push(year);
+            } else if (!yearCollection.includes(year)) {
+                yearCollection.push(year);
+            }
+        });
+
+        yearCollection.reverse();
+
+        yearCollection.forEach((year) => {
+            if (yearSelectionBox) {
+                const yearContainer = document.createElement("div");
+                yearContainer.classList.add("yearBtn");
+                yearSelectionBox.appendChild(yearContainer);
+
+                const yearButton = document.createElement("button");
+                yearButton.innerText = year;
+                yearButton.classList.add("yearBtnText");
+                yearButton.classList.add("yearBtnText:hover");
+                yearButton.setAttribute('onclick', 'yearClick(' + year + '); return false;');
+                yearButton.setAttribute('id', 'btn' + year);
+                yearContainer.appendChild(yearButton);
+            }
+        });
+
+        let yearButtonAnimation = anime({
+            targets: '.yearBtn',
+            opacity: 1,
+            duration: 4000,
+            easing: 'linear',
+            delay: anime.stagger(100)
+        });
+
+        yearButtonAnimation;
+
+        // Re-enable the controls
+        document.getElementById("txtUsername").disabled = false;
+        document.getElementById("btnLoad").disabled = false;
+        btnLoad.classList.remove("is-loading");
+    }
+    catch (err) {
+        // Re-enable the controls
+        document.getElementById("txtUsername").disabled = false;
+        document.getElementById("btnLoad").disabled = false;
+        btnLoad.classList.remove("is-loading");
+
+        // Add some error text on page TODO
+    }
 }
 
 // Function takes a userID and returns back a user's entire public photo library
@@ -72,6 +121,16 @@ async function getUserPhotos(userId, photoFeed) {
     })
 }
 
+// Function that fires after a year has been clicked by a user
+function yearClick(year) {
+    console.log(year);
+    const yearButton = document.getElementById('btn' + year);
+    yearButton.classList.remove('yearBtnText');
+    yearButton.classList.add('selectedYear');
+
+    //TODO: Disable form and other year buttons
+}
+
 // Function takes in a RecNet Display name and converts it to a RecNet user ID.
 async function getUserId(recNetDisplayName) {
     var url = 'https://accounts.rec.net/account?username=' + recNetDisplayName;
@@ -99,58 +158,5 @@ async function getUserId(recNetDisplayName) {
 
 // Function will analyze photos and write data back to the user's disc
 async function analyzePhotos() {
-    const txtUsername = document.getElementById('txtUsername');
-    var username = txtUsername.value;
-    
-    var yearCollection = ['2018','2019','2020', '2021'];
-    const yearSelectionBox = document.getElementById('yearSelectionContainer');
-    yearCollection.forEach((year) => {
-        if (yearSelectionBox) {
-            const singleYearContainer = document.createElement("div");
-            singleYearContainer.setAttribute('class', 'yearBtn');
-            singleYearContainer.innerText = year;
-            yearSelectionBox.appendChild(singleYearContainer);
-        }
-    });
 
-    document.getElementById("txtUsername").disabled = true;
-    document.getElementById("btnLoad").disabled = true;
-
-    let yearButtonAnimation = anime({
-        targets: '.yearBtn',
-        opacity: 1,
-        duration: 2000,
-        easing:'linear',
-        delay: anime.stagger(100)
-    });
-
-    yearButtonAnimation;
-    // var userId = await getUserId(username);
-    // var userPhotoLibrary = await getUserPhotos(userId, false);
-    // var userPhotoFeed = await getUserPhotos(userId, true);
-
-    // console.log(userId);
-
-    // // Grabs only photos specific to the selected year
-    // var newPhotoFeed = [];
-    // userPhotoFeed.forEach((image) => {
-    //     if (moment(image.CreatedAt).isSame('2021-01-01', 'year')) {
-    //         newPhotoFeed.push(image);
-    //     } 
-    // });
-
-    // var newPhotoLibrary = [];
-    // userPhotoLibrary.forEach((image) => {
-    //     if (moment(image.CreatedAt).isSame('2021-01-01', 'year')) {
-    //         newPhotoLibrary.push(image);
-    //     } 
-    // });
-
-    // var totalPhotosShared = newPhotoLibrary.length;
-    // var totalPhotosTaggedIn = newPhotoFeed.length;
-    // console.log("Photo Feed: ")
-    // console.log(newPhotoFeed.length);
-
-    // console.log("Photo Library: ")
-    // console.log(newPhotoLibrary.length);
 }

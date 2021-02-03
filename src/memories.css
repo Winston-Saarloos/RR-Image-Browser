@@ -101,11 +101,33 @@
 }
 
 .yearBtn {
-  font-family: 'Cutive Mono', monospace;
   opacity: 0;
+  margin-right: 15px;
+  margin-left: 15px;
+}
+
+.yearBtnText {
+  font-family: 'Cutive Mono', monospace;
   color: white;
   font-weight: bold;
   font-size: 1.5rem;
-  margin-right: 15px;
-  margin-left: 15px;
+  background: none;
+  border: none;
+  min-height: 38px;
+  min-width: 90px;
+}
+
+.yearBtnText:hover {
+  color:cyan;
+}
+
+.selectedYear {
+  font-family: 'Cutive Mono', monospace;
+  font-weight: bold;
+  background: none;
+  border: none;
+  font-size: 2rem;
+  color: orange;
+  min-height: 38px;
+  min-width: 90px;
 }
