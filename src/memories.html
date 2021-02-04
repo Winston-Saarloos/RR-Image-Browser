@@ -18,18 +18,24 @@
 <body>
   <div id="pageBackground" class="backgroundColor">
     <div class="logo">
-      <h1 class="logoMain">A Look Back..</h1>
+      <h1 class="logoMain">Memories..</h1>
       <h3 class="logoSub">=]</h3>
     </div>
     <div class="content boxShadow">
-      <div class="usernameInput">
+      <div class="usernameInput" id="userInput">
         <form class="userForm">
-          <input class="input is-primary is-medium" type="text" placeholder="RR @ Name"
-            aria-label="RR @ Name" id="txtUsername" value="">
+          <input class="input is-primary is-medium" type="text" placeholder="RR @ Name" aria-label="RR @ Name"
+            id="txtUsername" value="">
           <!-- LuminousPanther617 -->
-          <button type="button" class="button is-primary is-medium"
-            onClick="loadYearsToPage(); return false;" id="btnLoad" value="0">Load</button>
+          <button type="button" class="button is-primary is-medium" onClick="loadYearsToPage(); return false;"
+            id="btnLoad" value="0">Load</button>
         </form>
+      </div>
+      <div class="progressBar BoxShadow" id="progressBar" style="display: none;">
+        <div class="progressBarContainer">
+          <p class="loadingText" id="progressBarText"></p>
+          <progress class="progress is-link" id="progressBar" value="0" max="100"></progress>
+        </div>
       </div>
     </div>
     <div class="yearSelection boxShadow" id="yearSelectionContainer">
@@ -37,4 +43,5 @@
   </div>
   <script src="memories.js"></script>
 </body>
+
 </html>

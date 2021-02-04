@@ -131,3 +131,23 @@
   min-height: 38px;
   min-width: 90px;
 }
+
+.loadingText {
+  font-family: 'Cutive Mono', monospace;
+  font-weight: bold;
+  font-size: 1rem;
+  color: white;
+}
+
+.progressBar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  align-content: center;
+  height: 100%;
+}
+
+.progressBarContainer {
+  width: 90%;
+}

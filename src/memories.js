@@ -6,88 +6,101 @@ const open = require('open');
 const moment = require('moment');
 const anime = require('animejs');
 
+var bCurrentlyRunning = false;
+
 // Get photo data, calculate year options
 async function loadYearsToPage() {
     try {
         var usernameTextBox = document.getElementById("txtUsername");
-        var btnLoad = document.getElementById("btnLoad");
-        btnLoad.classList.add("is-loading");
 
-        // Clear out old years
-        const yearSelectionBox = document.getElementById('yearSelectionContainer');
-        while (yearSelectionBox.firstChild) {
-            yearSelectionBox.removeChild(yearSelectionBox.firstChild);
+        // User must enter their '@' RR name
+        if (usernameTextBox.value === "") {
+            return;
         }
 
-        var userId = await getUserId(usernameTextBox.value);
-        var userPhotoLibrary = await getUserPhotos(userId, false);
-        var userPhotoFeed = await getUserPhotos(userId, true);
+        if (!bCurrentlyRunning) {
+            bCurrentlyRunning = true;
 
-        // Disable the controls
-        document.getElementById("txtUsername").disabled = true;
-        document.getElementById("btnLoad").disabled = true;
-        console.log(userId);
+            var btnLoad = document.getElementById("btnLoad");
+            btnLoad.classList.add("is-loading");
 
-        // Creates a list of years for the user to choose from
-        var yearCollection = [];
-        userPhotoFeed.forEach((image) => {
-            var date = moment(image.CreatedAt).format("YYYY-MM-DD");
-            var year = moment(date).format("YYYY");
-            if (yearCollection.length == 0) {
-                yearCollection.push(year);
-            } else if (!yearCollection.includes(year)) {
-                yearCollection.push(year);
+            // Clear out old years
+            const yearSelectionBox = document.getElementById('yearSelectionContainer');
+            while (yearSelectionBox.firstChild) {
+                yearSelectionBox.removeChild(yearSelectionBox.firstChild);
             }
-        });
 
-        userPhotoLibrary.forEach((image) => {
-            var date = moment(image.CreatedAt).format("YYYY-MM-DD");
-            var year = moment(date).format("YYYY");
-            if (yearCollection.length == 0) {
-                yearCollection.push(year);
-            } else if (!yearCollection.includes(year)) {
-                yearCollection.push(year);
-            }
-        });
+            var userId = await getUserId(usernameTextBox.value);
+            var userPhotoLibrary = await getUserPhotos(userId, false);
+            var userPhotoFeed = await getUserPhotos(userId, true);
 
-        yearCollection.reverse();
+            // Disable the controls
+            document.getElementById("txtUsername").disabled = true;
+            document.getElementById("btnLoad").disabled = true;
+            console.log(userId);
 
-        yearCollection.forEach((year) => {
-            if (yearSelectionBox) {
-                const yearContainer = document.createElement("div");
-                yearContainer.classList.add("yearBtn");
-                yearSelectionBox.appendChild(yearContainer);
+            // Creates a list of years for the user to choose from
+            var yearCollection = [];
+            userPhotoFeed.forEach((image) => {
+                var date = moment(image.CreatedAt).format("YYYY-MM-DD");
+                var year = moment(date).format("YYYY");
+                if (yearCollection.length == 0) {
+                    yearCollection.push(year);
+                } else if (!yearCollection.includes(year)) {
+                    yearCollection.push(year);
+                }
+            });
 
-                const yearButton = document.createElement("button");
-                yearButton.innerText = year;
-                yearButton.classList.add("yearBtnText");
-                yearButton.classList.add("yearBtnText:hover");
-                yearButton.setAttribute('onclick', 'yearClick(' + year + '); return false;');
-                yearButton.setAttribute('id', 'btn' + year);
-                yearContainer.appendChild(yearButton);
-            }
-        });
+            userPhotoLibrary.forEach((image) => {
+                var date = moment(image.CreatedAt).format("YYYY-MM-DD");
+                var year = moment(date).format("YYYY");
+                if (yearCollection.length == 0) {
+                    yearCollection.push(year);
+                } else if (!yearCollection.includes(year)) {
+                    yearCollection.push(year);
+                }
+            });
 
-        let yearButtonAnimation = anime({
-            targets: '.yearBtn',
-            opacity: 1,
-            duration: 4000,
-            easing: 'linear',
-            delay: anime.stagger(100)
-        });
+            yearCollection.reverse();
 
-        yearButtonAnimation;
+            yearCollection.forEach((year) => {
+                if (yearSelectionBox) {
+                    const yearContainer = document.createElement("div");
+                    yearContainer.classList.add("yearBtn");
+                    yearSelectionBox.appendChild(yearContainer);
 
-        // Re-enable the controls
-        document.getElementById("txtUsername").disabled = false;
-        document.getElementById("btnLoad").disabled = false;
-        btnLoad.classList.remove("is-loading");
+                    const yearButton = document.createElement("button");
+                    yearButton.innerText = year;
+                    yearButton.classList.add("yearBtnText");
+                    yearButton.classList.add("yearBtnText:hover");
+                    yearButton.setAttribute('onclick', 'yearClick(' + year + ', ' + userId + '); return false;');
+                    yearButton.setAttribute('id', 'btn' + year);
+                    yearContainer.appendChild(yearButton);
+                }
+            });
+
+            let yearButtonAnimation = anime({
+                targets: '.yearBtn',
+                opacity: 1,
+                duration: 4000,
+                easing: 'linear',
+                delay: anime.stagger(100)
+            });
+            yearButtonAnimation;
+
+            // Re-enable the controls
+            document.getElementById("txtUsername").disabled = false;
+            document.getElementById("btnLoad").disabled = false;
+            btnLoad.classList.remove("is-loading");
+            bCurrentlyRunning = false;
+        }
     }
     catch (err) {
         // Re-enable the controls
         document.getElementById("txtUsername").disabled = false;
         document.getElementById("btnLoad").disabled = false;
         btnLoad.classList.remove("is-loading");
+        bCurrentlyRunning = false;
 
         // Add some error text on page TODO
     }
@@ -122,13 +135,48 @@ async function getUserPhotos(userId, photoFeed) {
 }
 
 // Function that fires after a year has been clicked by a user
-function yearClick(year) {
-    console.log(year);
+function yearClick(year, userId) {
     const yearButton = document.getElementById('btn' + year);
     yearButton.classList.remove('yearBtnText');
     yearButton.classList.add('selectedYear');
 
-    //TODO: Disable form and other year buttons
+    let removeElements = anime({
+        targets: '.yearSelection',
+        opacity: 0,
+        duration: 500,
+        easing: 'linear',
+        delay: anime.stagger(100)
+    });
+
+    let removeElements2 = anime({
+        targets: '.usernameInput',
+        opacity: 0,
+        duration: 1000,
+        easing: 'linear',
+        complete: function (anim) {
+            if (anim.completed) {
+                let showProgressBar = anime({
+                    targets: '.progressBar',
+                    opacity: 1,
+                    duration: 1000,
+                    easing: 'linear',
+                    complete: function (anim) {
+                        if (anim.completed) {
+                            analyzePhotos(year, userId);
+                        }
+                    }            
+                });
+
+                const userInput = document.getElementById('userInput');
+                userInput.style.display = 'none'
+
+                const progressBar = document.getElementById('progressBar');
+                progressBar.style.display = null;
+
+                showProgressBar;
+            }
+        }
+    });
 }
 
 // Function takes in a RecNet Display name and converts it to a RecNet user ID.
@@ -157,6 +205,7 @@ async function getUserId(recNetDisplayName) {
 }
 
 // Function will analyze photos and write data back to the user's disc
-async function analyzePhotos() {
-
+async function analyzePhotos(year, userId) {
+    console.log(year);
+    console.log(userId);
 }
