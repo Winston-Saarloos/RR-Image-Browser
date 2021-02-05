@@ -8,6 +8,16 @@ const anime = require('animejs');
 
 var bCurrentlyRunning = false;
 
+function updateProgressBar(progressNumber, loadingMessage) {
+    var loadingText = document.getElementById('progressBarText');
+    loadingText.innerText = loadingMessage;
+
+    if (progressNumber != null) {
+        var loadingBar = document.getElementById('loadingBar');
+        loadingBar.value = progressNumber;
+    }
+}
+
 // Get photo data, calculate year options
 async function loadYearsToPage() {
     try {
@@ -121,6 +131,7 @@ async function getUserPhotos(userId, photoFeed) {
         axios.get(url)
             .then(function (response) {
                 // handle success
+                //console.log(response.data);
                 resolve(response.data);
             })
             .catch(function (error) {
@@ -163,6 +174,7 @@ function yearClick(year, userId) {
                     complete: function (anim) {
                         if (anim.completed) {
                             analyzePhotos(year, userId);
+                            updateProgressBar(null, "Analyzing user photos...");
                         }
                     }            
                 });
@@ -206,6 +218,35 @@ async function getUserId(recNetDisplayName) {
 
 // Function will analyze photos and write data back to the user's disc
 async function analyzePhotos(year, userId) {
-    console.log(year);
-    console.log(userId);
+    console.log('Analyzing Photos...');
+    var userPhotoLibrary = await getUserPhotos(userId, false);
+    updateProgressBar(10, 'Loaded user library photos..');
+    var userPhotoFeed = await getUserPhotos(userId, true);
+    updateProgressBar(20, 'Loaded user feed..');
+    var statsFileData = {};
+    //statsFileData = JSON.parse(statsFileData);
+    //console.log(statsFileData);
+
+    // Set Year
+    statsFileData.BasicStats = {};
+    statsFileData.BasicStats.year = year;
+
+    // Set Total Photos shared
+    var photosFromSingleYear = {};
+    userPhotoLibrary.forEach((image) => {
+        var photoDate = moment(image.CreatedAt).format("YYYY-MM-DD");
+        var photoYear = moment(photoDate).format("YYYY");
+        if (year == photoYear) {
+            var count = Object.keys(photosFromSingleYear).length;
+            photosFromSingleYear[count] = image;
+        }
+    });
+    var totalImageCount = Object.keys(photosFromSingleYear).length + 1;
+    statsFileData.BasicStats.totalPhotosShared = totalImageCount;
+
+    console.log(statsFileData);
+
+
+    console.log('Done..');
+    updateProgressBar(100, 'Done..');
 }

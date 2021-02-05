@@ -1,0 +1,50 @@
+
+{
+    "BasicStats": [
+      {
+        "year": "2017",
+        "totalPhotosShared": "1322",
+        "totalPhotosTaggedIn": "1500",
+        "numUniqueLocations": "133",
+        "numUniquePlayers": "678",
+        "totalCheers": "4567",
+        "totalComments": "12873"
+      }
+    ],
+    "Activity": [
+      {
+        "mostPhotos": "45",
+        "image1": "C:/Photos/Image1.png",
+        "image2": "C:/Photos/Image2.png",
+        "image3": "C:/Photos/Image3.png"
+      }
+    ],
+    "ImageCheers": [
+      {
+        "image1CheerCount": "100",
+        "image2CheerCount": "76",
+        "image3CheerCount": "23",
+        "image1": "C:/Photos/Image1.png",
+        "image2": "C:/Photos/Image2.png",
+        "image3": "C:/Photos/Image3.png"
+      }
+    ],
+    "TaggedPlayers": [
+      {
+        "image1TagCount": "100",
+        "image2TagCount": "76",
+        "image3TagCount": "23",
+        "image1": "C:/Photos/Image1.png",
+        "image2": "C:/Photos/Image2.png",
+        "image3": "C:/Photos/Image3.png"
+      }
+    ],
+    "ImageComments": {
+      "image1CheerCount": "100",
+      "image2CheerCount": "76",
+      "image3CheerCount": "23",
+      "image1": "C:/Photos/Image1.png",
+      "image2": "C:/Photos/Image2.png",
+      "image3": "C:/Photos/Image3.png"
+    }
+  }
