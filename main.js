@@ -4,6 +4,9 @@ const { autoUpdater } = require('electron-updater');
 const ipcMain = require('electron').ipcMain;
 const log = require('electron-log');
 const path = require('path');
+const { trackEvent } = require('./analytics');
+
+global.trackEvent = trackEvent;
 
 //autoUpdater.allowPrerelease = true;
 autoUpdater.logger = log;
@@ -29,6 +32,7 @@ function createWindow() {
   win.loadFile('src/memories.html')
   win.removeMenu()
   win.webContents.openDevTools()
+  trackEvent('User Interaction', 'App Started')
 }
 
 app.whenReady().then(createWindow)

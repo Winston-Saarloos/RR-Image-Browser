@@ -218,6 +218,8 @@ async function getUserId(recNetDisplayName) {
 
 // Function will analyze photos and write data back to the user's disc
 async function analyzePhotos(year, userId) {
+    var startTime = moment();
+    console.log('Start time: ' + startTime.format("DD/MM/YYYY HH:mm:ss"));
     console.log('Analyzing Photos...');
     var userPhotoLibrary = await getUserPhotos(userId, false);
     updateProgressBar(10, 'Loaded user library photos..');
@@ -232,21 +234,117 @@ async function analyzePhotos(year, userId) {
     statsFileData.BasicStats.year = year;
 
     // Set Total Photos shared
-    var photosFromSingleYear = {};
+    var sharedPhotosFromYear = {};
     userPhotoLibrary.forEach((image) => {
         var photoDate = moment(image.CreatedAt).format("YYYY-MM-DD");
         var photoYear = moment(photoDate).format("YYYY");
         if (year == photoYear) {
-            var count = Object.keys(photosFromSingleYear).length;
-            photosFromSingleYear[count] = image;
+            var count = Object.keys(sharedPhotosFromYear).length;
+            sharedPhotosFromYear[count] = image;
         }
     });
-    var totalImageCount = Object.keys(photosFromSingleYear).length + 1;
-    statsFileData.BasicStats.totalPhotosShared = totalImageCount;
+    var totalSharedImageCount = Object.keys(sharedPhotosFromYear).length + 1;
+    statsFileData.BasicStats.totalPhotosShared = totalSharedImageCount;
 
+    console.log('Total Shared Photos By User:');
+    console.log(Object.keys(sharedPhotosFromYear).length);
+
+    // Update Progress Bar
+    updateProgressBar(30, 'Counting moments with friends..');
+
+    // Set Total Photos Tagged In
+    var taggedPhotosFromYear = {};
+    userPhotoFeed.forEach((image) => {
+        var photoDate = moment(image.CreatedAt).format("YYYY-MM-DD");
+        var photoYear = moment(photoDate).format("YYYY");
+        if (year == photoYear) {
+            var count = Object.keys(taggedPhotosFromYear).length;
+            taggedPhotosFromYear[count] = image;
+        }
+    });
+    var totalTaggedImageCount = Object.keys(taggedPhotosFromYear).length + 1;
+    statsFileData.BasicStats.totalPhotosTaggedIn = totalTaggedImageCount;
+
+    console.log('Total photos in users feed:');
+    console.log(Object.keys(taggedPhotosFromYear).length);
+
+    updateProgressBar(40, 'Slaying a few goblins on the side... ');
+
+    // Number of Unique Locations
+    // Number of Unique Tagged Players
+    // Number of Unique Events
+    var activityUniqueIdList = [];
+    var playerUniqueIdList = [];
+    var eventUniqueIdList = [];
+    var totalComments = 0;
+    var totalCheers = 0;
+    for (var i = 0, len = Object.keys(userPhotoLibrary).length; i < len; i++) {
+        var image = userPhotoLibrary[i];
+
+        // Activity
+        if ((!activityUniqueIdList.includes(image.RoomId)) && (image.RoomId)) {
+            activityUniqueIdList.push(image.RoomId);
+        };
+        // Players
+        if (image.TaggedPlayerIds.length > 0) {
+            var listOfPlayers = image.TaggedPlayerIds;
+            listOfPlayers.forEach(player => {
+                if ((!playerUniqueIdList.includes(player)) && (player)) {
+                    playerUniqueIdList.push(player);
+                };
+            });
+        };
+
+        // Events
+        if ((!eventUniqueIdList.includes(image.PlayerEventId)) && (image.PlayerEventId)) {
+            eventUniqueIdList.push(image.PlayerEventId);
+        };
+
+        // Add to grand totals
+        totalCheers += image.CheerCount;
+        totalComments += image.CommentCount;
+    }
+
+    statsFileData.BasicStats.numUniqueLocations = activityUniqueIdList.length;
+    statsFileData.BasicStats.numUniquePlayers = playerUniqueIdList.length;
+    statsFileData.BasicStats.numUniqueEvents = eventUniqueIdList.length;
+    statsFileData.BasicStats.totalCheers = totalCheers;
+    statsFileData.BasicStats.totalComments = totalComments;
+
+    // sharedPhotosFromYear.forEach((image) => {
+    // });
+
+    console.log('# of Unique Activities:');
+    console.log(activityUniqueIdList.length);
+
+    console.log('# of Unique Players:');
+    console.log(playerUniqueIdList.length);
+
+    console.log('# of unique events:');
+    console.log(eventUniqueIdList.length);
+
+    console.log('Total # of cheers:');
+    console.log(totalCheers);
+
+    console.log('Total # of comments:');
+    console.log(totalComments);
+
+    console.log('File Data: ');
     console.log(statsFileData);
 
 
     console.log('Done..');
+    writeStatsToFile(statsFileData);
     updateProgressBar(100, 'Done..');
+
+    var endTime = moment();
+    console.log('End time: ' + endTime.format("DD/MM/YYYY HH:mm:ss"));
+    console.log('Difference: ' + moment.utc(moment(endTime,"DD/MM/YYYY HH:mm:ss").diff(moment(startTime,"DD/MM/YYYY HH:mm:ss"))).format("HH:mm:ss") + ' seconds.');
+}
+
+// writes stats data to file
+// this should be overwriting any existing data
+function writeStatsToFile (jsonData) {
+    let data = JSON.stringify(jsonData);
+    fs.writeFileSync('./imageReview/stats.json', data);
 }

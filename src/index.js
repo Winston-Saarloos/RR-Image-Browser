@@ -4,6 +4,8 @@ const fs = require('fs');
 const { shell } = require('electron');
 const open = require('open');
 var moment = require('moment');
+const { getGlobal } = require('electron').remote;
+const trackEvent = getGlobal('trackEvent');
 // Electron-Store for saving preferences
 
 // Auto Update Related Function
@@ -191,6 +193,9 @@ async function getImageData(imageName) {
 async function loadImagesOntoPage() {
     var username = document.getElementById("txtUsername").value;
     var imageDiv = document.getElementById("grid");
+
+    trackEvent('User Interaction', 'Load Image Grid');
+    
     if (username === "") {
         while (imageDiv.firstChild) {
             imageDiv.removeChild(imageDiv.firstChild);
