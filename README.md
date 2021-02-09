@@ -38,6 +38,8 @@ If you would like to remove a filter press the X button on the right side of the
 ------------
 
 #Planned
+- User load images favoriting (v0.1.9)
+- Recent users list (v0.1.9)
 - Image Favoriting
 - Start application in maximized mode (v0.1.9)
 - Photo albums
