@@ -1,19 +1,20 @@
 const { electron, app, ipcRenderer } = require('electron');
 const axios = require('axios');
 const fs = require('fs');
-const { shell } = require('electron');
 const open = require('open');
 var moment = require('moment');
-const { getGlobal } = require('electron').remote;
-const trackEvent = getGlobal('trackEvent');
+// const { getGlobal } = require('electron').remote;
+// const trackEvent = getGlobal('trackEvent');
 // Electron-Store for saving preferences
 
 // Auto Update Related Function
-const version = document.getElementById('versionNumber');    
+const version = document.getElementById('versionNumber');
 ipcRenderer.send('app_version');
 ipcRenderer.on('app_version', (event, arg) => {
-  ipcRenderer.removeAllListeners('app_version');
-  version.innerText = 'V' + arg.version;
+    ipcRenderer.removeAllListeners('app_version');
+    if (version) {
+        version.innerText = 'V' + arg.version;
+    }
 });
 
 const notification = document.getElementById('notification');
@@ -21,18 +22,18 @@ const message = document.getElementById('message');
 const restartButton = document.getElementById('restart-button');
 
 ipcRenderer.on('update-available', () => {
-  console.log('update available');
-  ipcRenderer.removeAllListeners('update-available');
-  message.innerText = 'A new update is available. Downloading now...';
-  notification.classList.remove('hidden');
+    console.log('update available');
+    ipcRenderer.removeAllListeners('update-available');
+    message.innerText = 'A new update is available. Downloading now...';
+    notification.classList.remove('hidden');
 });
 
 ipcRenderer.on('update-downloaded', () => {
-  console.log('update downloaded');
-  ipcRenderer.removeAllListeners('update-downloaded');
-  message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
-  restartButton.classList.remove('hidden');
-  notification.classList.remove('hidden');
+    console.log('update downloaded');
+    ipcRenderer.removeAllListeners('update-downloaded');
+    message.innerText = 'Update Downloaded. It will be installed on restart. Restart now?';
+    restartButton.classList.remove('hidden');
+    notification.classList.remove('hidden');
 });
 
 function closeNotification() {
@@ -44,11 +45,11 @@ function restartApp() {
 }
 
 // Listen for messages
-ipcRenderer.on('message', function(event, text) {
-  var container = document.getElementById('messages');
-  var message = document.createElement('div');
-  message.innerHTML = text;
-  container.appendChild(message);
+ipcRenderer.on('message', function (event, text) {
+    var container = document.getElementById('messages');
+    var message = document.createElement('div');
+    message.innerHTML = text;
+    container.appendChild(message);
 })
 
 // Takes in a room id and returns out data for that room
@@ -194,129 +195,149 @@ async function loadImagesOntoPage() {
     var username = document.getElementById("txtUsername").value;
     var imageDiv = document.getElementById("grid");
 
-    trackEvent('User Interaction', 'Load Image Grid');
-    
+    //trackEvent('User Interaction', 'Load Image Grid');
+
+    // Add Spinner to button
+    // Disable the button to prevent extra load cycles
+    var btnLoad = document.getElementById("btnLoad");
+    if (btnLoad) {
+        var loadingSpinner = document.getElementById("loadingSpinner");
+        if (btnLoad.innerText == "Load Images") {
+            var loadingSpinner = document.createElement("span");
+            loadingSpinner.classList.add("spinner-border");
+            loadingSpinner.classList.add("spinner-border-sm");
+            loadingSpinner.setAttribute("id", "loadingSpinner");
+            loadingSpinner.setAttribute("role", "status");
+            loadingSpinner.setAttribute("aria-hidden", "true");
+
+            btnLoad.disabled = true;
+            btnLoad.innerText = "";
+            btnLoad.appendChild(loadingSpinner);
+        }
+    }
+
     if (username === "") {
         while (imageDiv.firstChild) {
             imageDiv.removeChild(imageDiv.firstChild);
         }
+        btnLoad.disabled = false;
         return;
     }
 
-    var userId = await getUserId(username);
-    var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
+var userId = await getUserId(username);
+var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
 
-    // Apply Filters
-    var filterValues = await swapFilterValuesWithIds();
-    var newFilteredUserPhotoLibrary = [];
+// Apply Filters
+var filterValues = await swapFilterValuesWithIds();
+var newFilteredUserPhotoLibrary = [];
 
-    // for each image
-    if (filterValues.length != 0) {
-        userPhotoLibrary.forEach(image => {
-            // for each filter item (verify image has the corret criteria)
-            var imageMustMatchAllFilters = true; // TO DO MAKE THIS TOGGLEABLE ON THE UI
-            var imageMatchesAllFilterCriteria = true;
+// for each image
+if (filterValues.length != 0) {
+    userPhotoLibrary.forEach(image => {
+        // for each filter item (verify image has the corret criteria)
+        var imageMustMatchAllFilters = true; // TO DO MAKE THIS TOGGLEABLE ON THE UI
+        var imageMatchesAllFilterCriteria = true;
 
-            var imageMatchedAtleastOneCriteria = false;
-            filterValues.forEach(filter => {
-                var filterParts = filter.split("|");
+        var imageMatchedAtleastOneCriteria = false;
+        filterValues.forEach(filter => {
+            var filterParts = filter.split("|");
 
-                switch (filterParts[0]) {
-                    case 'A':
-                        // Activity
-                        // Example Value: A|GoldenTrophy
-                        if (image.RoomId == filterParts[1]) {
-                            imageMatchedAtleastOneCriteria = true;
-                        } else if (imageMustMatchAllFilters) {
-                            imageMatchesAllFilterCriteria = false;
-                        }
+            switch (filterParts[0]) {
+                case 'A':
+                    // Activity
+                    // Example Value: A|GoldenTrophy
+                    if (image.RoomId == filterParts[1]) {
+                        imageMatchedAtleastOneCriteria = true;
+                    } else if (imageMustMatchAllFilters) {
+                        imageMatchesAllFilterCriteria = false;
+                    }
+                    break;
+
+                case '!A':
+                    // Not Activity
+                    // Example Value: !A|GoldenTrophy
+                    if (image.RoomId != filterParts[1]) {
+                        imageMatchedAtleastOneCriteria = true;
+                    } else if (imageMustMatchAllFilters) {
+                        imageMatchesAllFilterCriteria = false;
+                    }
+                    break;
+
+                case 'P':
+                    // Person
+                    // Example Value: P|Boethiah
+                    //console.log(image.TaggedPlayerIds.length);
+                    if (image.TaggedPlayerIds.length === 0) {
+                        imageMatchesAllFilterCriteria = false;
                         break;
+                    }
 
-                    case '!A':
-                        // Not Activity
-                        // Example Value: !A|GoldenTrophy
-                        if (image.RoomId != filterParts[1]) {
-                            imageMatchedAtleastOneCriteria = true;
-                        } else if (imageMustMatchAllFilters) {
-                            imageMatchesAllFilterCriteria = false;
-                        }
+                    var taggedPlayers = [];
+                    image.TaggedPlayerIds.forEach(player => { taggedPlayers.push(player) });
+                    if ((taggedPlayers.findIndex((player) => player == filterParts[1]) > -1) && imageMatchesAllFilterCriteria) {
+                        imageMatchedAtleastOneCriteria = true;
+                    } else if (imageMustMatchAllFilters) {
+                        imageMatchesAllFilterCriteria = false;
+                    }
+                    break;
+
+                case '!P':
+                    // Not Person
+                    // Example Value: !P|Boethiah
+                    if (image.TaggedPlayerIds.length === 0) {
+                        imageMatchesAllFilterCriteria = false;
                         break;
+                    }
 
-                    case 'P':
-                        // Person
-                        // Example Value: P|Boethiah
-                        //console.log(image.TaggedPlayerIds.length);
-                        if (image.TaggedPlayerIds.length === 0) {
-                            imageMatchesAllFilterCriteria = false;
-                            break;
-                        }
+                    var taggedPlayers = [];
+                    image.TaggedPlayerIds.forEach(player => { taggedPlayers.push(player) });
+                    if (!(taggedPlayers.findIndex((player) => player == filterParts[1]) > -1) && imageMatchesAllFilterCriteria) {
+                        imageMatchedAtleastOneCriteria = true;
+                    } else if (imageMustMatchAllFilters) {
+                        imageMatchesAllFilterCriteria = false;
+                    }
+                    break;
 
-                        var taggedPlayers = [];
-                        image.TaggedPlayerIds.forEach(player => { taggedPlayers.push(player) });
-                        if ((taggedPlayers.findIndex((player) => player == filterParts[1]) > -1) && imageMatchesAllFilterCriteria) {
-                            imageMatchedAtleastOneCriteria = true;
-                        } else if (imageMustMatchAllFilters) {
-                            imageMatchesAllFilterCriteria = false;
-                        }
-                        break;
-
-                    case '!P':
-                        // Not Person
-                        // Example Value: !P|Boethiah
-                        if (image.TaggedPlayerIds.length === 0) {
-                            imageMatchesAllFilterCriteria = false;
-                            break;
-                        }
-
-                        var taggedPlayers = [];
-                        image.TaggedPlayerIds.forEach(player => { taggedPlayers.push(player) });
-                        if (!(taggedPlayers.findIndex((player) => player == filterParts[1]) > -1) && imageMatchesAllFilterCriteria) {
-                            imageMatchedAtleastOneCriteria = true;
-                        } else if (imageMustMatchAllFilters) {
-                            imageMatchesAllFilterCriteria = false;
-                        }
-                        break;
-
-                    default:
-                        //error occured log to console
-                        console.log("An error occured parsing filter type: " + filterType);
-                }
-            });
-            if (imageMustMatchAllFilters && imageMatchesAllFilterCriteria) {
-                newFilteredUserPhotoLibrary.push(image);
-            } else if (!(imageMustMatchAllFilters) && imageMatchedAtleastOneCriteria) {
-                newFilteredUserPhotoLibrary.push(image);
+                default:
+                    //error occured log to console
+                    console.log("An error occured parsing filter type: " + filterType);
             }
         });
-    };
-
-    if (filterValues.length > 0) {
-        userPhotoLibrary = newFilteredUserPhotoLibrary;
-    }
-
-    const imageResults = document.getElementById('imageResultNumber');
-    if (imageResults) {
-        if (userPhotoLibrary.length === 0) {
-            imageResults.innerText = 'No Images Found!';
-        } else {
-            imageResults.innerText = 'Image Results: ' + userPhotoLibrary.length;
+        if (imageMustMatchAllFilters && imageMatchesAllFilterCriteria) {
+            newFilteredUserPhotoLibrary.push(image);
+        } else if (!(imageMustMatchAllFilters) && imageMatchedAtleastOneCriteria) {
+            newFilteredUserPhotoLibrary.push(image);
         }
+    });
+};
+
+if (filterValues.length > 0) {
+    userPhotoLibrary = newFilteredUserPhotoLibrary;
+}
+
+const imageResults = document.getElementById('imageResultNumber');
+if (imageResults) {
+    if (userPhotoLibrary.length === 0) {
+        imageResults.innerText = 'No Images Found!';
+    } else {
+        imageResults.innerText = 'Image Results: ' + userPhotoLibrary.length;
     }
+}
 
-    var dateOrder = document.getElementById("btnOldestToNewest");
-    if (dateOrder.value == "1") { // Oldest to Newest
-        userPhotoLibrary = userPhotoLibrary.reverse();
-    }
+var dateOrder = document.getElementById("btnOldestToNewest");
+if (dateOrder.value == "1") { // Oldest to Newest
+    userPhotoLibrary = userPhotoLibrary.reverse();
+}
 
-    while(imageDiv.firstChild) { 
-        imageDiv.removeChild(imageDiv.firstChild); 
-    } 
+while (imageDiv.firstChild) {
+    imageDiv.removeChild(imageDiv.firstChild);
+}
 
-    // Generate Master Lists
-    getMasterLists(userPhotoLibrary);
+// Generate Master Lists
+getMasterLists(userPhotoLibrary);
 
-    // Generate image HTML
-    loadImagesIntoPage(userPhotoLibrary);
+// Generate image HTML
+loadImagesIntoPage(userPhotoLibrary);
 }
 
 // Function that gets every User, Activity, and Event where a photo was taken.
@@ -348,6 +369,14 @@ async function getMasterLists(userPhotoLibrary) {
     //console.log(activityUniqueIdList);
     //console.log(playerUniqueIdList);
     //console.log(eventUniqueIdList);
+
+    if (btnLoad) {
+        var loadingSpinner = document.getElementById("loadingSpinner");
+        if (btnLoad.innerText == "") {
+            btnLoad.innerText = "Load Images";
+        }
+    }
+    btnLoad.disabled = false;
 }
 
 // Displays the iamges on the page in the div.  Uses lazy loading to only display images visible in the viewport
@@ -411,7 +440,7 @@ async function loadImagesIntoPage(userPhotoLibrary) {
                     const img = entry.target;
                     const src = img.getAttribute('data-src');
 
-                    if (img.hasAttribute('data-src')){
+                    if (img.hasAttribute('data-src')) {
                         img.setAttribute('src', src);
                     }
                     observer.disconnect();
@@ -464,7 +493,7 @@ async function loadDataImageDetailModal(imageId) {
 
     var modalImageRnLink = document.getElementById("imageRecNetLink");
     modalImageRnLink.innerText = LOADING_TEXT;
-    
+
     var username = document.getElementById("txtUsername").value; // This could be re written to not pull data if it is already available
     var userId = await getUserId(username);
     var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
@@ -554,7 +583,7 @@ async function loadDataImageDetailModal(imageId) {
     if (modalImageRnLink) {
         var szUrl = "https://rec.net/image/" + imageData.Id;
         modalImageRnLink.innerText = szUrl;
-        modalImageRnLink.setAttribute("onclick", "openImageInBrowser(" + imageData.Id +"); return false;");
+        modalImageRnLink.setAttribute("onclick", "openImageInBrowser(" + imageData.Id + "); return false;");
     }
 }
 
@@ -582,7 +611,7 @@ function toggleFilterDisplay() {
 // Toggles text on Activity Filter button
 function toggleActivityFilter() {
     var btnActivity = document.getElementById("activityFilterToggleButton");
-    if (btnActivity){
+    if (btnActivity) {
         if (btnActivity.innerText === "Not in:") {
             btnActivity.innerText = "In:";
         } else {
@@ -594,7 +623,7 @@ function toggleActivityFilter() {
 // Toggles text on Player filter button
 function togglePlayerFilter() {
     var btnPlayer = document.getElementById("playerFilterToggleButton");
-    if (btnPlayer){
+    if (btnPlayer) {
         if (btnPlayer.innerText === "Does not contain:") {
             btnPlayer.innerText = "Contains:";
         } else {
@@ -660,7 +689,7 @@ function addActivityCriteria() {
 }
 
 // Adds filter criteria item to visual filter criteria display on page
-function addFilterCriteriaItem(filterCriteriaText, filterCriteriaValue, filterCriteriaType){
+function addFilterCriteriaItem(filterCriteriaText, filterCriteriaValue, filterCriteriaType) {
     const criteriaDisplay = document.getElementById('currentFilterCriteria');
     var count = criteriaDisplay.childElementCount;
 
@@ -674,13 +703,13 @@ function addFilterCriteriaItem(filterCriteriaText, filterCriteriaValue, filterCr
     }
     var filterString = ''; // Function that returns this
 
-    switch(filterCriteriaType) {
+    switch (filterCriteriaType) {
         case 1:
             // Filter by Activity
             // Example Value: A|GoldenTrophy
-            if (filterCriteriaText === "In:"){
+            if (filterCriteriaText === "In:") {
                 filterString = 'A|' + filterCriteriaValue;
-            } else if (filterCriteriaText === "Not in:"){
+            } else if (filterCriteriaText === "Not in:") {
                 filterString = '!A|' + filterCriteriaValue;
             }
             break;
@@ -688,9 +717,9 @@ function addFilterCriteriaItem(filterCriteriaText, filterCriteriaValue, filterCr
         case 2:
             // Filter by Player
             // Example Value: P|Rocko
-            if (filterCriteriaText === "Contains:"){
+            if (filterCriteriaText === "Contains:") {
                 filterString = 'P|' + filterCriteriaValue;
-            } else if (filterCriteriaText === "Does not contain:"){
+            } else if (filterCriteriaText === "Does not contain:") {
                 filterString = '!P|' + filterCriteriaValue;
             }
             break;
@@ -778,7 +807,7 @@ async function swapFilterValuesWithIds() {
                 var activityData = await getActivityIdFromName(filterValue);
                 newFilterArray.push(filterType + '|' + activityData.RoomId);
                 break;
-            
+
             case '!A':
                 // !Activity
                 // Example Value: !A|GoldenTrophy
@@ -862,8 +891,6 @@ function onMouseExitFavBtn(element) {
     element.setAttribute('src', './images/star_outline.png');
 }
 
-exports.loadFavoriteList = loadFavoriteList;
-
 function loadFavoriteList() {
     fs.readFile('./data/favorite.json', 'utf8', (err, favList) => {
         if (err) {
@@ -884,28 +911,28 @@ function loadFavoriteList() {
                 favOptionItem.setAttribute('value', fileData.favoriteUsers[index]);
                 favOptionItem.innerText = 'Favorite';
                 favDataList.appendChild(favOptionItem);
-            };    
+            };
         }
     });
 }
 
+module.exports.loadFavoriteList = loadFavoriteList;
+
 function writeFavToFile() {
-    var usernameTextbox = document.getElementById('txtUsername');
-    console.log(usernameTextbox.value);
-    if (usernameTextbox)
-    {
-        if (usernameTextbox.value != '') 
-        {
+    var txtUsername = document.getElementById('txtUsername');
+    console.log(txtUsername.value);
+    if (txtUsername) {
+        if (txtUsername.value != '') {
             fs.readFile('./data/favorite.json', 'utf8', (err, favList) => {
                 if (err) {
-                    console.log("File read failed:", err)
-                    return
+                    console.log("File read failed:", err);
+                    return;
                 }
-                var txtUsername = document.getElementById('txtUsername');
                 var fileData = JSON.parse(favList);
-                if (!fileData.favoriteUsers.includes(txtUsername.value)){
+                if (!(fileData.favoriteUsers.includes(txtUsername.value))) {
                     console.log('Value not already in favorites list.');
                 }
+                console.log(!(fileData.favoriteUsers.includes(txtUsername.value)));
                 console.log(fileData.favoriteUsers);
             });
         }

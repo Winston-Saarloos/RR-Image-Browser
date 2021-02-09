@@ -285,3 +285,7 @@ a:active {
     float: right;
     margin: 8px;
 }
+
+#btnLoad {
+    min-width: 120px;
+}

@@ -1,1 +1,13 @@
-{"BasicStats":{"year":2020,"totalPhotosShared":690,"totalPhotosTaggedIn":2284,"numUniqueLocations":174,"numUniquePlayers":786,"numUniqueEvents":3,"totalCheers":3022,"totalComments":229}}
+{
+    "BasicStats": {
+        "userId": 256147,
+        "year": 2020,
+        "totalPhotosShared": 1274,
+        "totalPhotosTaggedIn": 2062,
+        "numUniqueLocations": 26,
+        "numUniquePlayers": 398,
+        "numUniqueEvents": 1,
+        "totalCheers": 120,
+        "totalComments": 22
+    }
+}

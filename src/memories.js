@@ -231,6 +231,7 @@ async function analyzePhotos(year, userId) {
 
     // Set Year
     statsFileData.BasicStats = {};
+    statsFileData.BasicStats.userId = userId;
     statsFileData.BasicStats.year = year;
 
     // Set Total Photos shared
@@ -245,6 +246,8 @@ async function analyzePhotos(year, userId) {
     });
     var totalSharedImageCount = Object.keys(sharedPhotosFromYear).length + 1;
     statsFileData.BasicStats.totalPhotosShared = totalSharedImageCount;
+
+    console.log(sharedPhotosFromYear);
 
     console.log('Total Shared Photos By User:');
     console.log(Object.keys(sharedPhotosFromYear).length);
@@ -278,8 +281,8 @@ async function analyzePhotos(year, userId) {
     var eventUniqueIdList = [];
     var totalComments = 0;
     var totalCheers = 0;
-    for (var i = 0, len = Object.keys(userPhotoLibrary).length; i < len; i++) {
-        var image = userPhotoLibrary[i];
+    for (var i = 0, len = Object.keys(sharedPhotosFromYear).length; i < len; i++) {
+        var image = sharedPhotosFromYear[i];
 
         // Activity
         if ((!activityUniqueIdList.includes(image.RoomId)) && (image.RoomId)) {
@@ -311,8 +314,25 @@ async function analyzePhotos(year, userId) {
     statsFileData.BasicStats.totalCheers = totalCheers;
     statsFileData.BasicStats.totalComments = totalComments;
 
-    // sharedPhotosFromYear.forEach((image) => {
-    // });
+    // Example: activity: "activityID",
+    var activityPhotoCounts = {};
+    for (var i = 0, len = Object.keys(sharedPhotosFromYear).length; i < len; i++) {
+        var image = sharedPhotosFromYear[i];
+        console.log(activityPhotoCounts);
+        var count = Object.keys(taggedPhotosFromYear).length;
+
+        if (activityPhotoCounts = {}) {
+            activityPhotoCounts[0].RoomId = image.RoomId;
+
+        } else {
+            if (!(image.RoomId in activityPhotoCounts.RoomId)) {
+                activityPhotoCounts.RoomId = image.RoomId;
+                //activityPhotoCounts[image.RoomId].count = 1;
+            }
+        }
+    };
+
+    console.log(activityPhotoCounts);
 
     console.log('# of Unique Activities:');
     console.log(activityUniqueIdList.length);
@@ -332,6 +352,8 @@ async function analyzePhotos(year, userId) {
     console.log('File Data: ');
     console.log(statsFileData);
 
+    // Gather Activity Stats
+    
 
     console.log('Done..');
     writeStatsToFile(statsFileData);

@@ -4,9 +4,9 @@ const { autoUpdater } = require('electron-updater');
 const ipcMain = require('electron').ipcMain;
 const log = require('electron-log');
 const path = require('path');
-const { trackEvent } = require('./analytics');
+// const { trackEvent } = require('./analytics');
 
-global.trackEvent = trackEvent;
+// global.trackEvent = trackEvent;
 
 //autoUpdater.allowPrerelease = true;
 autoUpdater.logger = log;
@@ -29,10 +29,10 @@ function createWindow() {
   })
 
   //win.maximize();
-  win.loadFile('src/memories.html')
+  win.loadFile('src/index.html')
   win.removeMenu()
   win.webContents.openDevTools()
-  trackEvent('User Interaction', 'App Started')
+  // trackEvent('User Interaction', 'App Started')
 }
 
 app.whenReady().then(createWindow)
@@ -74,7 +74,7 @@ autoUpdater.on('update-not-available', (ev, info) => {
   sendStatusToWindow('Update not available.');
 })
 autoUpdater.on('error', (ev, err) => {
-  sendStatusToWindow('Error in auto-updater.');
+  sendStatusToWindow('Application auto update failed with an error.');
 })
 autoUpdater.on('download-progress', (ev, progressObj) => {
   sendStatusToWindow('Download progress...');
