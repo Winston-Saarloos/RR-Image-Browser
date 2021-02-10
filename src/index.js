@@ -918,23 +918,35 @@ function loadFavoriteList() {
 
 module.exports.loadFavoriteList = loadFavoriteList;
 
-function writeFavToFile() {
+// Reads favorites list from file
+function readFavoriteListFromFile() {
+    //const favList = fs.readFileSync('./data/favorite.json', {encoding:'utf8', flag:'r'});
+    return fs.readFileSync('./data/favorite.json', {encoding:'utf8', flag:'r'});
+}
+
+// Writes favorites list to fileData
+function writeFavoriteListToFile(fileData) {
+    fs.writeFileSync('./data/favorite.json', JSON.stringify(fileData), 'utf8', (err, favList) => {
+        if (err) {
+            console.log("File write fav list failed:", err);
+            return;
+        }
+    });
+}
+
+function toggleFavInFile() {
     var txtUsername = document.getElementById('txtUsername');
-    console.log(txtUsername.value);
     if (txtUsername) {
         if (txtUsername.value != '') {
-            fs.readFile('./data/favorite.json', 'utf8', (err, favList) => {
-                if (err) {
-                    console.log("File read failed:", err);
-                    return;
-                }
-                var fileData = JSON.parse(favList);
-                if (!(fileData.favoriteUsers.includes(txtUsername.value))) {
-                    console.log('Value not already in favorites list.');
-                }
-                console.log(!(fileData.favoriteUsers.includes(txtUsername.value)));
+            var fileData = JSON.parse(readFavoriteListFromFile());
+            console.log(fileData);
+            if (!(fileData.favoriteUsers.includes(txtUsername.value))) {
+                fileData.favoriteUsers.push(txtUsername.value);
+                writeFavoriteListToFile(fileData);
+            } else if (fileData.favoriteUsers.includes(txtUsername.value)) {
+                fileData.favoriteUsers.pop(fileData.favoriteUsers.indexOf(txtUsername.value));
                 console.log(fileData.favoriteUsers);
-            });
+            }
         }
     }
 }
