@@ -920,13 +920,15 @@ module.exports.loadFavoriteList = loadFavoriteList;
 
 // Reads favorites list from file
 function readFavoriteListFromFile() {
-    //const favList = fs.readFileSync('./data/favorite.json', {encoding:'utf8', flag:'r'});
     return fs.readFileSync('./data/favorite.json', {encoding:'utf8', flag:'r'});
 }
 
 // Writes favorites list to fileData
 function writeFavoriteListToFile(fileData) {
-    fs.writeFileSync('./data/favorite.json', JSON.stringify(fileData), 'utf8', (err, favList) => {
+    const data = {
+        favoriteUsers: fileData
+    };
+    fs.writeFileSync('./data/favorite.json', JSON.stringify(data), 'utf8', (err, favList) => {
         if (err) {
             console.log("File write fav list failed:", err);
             return;
@@ -939,18 +941,22 @@ function toggleFavInFile() {
     if (txtUsername) {
         if (txtUsername.value != '') {
             var fileData = JSON.parse(readFavoriteListFromFile());
-            console.log(fileData);
             if (!(fileData.favoriteUsers.includes(txtUsername.value))) {
                 fileData.favoriteUsers.push(txtUsername.value);
-                writeFavoriteListToFile(fileData);
+                writeFavoriteListToFile(fileData.favoriteUsers);
+                loadFavoriteList();
             } else if (fileData.favoriteUsers.includes(txtUsername.value)) {
-                fileData.favoriteUsers.pop(fileData.favoriteUsers.indexOf(txtUsername.value));
-                console.log(fileData.favoriteUsers);
+                var currentFavlist = fileData.favoriteUsers;
+                var newFavList = [];
+                currentFavlist.forEach(user => {
+                    if (!(user == txtUsername.value)) {
+                        newFavList.push(user);
+                    }
+                });
+                
+                writeFavoriteListToFile(newFavList);
+                loadFavoriteList();
             }
         }
     }
-}
-
-function removeFavFromFile() {
-
 }
