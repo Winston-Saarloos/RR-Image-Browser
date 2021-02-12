@@ -37,7 +37,7 @@ If you would like to remove a filter press the X button on the right side of the
 
 ------------
 
-#Planned
+# Planned
 - User load images favoriting (v0.1.9)
 - Recent users list (v0.1.9)
 - Favorited Users list (v0.1.9)
