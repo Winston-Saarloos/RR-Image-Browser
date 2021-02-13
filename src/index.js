@@ -22,9 +22,9 @@ if (!userId) {
 var appVersion = require("electron").remote.app.getVersion();
 
 // I will regenerate this key and place it where it cannot be seen =]
-Nucleus.init(appAnalyticConfig.Key, {
+Nucleus.init(appAnalyticConfig.key, {
     disableInDev: false, // disable module while in development (default: false)
-    disableTracking: true, // completely disable tracking from the start (default: false)
+    disableTracking: false, // completely disable tracking from the start (default: false)
     disableErrorReports: false, // disable errors reporting (default: false)
     autoUserId: false, // auto assign the user an id: username@hostname
     debug: true // Show logs
@@ -367,6 +367,21 @@ async function loadImagesOntoPage() {
 
         // Generate image HTML
         loadImagesIntoPage(userPhotoLibrary);
+
+        if (!username == '') {
+            var filterCriteriaString
+            if (filterValues.length == 0) {
+                filterCriteriaString = 'No filters applied'
+            } else { filterCriteriaString = filterValues };
+
+            console.log(filterValues.length);
+            console.log(filterCriteriaString);
+            // Log analytics event
+            Nucleus.track("LOAD_IMAGES_CLICKED", {
+                filterCriteriaString: filterCriteriaString,
+                imageResultCount: userPhotoLibrary.length
+            })
+        }
     } catch (error) {
         // Remove Spinner on load button
         // Disable the button to prevent extra load cycles
@@ -596,7 +611,6 @@ async function loadDataImageDetailModal(imageId) {
     // Tagged Players
     if (imageData.TaggedPlayerIds.length > 0) {
         var playerInfoJson = await getUsernameFromId(imageData.TaggedPlayerIds);
-        console.log(playerInfoJson);
         if (modalImageTaggedPlayers) {
             var szTaggedPlayers = "";
             var i = 0;
