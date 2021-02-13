@@ -3,8 +3,24 @@ const axios = require('axios');
 const fs = require('fs');
 const open = require('open');
 var moment = require('moment');
-// const { getGlobal } = require('electron').remote;
-// const trackEvent = getGlobal('trackEvent');
+const Nucleus = require("nucleus-nodejs")
+const { v4: uuidv4 } = require('uuid');
+
+// Get/Set User UUID to file system
+const store = require('electron-store');
+const userInfo = {UUID: ''};
+const storage = new store({userInfo});
+const userId = storage.get('UUID');
+
+if (!userId) {
+    storage.set('UUID', uuidv4());
+}
+
+// Set UUID for analytic events
+Nucleus.init("60262a67cc400275458f0c45")
+Nucleus.setUserId(storage.get('UUID'));
+Nucleus.appStarted();
+
 // Electron-Store for saving preferences
 
 // Auto Update Related Function

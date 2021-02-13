@@ -37,12 +37,11 @@
     "fs": "0.0.1-security",
     "jquery": "^3.5.1",
     "moment": "^2.29.1",
-    "node-localstorage": "^2.1.6",
+    "nucleus-nodejs": "^3.0.8",
     "open": "^7.3.0",
     "path": "^0.12.7",
     "popper.js": "^1.16.1",
     "request": "^2.88.2",
-    "universal-analytics": "^0.4.23",
     "util": "^0.12.3",
     "uuid": "^8.3.2",
     "yarn": "^1.22.10"
