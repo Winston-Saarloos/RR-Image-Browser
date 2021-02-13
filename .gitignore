@@ -4,3 +4,4 @@ appdata
 electron-builder.yml
 dist
 dev-app-update.yml
+analyticConfig.json

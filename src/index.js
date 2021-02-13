@@ -8,9 +8,10 @@ const Nucleus = require("nucleus-nodejs")
 const { v4: uuidv4 } = require('uuid');
 
 // Get/Set User UUID to file system
+const appAnalyticConfig = require('../analyticConfig.json');
 const store = require('electron-store');
-const userInfo = {UUID: ''};
-const storage = new store({userInfo});
+const userInfo = { UUID: '' };
+const storage = new store({ userInfo });
 const userId = storage.get('UUID');
 
 if (!userId) {
@@ -20,7 +21,8 @@ if (!userId) {
 // Set UUID for analytic events
 var appVersion = require("electron").remote.app.getVersion();
 
-Nucleus.init("60262a67cc400275458f0c45", {
+// I will regenerate this key and place it where it cannot be seen =]
+Nucleus.init(appAnalyticConfig.Key, {
     disableInDev: false, // disable module while in development (default: false)
     disableTracking: true, // completely disable tracking from the start (default: false)
     disableErrorReports: false, // disable errors reporting (default: false)
@@ -28,10 +30,8 @@ Nucleus.init("60262a67cc400275458f0c45", {
     debug: true // Show logs
 });
 Nucleus.setUserId(storage.get('UUID'));
-Nucleus.setProps({version: appVersion});
-
+Nucleus.setProps({ version: appVersion });
 Nucleus.appStarted();
-
 
 // Electron-Store for saving preferences
 
@@ -220,152 +220,176 @@ async function getImageData(imageName) {
 
 // Function processes filters and creates the UserPhotoLibrary object that will be displayed on the page
 async function loadImagesOntoPage() {
-    var username = document.getElementById("txtUsername").value;
-    var imageDiv = document.getElementById("grid");
+    try {
+        var username = document.getElementById("txtUsername").value;
+        var imageDiv = document.getElementById("grid");
 
-    //trackEvent('User Interaction', 'Load Image Grid');
+        //trackEvent('User Interaction', 'Load Image Grid');
 
-    // Add Spinner to button
-    // Disable the button to prevent extra load cycles
-    var btnLoad = document.getElementById("btnLoad");
-    if (btnLoad) {
-        var loadingSpinner = document.getElementById("loadingSpinner");
-        if (btnLoad.innerText == "Load Images") {
-            var loadingSpinner = document.createElement("span");
-            loadingSpinner.classList.add("spinner-border");
-            loadingSpinner.classList.add("spinner-border-sm");
-            loadingSpinner.setAttribute("id", "loadingSpinner");
-            loadingSpinner.setAttribute("role", "status");
-            loadingSpinner.setAttribute("aria-hidden", "true");
+        // Add Spinner to button
+        // Disable the button to prevent extra load cycles
+        var btnLoad = document.getElementById("btnLoad");
+        if (btnLoad) {
+            var loadingSpinner = document.getElementById("loadingSpinner");
+            if (btnLoad.innerText == "Load Images") {
+                var loadingSpinner = document.createElement("span");
+                loadingSpinner.classList.add("spinner-border");
+                loadingSpinner.classList.add("spinner-border-sm");
+                loadingSpinner.setAttribute("id", "loadingSpinner");
+                loadingSpinner.setAttribute("role", "status");
+                loadingSpinner.setAttribute("aria-hidden", "true");
 
-            btnLoad.disabled = true;
-            btnLoad.innerText = "";
-            btnLoad.appendChild(loadingSpinner);
+                btnLoad.disabled = true;
+                btnLoad.innerText = "";
+                btnLoad.appendChild(loadingSpinner);
+            }
         }
-    }
 
-    if (username === "") {
+        if (username === "") {
+            while (imageDiv.firstChild) {
+                imageDiv.removeChild(imageDiv.firstChild);
+            }
+            btnLoad.disabled = false;
+            return;
+        }
+
+        var userId = await getUserId(username);
+        var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
+
+        // Apply Filters
+        var filterValues = await swapFilterValuesWithIds();
+        var newFilteredUserPhotoLibrary = [];
+
+        // for each image
+        if (filterValues.length != 0) {
+            userPhotoLibrary.forEach(image => {
+                // for each filter item (verify image has the corret criteria)
+                var imageMustMatchAllFilters = true; // TO DO MAKE THIS TOGGLEABLE ON THE UI
+                var imageMatchesAllFilterCriteria = true;
+
+                var imageMatchedAtleastOneCriteria = false;
+                filterValues.forEach(filter => {
+                    var filterParts = filter.split("|");
+
+                    switch (filterParts[0]) {
+                        case 'A':
+                            // Activity
+                            // Example Value: A|GoldenTrophy
+                            if (image.RoomId == filterParts[1]) {
+                                imageMatchedAtleastOneCriteria = true;
+                            } else if (imageMustMatchAllFilters) {
+                                imageMatchesAllFilterCriteria = false;
+                            }
+                            break;
+
+                        case '!A':
+                            // Not Activity
+                            // Example Value: !A|GoldenTrophy
+                            if (image.RoomId != filterParts[1]) {
+                                imageMatchedAtleastOneCriteria = true;
+                            } else if (imageMustMatchAllFilters) {
+                                imageMatchesAllFilterCriteria = false;
+                            }
+                            break;
+
+                        case 'P':
+                            // Person
+                            // Example Value: P|Boethiah
+                            //console.log(image.TaggedPlayerIds.length);
+                            if (image.TaggedPlayerIds.length === 0) {
+                                imageMatchesAllFilterCriteria = false;
+                                break;
+                            }
+
+                            var taggedPlayers = [];
+                            image.TaggedPlayerIds.forEach(player => { taggedPlayers.push(player) });
+                            if ((taggedPlayers.findIndex((player) => player == filterParts[1]) > -1) && imageMatchesAllFilterCriteria) {
+                                imageMatchedAtleastOneCriteria = true;
+                            } else if (imageMustMatchAllFilters) {
+                                imageMatchesAllFilterCriteria = false;
+                            }
+                            break;
+
+                        case '!P':
+                            // Not Person
+                            // Example Value: !P|Boethiah
+                            if (image.TaggedPlayerIds.length === 0) {
+                                imageMatchesAllFilterCriteria = false;
+                                break;
+                            }
+
+                            var taggedPlayers = [];
+                            image.TaggedPlayerIds.forEach(player => { taggedPlayers.push(player) });
+                            if (!(taggedPlayers.findIndex((player) => player == filterParts[1]) > -1) && imageMatchesAllFilterCriteria) {
+                                imageMatchedAtleastOneCriteria = true;
+                            } else if (imageMustMatchAllFilters) {
+                                imageMatchesAllFilterCriteria = false;
+                            }
+                            break;
+
+                        default:
+                            //error occured log to console
+                            console.log("An error occured parsing filter type: " + filterType);
+                    }
+                });
+                if (imageMustMatchAllFilters && imageMatchesAllFilterCriteria) {
+                    newFilteredUserPhotoLibrary.push(image);
+                } else if (!(imageMustMatchAllFilters) && imageMatchedAtleastOneCriteria) {
+                    newFilteredUserPhotoLibrary.push(image);
+                }
+            });
+        };
+
+        if (filterValues.length > 0) {
+            userPhotoLibrary = newFilteredUserPhotoLibrary;
+        }
+
+        const imageResults = document.getElementById('imageResultNumber');
+        if (imageResults) {
+            if (userPhotoLibrary.length === 0) {
+                imageResults.innerText = 'No Images Found!';
+            } else {
+                imageResults.innerText = 'Image Results: ' + userPhotoLibrary.length;
+            }
+        }
+
+        var dateOrder = document.getElementById("btnOldestToNewest");
+        if (dateOrder.value == "1") { // Oldest to Newest
+            userPhotoLibrary = userPhotoLibrary.reverse();
+        }
+
         while (imageDiv.firstChild) {
             imageDiv.removeChild(imageDiv.firstChild);
         }
-        btnLoad.disabled = false;
-        return;
-    }
 
-var userId = await getUserId(username);
-var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
+        // Generate Master Lists
+        getMasterLists(userPhotoLibrary);
 
-// Apply Filters
-var filterValues = await swapFilterValuesWithIds();
-var newFilteredUserPhotoLibrary = [];
-
-// for each image
-if (filterValues.length != 0) {
-    userPhotoLibrary.forEach(image => {
-        // for each filter item (verify image has the corret criteria)
-        var imageMustMatchAllFilters = true; // TO DO MAKE THIS TOGGLEABLE ON THE UI
-        var imageMatchesAllFilterCriteria = true;
-
-        var imageMatchedAtleastOneCriteria = false;
-        filterValues.forEach(filter => {
-            var filterParts = filter.split("|");
-
-            switch (filterParts[0]) {
-                case 'A':
-                    // Activity
-                    // Example Value: A|GoldenTrophy
-                    if (image.RoomId == filterParts[1]) {
-                        imageMatchedAtleastOneCriteria = true;
-                    } else if (imageMustMatchAllFilters) {
-                        imageMatchesAllFilterCriteria = false;
-                    }
-                    break;
-
-                case '!A':
-                    // Not Activity
-                    // Example Value: !A|GoldenTrophy
-                    if (image.RoomId != filterParts[1]) {
-                        imageMatchedAtleastOneCriteria = true;
-                    } else if (imageMustMatchAllFilters) {
-                        imageMatchesAllFilterCriteria = false;
-                    }
-                    break;
-
-                case 'P':
-                    // Person
-                    // Example Value: P|Boethiah
-                    //console.log(image.TaggedPlayerIds.length);
-                    if (image.TaggedPlayerIds.length === 0) {
-                        imageMatchesAllFilterCriteria = false;
-                        break;
-                    }
-
-                    var taggedPlayers = [];
-                    image.TaggedPlayerIds.forEach(player => { taggedPlayers.push(player) });
-                    if ((taggedPlayers.findIndex((player) => player == filterParts[1]) > -1) && imageMatchesAllFilterCriteria) {
-                        imageMatchedAtleastOneCriteria = true;
-                    } else if (imageMustMatchAllFilters) {
-                        imageMatchesAllFilterCriteria = false;
-                    }
-                    break;
-
-                case '!P':
-                    // Not Person
-                    // Example Value: !P|Boethiah
-                    if (image.TaggedPlayerIds.length === 0) {
-                        imageMatchesAllFilterCriteria = false;
-                        break;
-                    }
-
-                    var taggedPlayers = [];
-                    image.TaggedPlayerIds.forEach(player => { taggedPlayers.push(player) });
-                    if (!(taggedPlayers.findIndex((player) => player == filterParts[1]) > -1) && imageMatchesAllFilterCriteria) {
-                        imageMatchedAtleastOneCriteria = true;
-                    } else if (imageMustMatchAllFilters) {
-                        imageMatchesAllFilterCriteria = false;
-                    }
-                    break;
-
-                default:
-                    //error occured log to console
-                    console.log("An error occured parsing filter type: " + filterType);
-            }
-        });
-        if (imageMustMatchAllFilters && imageMatchesAllFilterCriteria) {
-            newFilteredUserPhotoLibrary.push(image);
-        } else if (!(imageMustMatchAllFilters) && imageMatchedAtleastOneCriteria) {
-            newFilteredUserPhotoLibrary.push(image);
+        // Generate image HTML
+        loadImagesIntoPage(userPhotoLibrary);
+    } catch (error) {
+        // Remove Spinner on load button
+        // Disable the button to prevent extra load cycles
+        var btnLoad = document.getElementById("btnLoad");
+        if (btnLoad) {
+            var loadingSpinner = document.getElementById("loadingSpinner");
+            btnLoad.removeChild(loadingSpinner);
+            btnLoad.innerText = "Load Images";
+            btnLoad.disabled = false;
         }
-    });
-};
 
-if (filterValues.length > 0) {
-    userPhotoLibrary = newFilteredUserPhotoLibrary;
-}
+        var errorText = document.getElementById('filterErrorText');
+        var filterContainer = document.getElementById('filterCategoryContainer');
 
-const imageResults = document.getElementById('imageResultNumber');
-if (imageResults) {
-    if (userPhotoLibrary.length === 0) {
-        imageResults.innerText = 'No Images Found!';
-    } else {
-        imageResults.innerText = 'Image Results: ' + userPhotoLibrary.length;
+        if (errorText && filterContainer) {
+            if (!filterContainer.classList.contains('displayNone')) {
+                errorText.classList.remove('displayNone');
+                errorText.innerText = "Failed to load images.  Filter criteria may contain invalid values. Check/remove values and try again.";
+            }
+        }
+        console.log('Error occured loading images onto page: ');
+        console.log(error);
     }
-}
-
-var dateOrder = document.getElementById("btnOldestToNewest");
-if (dateOrder.value == "1") { // Oldest to Newest
-    userPhotoLibrary = userPhotoLibrary.reverse();
-}
-
-while (imageDiv.firstChild) {
-    imageDiv.removeChild(imageDiv.firstChild);
-}
-
-// Generate Master Lists
-getMasterLists(userPhotoLibrary);
-
-// Generate image HTML
-loadImagesIntoPage(userPhotoLibrary);
 }
 
 // Function that gets every User, Activity, and Event where a photo was taken.
@@ -902,7 +926,6 @@ async function getActivityIdFromName(activityName) {
             })
             .catch(function (error) {
                 // handle error
-                console.log(error);
                 reject(error);
             })
             .then(function () {
@@ -948,7 +971,7 @@ module.exports.loadFavoriteList = loadFavoriteList;
 
 // Reads favorites list from file
 function readFavoriteListFromFile() {
-    return fs.readFileSync('./data/favorite.json', {encoding:'utf8', flag:'r'});
+    return fs.readFileSync('./data/favorite.json', { encoding: 'utf8', flag: 'r' });
 }
 
 // Writes favorites list to fileData
@@ -981,7 +1004,7 @@ function toggleFavInFile() {
                         newFavList.push(user);
                     }
                 });
-                
+
                 writeFavoriteListToFile(newFavList);
                 loadFavoriteList();
             }
