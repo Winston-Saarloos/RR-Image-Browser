@@ -1,4 +1,5 @@
-const { electron, app, ipcRenderer } = require('electron');
+const { electron, ipcRenderer } = require('electron');
+const app = require('electron');
 const axios = require('axios');
 const fs = require('fs');
 const open = require('open');
@@ -17,9 +18,20 @@ if (!userId) {
 }
 
 // Set UUID for analytic events
-Nucleus.init("60262a67cc400275458f0c45")
+var appVersion = require("electron").remote.app.getVersion();
+
+Nucleus.init("60262a67cc400275458f0c45", {
+    disableInDev: false, // disable module while in development (default: false)
+    disableTracking: true, // completely disable tracking from the start (default: false)
+    disableErrorReports: false, // disable errors reporting (default: false)
+    autoUserId: false, // auto assign the user an id: username@hostname
+    debug: true // Show logs
+});
 Nucleus.setUserId(storage.get('UUID'));
+Nucleus.setProps({version: appVersion});
+
 Nucleus.appStarted();
+
 
 // Electron-Store for saving preferences
 
