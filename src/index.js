@@ -14,6 +14,9 @@ const userInfo = { UUID: '' };
 const storage = new store({ userInfo });
 const userId = storage.get('UUID');
 
+// Retargets functions to not hit production resources
+const IS_IN_DEVELOPMENT_MODE = true;
+
 if (!userId) {
     storage.set('UUID', uuidv4());
 }
@@ -21,16 +24,25 @@ if (!userId) {
 // Set UUID for analytic events
 var appVersion = require("electron").remote.app.getVersion();
 
-// I will regenerate this key and place it where it cannot be seen =]
-Nucleus.init(appAnalyticConfig.key, {
+var nucleusKey = "";
+var nucleusDebug = false;
+if (IS_IN_DEVELOPMENT_MODE) {
+    nucleusKey = appAnalyticConfig.testKey;
+    nucleusDebug = true;
+} else {
+    nucleusKey = appAnalyticConfig.key
+}
+
+Nucleus.init(nucleusKey, {
     disableInDev: false, // disable module while in development (default: false)
     disableTracking: false, // completely disable tracking from the start (default: false)
     disableErrorReports: false, // disable errors reporting (default: false)
     autoUserId: false, // auto assign the user an id: username@hostname
-    debug: true // Show logs
+    debug: nucleusDebug // Show logs
 });
 Nucleus.setUserId(storage.get('UUID'));
 Nucleus.setProps({ version: appVersion });
+console.log('App Started');
 Nucleus.appStarted();
 
 // Electron-Store for saving preferences
@@ -663,6 +675,7 @@ function openImageInBrowser(imageId) {
 function toggleFilterDisplay() {
     var btnToggleFilters = document.getElementById("expandCollapseFiltersButton");
     var filterContainer = document.getElementById("filterCategoryContainer");
+    var errorText = document.getElementById("filterErrorText");
     if (btnToggleFilters && filterContainer) {
         if (btnToggleFilters.innerText === "Expand") {
             filterContainer.classList.remove("displayNone");
@@ -670,6 +683,12 @@ function toggleFilterDisplay() {
         } else {
             filterContainer.classList.add("displayNone");
             btnToggleFilters.innerText = "Expand";
+        }
+    }
+    if (errorText) {
+        if (!errorText.classList.contains('displayNone')) {
+            errorText.innerText = "";
+            errorText.classList.add('displayNone');
         }
     }
 }
@@ -957,7 +976,7 @@ function onMouseExitFavBtn(element) {
 }
 
 function loadFavoriteList() {
-    fs.readFile('./data/favorite.json', 'utf8', (err, favList) => {
+    fs.readFile('../data/favorite.json', 'utf8', (err, favList) => {
         if (err) {
             console.log("File read failed:", err)
             return
@@ -985,7 +1004,7 @@ module.exports.loadFavoriteList = loadFavoriteList;
 
 // Reads favorites list from file
 function readFavoriteListFromFile() {
-    return fs.readFileSync('./data/favorite.json', { encoding: 'utf8', flag: 'r' });
+    return fs.readFileSync('../data/favorite.json', { encoding: 'utf8', flag: 'r' });
 }
 
 // Writes favorites list to fileData
@@ -993,7 +1012,7 @@ function writeFavoriteListToFile(fileData) {
     const data = {
         favoriteUsers: fileData
     };
-    fs.writeFileSync('./data/favorite.json', JSON.stringify(data), 'utf8', (err, favList) => {
+    fs.writeFileSync('../data/favorite.json', JSON.stringify(data), 'utf8', (err, favList) => {
         if (err) {
             console.log("File write fav list failed:", err);
             return;
