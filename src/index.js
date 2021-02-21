@@ -151,15 +151,18 @@ async function getUsernameFromId(listOfUserIds) {
 
 // Toggles text/value of button for toggling between displaying user feed vs user photo library
 function toggleButtonFeedLibrary() {
-    var button = document.getElementById("btnFeedLibrary");
+    var button = document.getElementById("btnFeedLibrary"); // User Photo Feed = 0, User Photo Library = 1, Global feed = 2
 
     if (button) {
-        if (button.value === "1") {
-            button.value = "0";
-            button.innerText = "User Photo Feed";
-        } else {
+        if (button.value === "0") {
             button.value = "1";
             button.innerText = "User Photo Library";
+        } else if (button.value === "1") {
+            button.value = "2";
+            button.innerText = "Global Photo Feed";
+        } else if (button.value === "2") {
+            button.value = "0"
+            button.innerText = "User Photo Feed";
         }
     }
 }
@@ -180,16 +183,20 @@ function toggleButtonOldestNewest() {
 }
 
 // Function takes a userID and returns back a user's entire public photo library
-async function getUserPublicPhotoLibrary(userId) {
+async function getUserPublicPhotoLibrary(userId) { // User Photo Feed = 0, User Photo Library = 1, Global feed = 2
+    var dtToday = moment().format();
     var urlUserPhotos = 'https://api.rec.net/api/images/v4/player/' + userId + '?skip=0&take=100000';
     var urlUserFeed = 'https://api.rec.net/api/images/v3/feed/player/' + userId + '?skip=0&take=100000';
+    var urlGlobalFeed = 'https://api.rec.net/api/images/v3/feed/global?skip=45000&take=100000&since=' + dtToday;
     var url = '';
     var button = document.getElementById("btnFeedLibrary");
 
-    if (button.value == 1) {
-        url = urlUserPhotos;
-    } else {
+    if (button.value == 0) {
         url = urlUserFeed;
+    } else if (button.value == 1) {
+        url = urlUserPhotos;
+    } else if (button.value == 2) {
+        url = urlGlobalFeed
     }
 
     return new Promise(function (resolve, reject) {
@@ -381,6 +388,16 @@ async function loadImagesOntoPage() {
         loadImagesIntoPage(userPhotoLibrary);
 
         if (!username == '') {
+            var NewestFirst = false;
+            var button = document.getElementById("btnOldestToNewest");
+            if (button) {
+                if (button.value == "0") {
+                    NewestFirst = true;
+                } else {
+                    NewestFirst = false;
+                }
+            }
+
             var filterCriteriaString
             if (filterValues.length == 0) {
                 filterCriteriaString = 'No filters applied'
@@ -390,8 +407,9 @@ async function loadImagesOntoPage() {
             console.log(filterCriteriaString);
             // Log analytics event
             Nucleus.track("LOAD_IMAGES_CLICKED", {
-                filterCriteriaString: filterCriteriaString,
-                imageResultCount: userPhotoLibrary.length
+                FilterCriteriaString: filterCriteriaString,
+                ImageResultCount: userPhotoLibrary.length,
+                NewestFirst: NewestFirst
             })
         }
     } catch (error) {
@@ -976,7 +994,7 @@ function onMouseExitFavBtn(element) {
 }
 
 function loadFavoriteList() {
-    fs.readFile('../data/favorite.json', 'utf8', (err, favList) => {
+    fs.readFile('./src/data/favorite.json', 'utf8', (err, favList) => {
         if (err) {
             console.log("File read failed:", err)
             return
@@ -1004,7 +1022,7 @@ module.exports.loadFavoriteList = loadFavoriteList;
 
 // Reads favorites list from file
 function readFavoriteListFromFile() {
-    return fs.readFileSync('../data/favorite.json', { encoding: 'utf8', flag: 'r' });
+    return fs.readFileSync('./src/data/favorite.json', { encoding: 'utf8', flag: 'r' });
 }
 
 // Writes favorites list to fileData
@@ -1012,7 +1030,7 @@ function writeFavoriteListToFile(fileData) {
     const data = {
         favoriteUsers: fileData
     };
-    fs.writeFileSync('../data/favorite.json', JSON.stringify(data), 'utf8', (err, favList) => {
+    fs.writeFileSync('./src/data/favorite.json', JSON.stringify(data), 'utf8', (err, favList) => {
         if (err) {
             console.log("File write fav list failed:", err);
             return;

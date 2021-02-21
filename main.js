@@ -74,9 +74,9 @@ autoUpdater.on('update-available', (ev, info) => {
 autoUpdater.on('update-not-available', (ev, info) => {
   sendStatusToWindow('Update not available.');
 })
-autoUpdater.on('error', (ev, err) => {
-  sendStatusToWindow('Application auto update failed with an error.');
-})
+// autoUpdater.on('error', (ev, err) => {
+//   sendStatusToWindow('Application auto update failed with an error.');
+// })
 autoUpdater.on('download-progress', (ev, progressObj) => {
   sendStatusToWindow('Download progress...');
 })
