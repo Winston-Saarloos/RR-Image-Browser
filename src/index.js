@@ -11,7 +11,7 @@ const store = require('electron-store');
 const userInfo = { UUID: '' };
 const storage = new store({ userInfo });
 const userId = storage.get('UUID');
-const sendUsageStatistics = storage.get('SendUsageStats');
+var sendUsageStatistics = storage.get('SendUsageStats');
 
 var dtImageLoadStart = '';
 var dtImageLoadEnd = '';
@@ -26,14 +26,17 @@ if (sendUsageStatistics != true && sendUsageStatistics != false) {
 
 if (sendUsageStatistics == false) {
     statsCheckBox.removeAttribute('checked');
+    Nucleus.disableTracking();
 }
 
 // Used for disabling analytic tracking
 function disableStatisticTracking() {
     if (statsCheckBox.checked) {
         storage.set('SendUsageStats', true);
+        Nucleus.enableTracking();
     } else {
         storage.set('SendUsageStats', false);
+        Nucleus.disableTracking();
     }
 }
 
@@ -49,14 +52,15 @@ var nucleusKey = "";
 var nucleusDebug = false;
 if (IS_IN_DEVELOPMENT_MODE) {
     nucleusKey = appAnalyticConfig.testKey;
-    nucleusDebug = false;
+    nucleusDebug = true;
 } else {
     nucleusKey = appAnalyticConfig.key
 }
 
+sendUsageStatistics = !sendUsageStatistics;
+
 Nucleus.init(nucleusKey, {
     disableInDev: false, // disable module while in development (default: false)
-    disableTracking: sendUsageStatistics, // completely disable tracking from the start (default: false)
     disableErrorReports: false, // disable errors reporting (default: false)
     autoUserId: false, // auto assign the user an id: username@hostname
     debug: nucleusDebug // Show logs
