@@ -14,6 +14,10 @@ const userInfo = { UUID: '' };
 const storage = new store({ userInfo });
 const userId = storage.get('UUID');
 
+var dtImageLoadStart = '';
+var dtImageLoadEnd = '';
+
+
 // Retargets functions to not hit production resources
 const IS_IN_DEVELOPMENT_MODE = true;
 
@@ -187,23 +191,29 @@ async function getUserPublicPhotoLibrary(userId) { // User Photo Feed = 0, User 
     var dtToday = moment().format();
     var urlUserPhotos = 'https://api.rec.net/api/images/v4/player/' + userId + '?skip=0&take=100000';
     var urlUserFeed = 'https://api.rec.net/api/images/v3/feed/player/' + userId + '?skip=0&take=100000';
-    var urlGlobalFeed = 'https://api.rec.net/api/images/v3/feed/global?skip=45000&take=100000&since=' + dtToday;
+    var urlGlobalFeed = 'https://api.rec.net/api/images/v3/feed/global?skip=0&take=3000&since=' + dtToday;
     var url = '';
     var button = document.getElementById("btnFeedLibrary");
 
     if (button.value == 0) {
+        console.log('USER PHOTO FEED');
         url = urlUserFeed;
     } else if (button.value == 1) {
+        console.log('USER PHOTOS');
         url = urlUserPhotos;
     } else if (button.value == 2) {
+        console.log('FRONT PAGE');
         url = urlGlobalFeed
     }
+
+    console.log(url);
 
     return new Promise(function (resolve, reject) {
 
         axios.get(url)
             .then(function (response) {
                 // handle success
+                console.log('Loaded data..');
                 resolve(response.data);
             })
             .catch(function (error) {
@@ -240,10 +250,11 @@ async function getImageData(imageName) {
 // Function processes filters and creates the UserPhotoLibrary object that will be displayed on the page
 async function loadImagesOntoPage() {
     try {
+        dtImageLoadStart = moment(new Date());
         var username = document.getElementById("txtUsername").value;
+        console.log(username);
         var imageDiv = document.getElementById("grid");
-
-        //trackEvent('User Interaction', 'Load Image Grid');
+        var buttonFeedType = document.getElementById("btnFeedLibrary");
 
         // Add Spinner to button
         // Disable the button to prevent extra load cycles
@@ -264,16 +275,30 @@ async function loadImagesOntoPage() {
             }
         }
 
-        if (username === "") {
+        if (username == "" && buttonFeedType.value != 2) {
+            console.log('Clearing out images..');
             while (imageDiv.firstChild) {
                 imageDiv.removeChild(imageDiv.firstChild);
             }
-            btnLoad.disabled = false;
+
+            if (btnLoad) {
+                var loadingSpinner = document.getElementById("loadingSpinner");
+                btnLoad.removeChild(loadingSpinner);
+                btnLoad.innerText = "Load Images";
+                btnLoad.disabled = false;
+            }
             return;
         }
 
-        var userId = await getUserId(username);
+        var userId = 0;
+        if (buttonFeedType.value != 2) {
+            userId = await getUserId(username);
+        }
+
+        console.log('UserID: ' + userId);
+        console.log('Attempting to get photo feed..');
         var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
+        console.log('Photo feed received..');
 
         // Apply Filters
         var filterValues = await swapFilterValuesWithIds();
@@ -363,6 +388,8 @@ async function loadImagesOntoPage() {
             userPhotoLibrary = newFilteredUserPhotoLibrary;
         }
 
+        console.log('Applied filters...');
+
         const imageResults = document.getElementById('imageResultNumber');
         if (imageResults) {
             if (userPhotoLibrary.length === 0) {
@@ -403,18 +430,32 @@ async function loadImagesOntoPage() {
                 filterCriteriaString = 'No filters applied'
             } else { filterCriteriaString = filterValues };
 
-            console.log(filterValues.length);
-            console.log(filterCriteriaString);
+            dtImageLoadEnd = moment(new Date());
+
+            var duration = moment.duration(dtImageLoadEnd.diff(dtImageLoadStart));
+            var seconds = duration.asSeconds();
+            var feedType = '';
+            if (buttonFeedType.value == 0) {
+                feedType = 'User Photo Feed';
+            } else if (buttonFeedType.value == 1) {
+                feedType = 'User Photo Library';
+            } else if (buttonFeedType.value == 2) {
+                feedType = 'RN Front Page Feed'
+            }
+
             // Log analytics event
-            Nucleus.track("LOAD_IMAGES_CLICKED", {
+            Nucleus.track("Button Clicked: Load_Images", {
                 FilterCriteriaString: filterCriteriaString,
                 ImageResultCount: userPhotoLibrary.length,
-                NewestFirst: NewestFirst
+                NewestFirst: NewestFirst,
+                LoadDuration: seconds,
+                FeedType: feedType
             })
         }
     } catch (error) {
         // Remove Spinner on load button
         // Disable the button to prevent extra load cycles
+        console.log(error);
         var btnLoad = document.getElementById("btnLoad");
         if (btnLoad) {
             var loadingSpinner = document.getElementById("loadingSpinner");
@@ -591,8 +632,15 @@ async function loadDataImageDetailModal(imageId) {
     var modalImageRnLink = document.getElementById("imageRecNetLink");
     modalImageRnLink.innerText = LOADING_TEXT;
 
-    var username = document.getElementById("txtUsername").value; // This could be re written to not pull data if it is already available
-    var userId = await getUserId(username);
+    var username = document.getElementById("txtUsername").value;
+    
+
+    var userId = 0;
+    var buttonFeedType = document.getElementById("btnFeedLibrary");
+    if (buttonFeedType.value != 2) {
+        userId = await getUserId(username);
+    }
+    
     var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
     var imageData = {};
     var i = 0;
@@ -950,8 +998,7 @@ async function getUserId(recNetDisplayName) {
         axios.get(url)
             .then(function (response) {
                 // handle success
-                //console.log('Obtained User ID!');
-                //return response.data.accountId;
+                console.log(response.data.accountId);
                 resolve(response.data.accountId);
             })
             .catch(function (error) {
