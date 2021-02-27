@@ -26,11 +26,11 @@ function createWindow() {
     }
   })
 
-  win.maximize();
+  //win.maximize();
   win.loadFile('src/index.html')
   win.removeMenu()
-  //win.webContents.openDevTools()
-  // trackEvent('User Interaction', 'App Started')
+  win.isMaximized();
+  win.webContents.openDevTools()
 }
 
 app.whenReady().then(createWindow)

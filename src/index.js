@@ -13,12 +13,33 @@ const store = require('electron-store');
 const userInfo = { UUID: '' };
 const storage = new store({ userInfo });
 const userId = storage.get('UUID');
+const sendUsageStatistics = storage.get('SendUsageStats');
 
 var dtImageLoadStart = '';
 var dtImageLoadEnd = '';
 
 // Retargets functions to not hit production resources
-const IS_IN_DEVELOPMENT_MODE = false;
+const IS_IN_DEVELOPMENT_MODE = true;
+
+var statsCheckBox = document.getElementById("chkFlexCheckChecked");
+if (sendUsageStatistics != true && sendUsageStatistics != false) {
+    storage.set('SendUsageStats', true);
+}
+
+if (sendUsageStatistics == false) {
+    statsCheckBox.removeAttribute('checked');
+}
+
+// Used for disabling analytic tracking
+function disableStatisticTracking() {
+    if (statsCheckBox.checked) {
+        storage.set('SendUsageStats', true);
+    } else {
+        storage.set('SendUsageStats', false);
+    }
+}
+
+console.log('SEND USAGE: ' + sendUsageStatistics);
 
 if (!userId) {
     storage.set('UUID', uuidv4());
@@ -26,7 +47,6 @@ if (!userId) {
 
 // Set UUID for analytic events
 var appVersion = require("electron").remote.app.getVersion();
-
 var nucleusKey = "";
 var nucleusDebug = false;
 if (IS_IN_DEVELOPMENT_MODE) {
@@ -38,7 +58,7 @@ if (IS_IN_DEVELOPMENT_MODE) {
 
 Nucleus.init(nucleusKey, {
     disableInDev: false, // disable module while in development (default: false)
-    disableTracking: false, // completely disable tracking from the start (default: false)
+    disableTracking: sendUsageStatistics, // completely disable tracking from the start (default: false)
     disableErrorReports: false, // disable errors reporting (default: false)
     autoUserId: false, // auto assign the user an id: username@hostname
     debug: nucleusDebug // Show logs
@@ -1026,71 +1046,71 @@ function onMouseExitFavBtn(element) {
     element.setAttribute('src', './images/star_outline.png');
 }
 
-function loadFavoriteList() {
-    fs.readFile('./src/data/favorite.json', 'utf8', (err, favList) => {
-        if (err) {
-            console.log("File read failed:", err)
-            return
-        }
+// function loadFavoriteList() {
+//     fs.readFile('./src/data/favorite.json', 'utf8', (err, favList) => {
+//         if (err) {
+//             console.log("File read failed:", err)
+//             return
+//         }
 
-        var fileData = JSON.parse(favList);
-        const favDataList = document.getElementById('favUsers');
-        if (favDataList) {
-            while (favDataList.firstChild) {
-                favDataList.removeChild(favDataList.firstChild);
-            }
+//         var fileData = JSON.parse(favList);
+//         const favDataList = document.getElementById('favUsers');
+//         if (favDataList) {
+//             while (favDataList.firstChild) {
+//                 favDataList.removeChild(favDataList.firstChild);
+//             }
 
-            for (var index in fileData.favoriteUsers) {
-                const favOptionItem = document.createElement("option");
-                favOptionItem.setAttribute('value', fileData.favoriteUsers[index]);
-                favOptionItem.innerText = 'Favorite';
-                favDataList.appendChild(favOptionItem);
-            };
-        }
-    });
-}
+//             for (var index in fileData.favoriteUsers) {
+//                 const favOptionItem = document.createElement("option");
+//                 favOptionItem.setAttribute('value', fileData.favoriteUsers[index]);
+//                 favOptionItem.innerText = 'Favorite';
+//                 favDataList.appendChild(favOptionItem);
+//             };
+//         }
+//     });
+// }
 
-module.exports.loadFavoriteList = loadFavoriteList;
+// module.exports.loadFavoriteList = loadFavoriteList;
 
-// Reads favorites list from file
-function readFavoriteListFromFile() {
-    return fs.readFileSync('./src/data/favorite.json', { encoding: 'utf8', flag: 'r' });
-}
+// // Reads favorites list from file
+// function readFavoriteListFromFile() {
+//     return fs.readFileSync('./src/data/favorite.json', { encoding: 'utf8', flag: 'r' });
+// }
 
-// Writes favorites list to fileData
-function writeFavoriteListToFile(fileData) {
-    const data = {
-        favoriteUsers: fileData
-    };
-    fs.writeFileSync('./src/data/favorite.json', JSON.stringify(data), 'utf8', (err, favList) => {
-        if (err) {
-            console.log("File write fav list failed:", err);
-            return;
-        }
-    });
-}
+// // Writes favorites list to fileData
+// function writeFavoriteListToFile(fileData) {
+//     const data = {
+//         favoriteUsers: fileData
+//     };
+//     fs.writeFileSync('./src/data/favorite.json', JSON.stringify(data), 'utf8', (err, favList) => {
+//         if (err) {
+//             console.log("File write fav list failed:", err);
+//             return;
+//         }
+//     });
+// }
 
-function toggleFavInFile() {
-    var txtUsername = document.getElementById('txtUsername');
-    if (txtUsername) {
-        if (txtUsername.value != '') {
-            var fileData = JSON.parse(readFavoriteListFromFile());
-            if (!(fileData.favoriteUsers.includes(txtUsername.value))) {
-                fileData.favoriteUsers.push(txtUsername.value);
-                writeFavoriteListToFile(fileData.favoriteUsers);
-                loadFavoriteList();
-            } else if (fileData.favoriteUsers.includes(txtUsername.value)) {
-                var currentFavlist = fileData.favoriteUsers;
-                var newFavList = [];
-                currentFavlist.forEach(user => {
-                    if (!(user == txtUsername.value)) {
-                        newFavList.push(user);
-                    }
-                });
+// function toggleFavInFile() {
+//     var txtUsername = document.getElementById('txtUsername');
+//     if (txtUsername) {
+//         if (txtUsername.value != '') {
+//             var fileData = JSON.parse(readFavoriteListFromFile());
+//             if (!(fileData.favoriteUsers.includes(txtUsername.value))) {
+//                 fileData.favoriteUsers.push(txtUsername.value);
+//                 writeFavoriteListToFile(fileData.favoriteUsers);
+//                 loadFavoriteList();
+//             } else if (fileData.favoriteUsers.includes(txtUsername.value)) {
+//                 var currentFavlist = fileData.favoriteUsers;
+//                 var newFavList = [];
+//                 currentFavlist.forEach(user => {
+//                     if (!(user == txtUsername.value)) {
+//                         newFavList.push(user);
+//                     }
+//                 });
 
-                writeFavoriteListToFile(newFavList);
-                loadFavoriteList();
-            }
-        }
-    }
-}
+//                 writeFavoriteListToFile(newFavList);
+//                 loadFavoriteList();
+//             }
+//         }
+//     }
+// }
