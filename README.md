@@ -38,14 +38,12 @@ If you would like to remove a filter press the X button on the right side of the
 ------------
 
 # Planned
-- User load images favoriting (v0.1.9)
-- Recent users list (v0.1.9)
-- Favorited Users list (v0.1.9)
-- anonymous analytics [These will help me fix common errors experienced by users] (v0.1.9)
+- User load images favoriting 
+- Recent users list
+- Favorited Users list
 - Image Favoriting
-- Start application in maximized mode (v0.1.9)
+- Start application in maximized mode
 - Photo albums
-- Number of cheers will be dispalyed on image thumbnail (v0.1.9)
 - Number of comments will be displayed on image thumbnail
 - Settings page?
 - Ability to auto update the app after being prompted (currently it just auto restarts which is not user friendly).  I would like to prompt the user that the update is downloaded and ready and allow them to close/restart it for install at a time that is convient for them.
