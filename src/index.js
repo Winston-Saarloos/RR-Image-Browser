@@ -17,7 +17,7 @@ var dtImageLoadStart = '';
 var dtImageLoadEnd = '';
 
 // Retargets functions to not hit production resources
-const IS_IN_DEVELOPMENT_MODE = true;
+const IS_IN_DEVELOPMENT_MODE = false;
 
 var statsCheckBox = document.getElementById("chkFlexCheckChecked");
 if (sendUsageStatistics != true && sendUsageStatistics != false) {
