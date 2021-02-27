@@ -29,7 +29,7 @@ function createWindow() {
   win.maximize();
   win.loadFile('src/index.html')
   win.removeMenu()
-  win.webContents.openDevTools()
+  //win.webContents.openDevTools()
   // trackEvent('User Interaction', 'App Started')
 }
 

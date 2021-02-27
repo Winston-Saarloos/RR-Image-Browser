@@ -1,4 +1,4 @@
-const { electron, ipcRenderer } = require('electron');
+const { ipcRenderer } = require('electron');
 const app = require('electron');
 const axios = require('axios');
 const fs = require('fs');
@@ -17,9 +17,8 @@ const userId = storage.get('UUID');
 var dtImageLoadStart = '';
 var dtImageLoadEnd = '';
 
-
 // Retargets functions to not hit production resources
-const IS_IN_DEVELOPMENT_MODE = true;
+const IS_IN_DEVELOPMENT_MODE = false;
 
 if (!userId) {
     storage.set('UUID', uuidv4());
@@ -424,11 +423,11 @@ async function loadImagesOntoPage() {
             var seconds = duration.asSeconds();
             var feedType = '';
             if (buttonFeedType.value == 0) {
-                feedType = 'User Photo Feed';
+                feedType = 'Feed';
             } else if (buttonFeedType.value == 1) {
-                feedType = 'User Photo Library';
+                feedType = 'Library';
             } else if (buttonFeedType.value == 2) {
-                feedType = 'RN Front Page Feed'
+                feedType = 'Global'
             }
 
             // Log analytics event
@@ -657,7 +656,7 @@ async function loadDataImageDetailModal(imageId) {
     if (modalImageActivityName) {
         if (roomData.length >= 1) {
             var szActivityName = roomData[0].Name;
-            modalImageActivityName.innerText = szActivityName;
+            modalImageActivityName.innerText = '^' + szActivityName;
         } else if (roomData === 'null') {
             modalImageActivityName.innerText = 'Null';
         } else {
