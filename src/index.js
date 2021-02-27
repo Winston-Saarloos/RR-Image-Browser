@@ -1,7 +1,5 @@
 const { ipcRenderer } = require('electron');
-const app = require('electron');
 const axios = require('axios');
-const fs = require('fs');
 const open = require('open');
 var moment = require('moment');
 const Nucleus = require("nucleus-nodejs")
@@ -67,8 +65,6 @@ Nucleus.setUserId(storage.get('UUID'));
 Nucleus.setProps({ version: appVersion });
 console.log('App Started');
 Nucleus.appStarted();
-
-// Electron-Store for saving preferences
 
 // Auto Update Related Function
 const version = document.getElementById('versionNumber');
