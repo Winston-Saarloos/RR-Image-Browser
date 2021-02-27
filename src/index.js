@@ -32,7 +32,7 @@ var nucleusKey = "";
 var nucleusDebug = false;
 if (IS_IN_DEVELOPMENT_MODE) {
     nucleusKey = appAnalyticConfig.testKey;
-    nucleusDebug = true;
+    nucleusDebug = false;
 } else {
     nucleusKey = appAnalyticConfig.key
 }
@@ -196,24 +196,18 @@ async function getUserPublicPhotoLibrary(userId) { // User Photo Feed = 0, User 
     var button = document.getElementById("btnFeedLibrary");
 
     if (button.value == 0) {
-        console.log('USER PHOTO FEED');
         url = urlUserFeed;
     } else if (button.value == 1) {
-        console.log('USER PHOTOS');
         url = urlUserPhotos;
     } else if (button.value == 2) {
-        console.log('FRONT PAGE');
         url = urlGlobalFeed
     }
-
-    console.log(url);
 
     return new Promise(function (resolve, reject) {
 
         axios.get(url)
             .then(function (response) {
                 // handle success
-                console.log('Loaded data..');
                 resolve(response.data);
             })
             .catch(function (error) {
@@ -252,7 +246,6 @@ async function loadImagesOntoPage() {
     try {
         dtImageLoadStart = moment(new Date());
         var username = document.getElementById("txtUsername").value;
-        console.log(username);
         var imageDiv = document.getElementById("grid");
         var buttonFeedType = document.getElementById("btnFeedLibrary");
 
@@ -295,10 +288,7 @@ async function loadImagesOntoPage() {
             userId = await getUserId(username);
         }
 
-        console.log('UserID: ' + userId);
-        console.log('Attempting to get photo feed..');
         var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
-        console.log('Photo feed received..');
 
         // Apply Filters
         var filterValues = await swapFilterValuesWithIds();
@@ -387,8 +377,6 @@ async function loadImagesOntoPage() {
         if (filterValues.length > 0) {
             userPhotoLibrary = newFilteredUserPhotoLibrary;
         }
-
-        console.log('Applied filters...');
 
         const imageResults = document.getElementById('imageResultNumber');
         if (imageResults) {
@@ -640,7 +628,7 @@ async function loadDataImageDetailModal(imageId) {
     if (buttonFeedType.value != 2) {
         userId = await getUserId(username);
     }
-    
+
     var userPhotoLibrary = await getUserPublicPhotoLibrary(userId);
     var imageData = {};
     var i = 0;
@@ -998,7 +986,6 @@ async function getUserId(recNetDisplayName) {
         axios.get(url)
             .then(function (response) {
                 // handle success
-                console.log(response.data.accountId);
                 resolve(response.data.accountId);
             })
             .catch(function (error) {
@@ -1055,7 +1042,6 @@ function loadFavoriteList() {
             }
 
             for (var index in fileData.favoriteUsers) {
-                console.log(fileData.favoriteUsers[index]);
                 const favOptionItem = document.createElement("option");
                 favOptionItem.setAttribute('value', fileData.favoriteUsers[index]);
                 favOptionItem.innerText = 'Favorite';
