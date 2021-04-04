@@ -118,7 +118,7 @@ ipcRenderer.on('message', function (event, text) {
 // Takes in a room id and returns out data for that room
 // https://api.rec.net/roomserver/rooms/bulk?Id=12028058
 async function getRoomInfo(roomId) {
-    var url = 'https://api.rec.net/roomserver/rooms/bulk?Id=' + roomId;
+    var url = 'https://rooms.rec.net/rooms/bulk?Id=' + roomId;
 
     return new Promise(function (resolve, reject) {
         if (!roomId) {
