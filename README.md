@@ -1,5 +1,7 @@
 # Image Browser
 
+This app has been replaced by the following website: https://rn-extratools.com/imagebrowser
+
 Type in an @ name and press load to view a user's photo feed or photo library (Public photos only).  Use the button to the left of the textbox and load button for toggling between "oldest to newest" and "newest to oldest."  
 
 You can favorite up to 3 @ names which will show up in a drop down below the @ name textbox.  Additionally the last 5 usernames entered will be preloaded in this dropdown.  This data will persist between opening/closing of the application.
